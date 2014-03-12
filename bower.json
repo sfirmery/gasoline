@@ -1,0 +1,27 @@
+{
+	"name": "gasoline",
+	"version": "0.0.0",
+	"private": "true",
+	"dependencies": {
+		"jquery": "*",
+		"bootstrap": "*",
+		"bootstrap-datepicker": "*",
+		"font-awesome": "*"
+	},
+	"exportsOverride": {
+		"bootstrap": {
+			"js": "dist/js/bootstrap.js",
+			"css": "dist/css/bootstrap.css",
+			"fonts": "dist/fonts/*"
+		},
+		"bootstrap-datepicker": {
+			"js": "js/*.js",
+			"js/locales": "js/locales/*.js",
+			"css": "css/datepicker3.css"
+		},
+		"font-awesome": {
+			"css": "css/font-awesome.css",
+			"fonts": "fonts/*"
+		}
+	}
+}

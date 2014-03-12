@@ -1,0 +1,12 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Hi !</h1>
+
+<ul>
+{% for doc in docs %}
+	<li><a href="{{ url_for('frontend.view_document', doc_id=doc.id) }}">{{ doc.title }}</a> ({{ doc.current_revision }}) - {{ doc.id }}</li>
+{% endfor %}
+</ul>
+{% endblock %}

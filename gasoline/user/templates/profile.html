@@ -1,0 +1,16 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% set page_title = _('Profile') %}
+
+{% block content %}
+<table>
+    <tr valign="top">
+        <td>
+            <h1>{{ _('User:') }} {{ user.name }}</h1>
+            {% if user.last_seen %}<p><i>{{ _('Last seen on:') }} {{user.last_seen}}</i></p>{% endif %}
+        </td>
+    </tr>
+</table>
+<hr>
+{% endblock %}
