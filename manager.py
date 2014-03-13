@@ -12,7 +12,7 @@ manager = Manager(app)
 @manager.command
 def run(debug=False):
     """run app"""
-    app.run(debug=debug)
+    app.run(debug=debug, host='0.0.0.0')
 
 
 @manager.command
