@@ -1,0 +1,13 @@
+*.py[cod]
+
+# webassets cache
+.webassets-cache/
+
+# whoosh index
+index/
+
+# npm
+node_modules/
+
+# bower
+bower_components
