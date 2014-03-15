@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-11 10:33+0100\n"
+"POT-Creation-Date: 2014-03-15 12:41+0100\n"
 "PO-Revision-Date: 2014-03-10 14:23+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -17,21 +17,37 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: gasoline/frontend/forms.py:10
+#: gasoline/frontend/forms.py:10 gasoline/frontend/forms.py:11
 msgid "Title"
 msgstr "Titre"
 
-#: gasoline/frontend/forms.py:11
+#: gasoline/frontend/forms.py:13 gasoline/frontend/forms.py:14
 msgid "Content"
 msgstr "Contenu"
 
-#: gasoline/frontend/forms.py:16 gasoline/templates/base.html:47
+#: gasoline/frontend/forms.py:19 gasoline/frontend/forms.py:20
+#: gasoline/templates/base.html:46
 msgid "Search"
 msgstr "Rechercher"
 
-#: gasoline/frontend/templates/edit_document.html:33
+#: gasoline/frontend/views.py:59 gasoline/frontend/views.py:74
+msgid "Document saved successfuly."
+msgstr "Document sauvegardé avec succès."
+
+#: gasoline/frontend/templates/dashboard.html:5
+msgid "Create"
+msgstr "Créer"
+
+#: gasoline/frontend/templates/edit_document.html:32
 msgid "Submit"
 msgstr "Soumettre"
+
+#: gasoline/frontend/templates/search_results.html:5
+#, python-format
+msgid "%(count)d of %(num)i result found in %(seconds)fs"
+msgid_plural "%(count)d of %(num)i results found in %(seconds)fs"
+msgstr[0] "%(count)d of %(num)i résultat trouvé en %(seconds)fs"
+msgstr[1] "%(count)d sur %(num)i résultats trouvés en %(seconds)fs"
 
 #: gasoline/frontend/templates/view_document.html:6
 msgid "Create on"
@@ -48,6 +64,10 @@ msgstr "edition"
 #: gasoline/frontend/templates/view_document.html:7
 msgid "Current revision is"
 msgstr "Version actuelle"
+
+#: gasoline/frontend/templates/view_document.html:11
+msgid "History:"
+msgstr "Historique :"
 
 #: gasoline/templates/base.html:5
 msgid "Project"
