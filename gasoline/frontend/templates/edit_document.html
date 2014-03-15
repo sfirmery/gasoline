@@ -19,7 +19,6 @@
 	    </label>
 	    <div class="col-sm-8 controls">
 	        {{ form.content(class="form-control", rows="20") }}
-	        <span class="help-inline">{{ form.content.description }}</span>
 	        {% if form.content.errors -%}
 	            {% for error in form.content.errors -%}
 	            <span class="help-block error">{{ error }}</span>

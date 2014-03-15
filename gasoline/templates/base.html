@@ -39,10 +39,9 @@
         </ul>
       {% if current_user.is_authenticated() %}
       {% cache 60*5 %}
-        <form class="navbar-form navbar-right" role="search" action="{{url_for('frontend.search')}}" method="post" name="search">
+        <form class="navbar-form navbar-right" role="search" action="{{url_for('frontend.search')}}" method="get" name="search">
           <div class="form-group">
-            {{g.search_form.hidden_tag()}}
-            {{ g.search_form.search(class='form-control', placeholder=g.search_form.search.description)|safe }}
+            {{ g.search_form.query(class='form-control', placeholder=g.search_form.query.description)|safe }}
           </div>
           <button type="button" value="{{ _('Search') }}" class="btn btn-default"><i class="fa fa-search fa-fw"></i></button>
         </form>

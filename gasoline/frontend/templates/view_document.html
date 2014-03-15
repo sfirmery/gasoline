@@ -8,8 +8,8 @@
 
 <p>{{ doc.content_html|safe }}</p>
 
-{% if doc.current_revision > 1 %}
 <h4>{{ _('History:') }}</h4>
+{% if doc.current_revision > 1 %}
 <ul>
 	{% for revision in history.reverse_revisions %}
 	<li>Rev: <a href="{{ url_for('frontend.view_document', doc_id=doc.id, revision=revision.number) }}">{{ revision.number }}</a> - {{ revision.date }}</li>

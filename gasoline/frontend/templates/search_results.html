@@ -1,0 +1,11 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<h4>{{ ngettext('%(count)d of %(num)i result found in %(seconds)fs', '%(count)d of %(num)i results found in %(seconds)fs', results.estimated_length(), count=results.scored_length(), seconds=results.runtime) }}</h4>
+<ul>
+	{% for result in results_list %}
+	<li><a href="{{ url_for('frontend.view_document', doc_id=result['res']['id']) }}">{{ result['res']['id'] }}</a> - {{ result['score'] }}</li>
+	{% endfor %}
+</ul>
+{% endblock %}

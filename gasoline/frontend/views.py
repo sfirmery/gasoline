@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from flask import Blueprint, render_template, redirect
-from flask import url_for, flash
+from flask import url_for, flash, request
 from flask.ext.login import login_required
+from flask.ext.babel import gettext as _
 
 from .models import BaseDocument, DocumentHistory
 from .forms import BaseDocumentForm
+from ..search_engine import indexer
+
 # from .constants import DEFAULT_SPACE
 
 frontend = Blueprint('frontend',
@@ -38,30 +41,46 @@ def view_document(doc_id=None, revision=None):
     return render_template('view_document.html', **locals())
 
 
+@route('/document/new', methods=['GET', 'POST'])
 @route('/document/edit/<doc_id>', methods=['GET', 'POST'])
 @login_required
 def edit_document(doc_id=None):
-    doc = BaseDocument.objects(id=doc_id).first()
+    if doc_id is not None:
+        doc = BaseDocument.objects(id=doc_id).first()
+    else:
+        doc = BaseDocument()
     form = BaseDocumentForm(obj=doc)
     if form.validate_on_submit():
-        updated = False
         if form.title.data != doc.title:
             doc.title = form.title.data
-            updated = True
         if form.content.data != doc.content:
             doc.content = form.content.data
-            updated = True
-        # if updated:
-        if True:
-            doc.save()
-        else:
-            flash("no modification", 'warning')
+        doc.save()
+        flash(_('Document saved successfuly.'), 'info')
+        return redirect(url_for('.view_document', doc_id=doc.id))
+    return render_template('edit_document.html', **locals())
 
-        return redirect(url_for('.view_document', doc_id=doc_id))
 
+@login_required
+def new_document():
+    doc = BaseDocument()
+    form = BaseDocumentForm()
+    if form.validate_on_submit():
+        if form.title.data != doc.title:
+            doc.title = form.title.data
+        if form.content.data != doc.content:
+            doc.content = form.content.data
+        doc.save()
+        flash(_('Document saved successfuly.'), 'info')
+        return redirect(url_for('.view_document', doc_id=doc.id))
     return render_template('edit_document.html', **locals())
 
 
 @route('/search')
-def search():
-    return redirect(url_for('.index'))
+@route('/search/<query>')
+@login_required
+def search(query=None):
+    if query is None:
+        query = request.args.get('query', '')
+    results, results_list = indexer.search(query)
+    return render_template('search_results.html', **locals())

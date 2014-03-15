@@ -13,6 +13,7 @@ from flask.ext.babel import Babel
 
 from .config import DefaultConfig
 from .extensions import db, cache, lm, assets
+from .search_engine import indexer
 from .user import User, user
 from .frontend import frontend
 
@@ -22,8 +23,13 @@ def create_app():
     app = Flask('gasoline')
     app.config.from_object(DefaultConfig)
 
+    # initialise flask extensions
     init_extensions(app)
 
+    # initialise search engine
+    init_search_engine(app)
+
+    # register blueprints
     register_blueprints(app, [frontend, user])
 
     @app.before_request
@@ -32,10 +38,12 @@ def create_app():
         if current_user.is_authenticated():
             g.search_form = SearchForm()
 
+    # load request profiler
     from werkzeug.contrib.profiler import ProfilerMiddleware
     app.wsgi_app = ProfilerMiddleware(app.wsgi_app,
                                       restrictions=['gasoline'])
 
+    # initalialise logging app
     init_logging(app)
 
     return app
@@ -90,9 +98,13 @@ def init_extensions(app):
 
 def register_blueprints(app, blueprints):
     """register flask blueprints"""
-
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
+
+
+def init_search_engine(app):
+    """initialisation of gasoline search engine"""
+    indexer.init_app(app)
 
 
 def init_logging(app):

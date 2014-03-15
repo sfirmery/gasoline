@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask.ext.babel import gettext as _
+from flask.ext.babel import lazy_gettext as _
 from flask.ext.wtf import Form
 from wtforms import TextField, BooleanField, PasswordField
 from wtforms.validators import Required, Length
