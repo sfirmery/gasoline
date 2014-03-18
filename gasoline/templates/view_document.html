@@ -1,0 +1,19 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1><a href="{{ url_for('document.view', doc_id=doc.id) }}">{{ doc.title }}</a></h1>
+<p>{{ _('Create on') }} {{ doc.creation }}, {{ _('last update') }} {{ doc.last_update }} <a href="{{ url_for('document.edit', doc_id=doc.id) }}">{{ _('edit') }}</a></p>
+<p>{{ _('Current revision is') }} {{ doc.current_revision }}</p>
+
+<p>{{ doc.content_html|safe }}</p>
+
+<h4>{{ _('History:') }}</h4>
+{% if doc.current_revision > 1 %}
+<ul>
+	{% for revision in history.reverse_revisions %}
+	<li>Rev: <a href="{{ url_for('document.view', doc_id=doc.id, revision=revision.number) }}">{{ revision.number }}</a> - {{ revision.date }}</li>
+	{% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

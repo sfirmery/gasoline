@@ -2,7 +2,7 @@
 
 from werkzeug import generate_password_hash, check_password_hash
 
-from ..extensions import db
+from gasoline.core.extensions import db
 
 
 class User(db.Document):

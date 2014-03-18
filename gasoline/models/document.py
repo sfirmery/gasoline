@@ -3,10 +3,11 @@
 from datetime import datetime
 import markdown2
 
-from ..diff import Diff
-from ..search_engine import indexer
-from ..extensions import db
-from ..user import User
+from gasoline.core.extensions import db
+from gasoline.core.signals import event
+from gasoline.core.diff import Diff
+
+from .user import User
 
 
 class DocumentRevision(db.EmbeddedDocument):
@@ -22,7 +23,7 @@ class DocumentRevision(db.EmbeddedDocument):
 
 class BaseDocument(db.DynamicDocument):
     _title = db.StringField(db_field='title', unique_with='_space')
-    _space = db.StringField(db_field='space', default='root')
+    _space = db.StringField(db_field='space', default=u'root')
     _content = db.StringField(db_field='content')
 
     # document Metadata
@@ -60,9 +61,6 @@ class BaseDocument(db.DynamicDocument):
         # get diff object
         if self._diff is None:
             self._diff = Diff()
-
-    def _index(self):
-        indexer.index_document(self)
 
     @property
     def title(self):
@@ -158,7 +156,10 @@ class BaseDocument(db.DynamicDocument):
 
         # update metadata
         self.last_update = datetime.utcnow()
-        self._index()
+
+        # send document update evetn
+        event.send('document', document=self)
+
         super(BaseDocument, self).save()
 
     def __repr__(self):

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from flask import current_app
 from flask.ext.script import Manager
 
 from gasoline import create_app
-from gasoline.extensions import db, cache, lm, assets
+from gasoline.core import extensions
 
 app = create_app()
 manager = Manager(app)
@@ -33,8 +34,23 @@ def initdb():
         new_doc.save()
 
 
+@manager.command
+def reindex(clear=False):
+    """Reindex documents"""
+    from gasoline.frontend.models import BaseDocument
+
+    indexer = current_app.services['indexer']
+    documents = BaseDocument.objects.all()
+
+    if clear:
+        print "*" * 80
+        print "WILL CLEAR INDEX BEFORE REINDEXING"
+        print "*" * 80
+    indexer.index_documents(documents, clear)
+
+
 def _make_context():
-    return dict(app=app, db=db)
+    return dict(app=app, db=extensions.db)
 
 from flask.ext.script import Shell
 manager.add_command("shell", Shell(make_context=_make_context))

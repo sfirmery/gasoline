@@ -3,16 +3,17 @@
 from flask.ext.babel import lazy_gettext as _
 from flask.ext.wtf import Form
 from wtforms import TextField, BooleanField, PasswordField
-from wtforms.validators import Required, Length
+from wtforms.validators import Required
 
-from .models import User
+from gasoline.models import User
 
 
 class LoginForm(Form):
     name = TextField(_(u'Username'),
                      description=_(u'Username'), validators=[Required()])
     password = PasswordField(_(u'Password'),
-                             description=_(u'Password'), validators=[Required()])
+                             description=_(u'Password'),
+                             validators=[Required()])
     remember_me = BooleanField(_(u'Remember me'),
                                description=_(u'Remember me'), default=False)
 

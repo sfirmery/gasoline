@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>{% block title %}{{ page_title|default(_('Project')) }}{% endblock %} - Gasoline</title>
-    {% assets "css_all" %}<link href="{{ ASSET_URL }}" rel="stylesheet" media="screen">{% endassets %}
+    {% assets "css" %}<link href="{{ ASSET_URL }}" rel="stylesheet" media="screen">{% endassets %}
     <meta name="description" content="Gasoline, collaborative wiki">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
@@ -26,7 +26,7 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
           <li{% if request.path in "/" "/index" %} class="active"{% endif %}>
-            <a href="{{ url_for('frontend.index') }}">{{ _('Dashboard') }}</a>
+            <a href="{{ url_for('dashboard.index') }}">{{ _('Dashboard') }}</a>
           </li>
         {% if current_user.is_authenticated() %}
           <li{% if request.path.startswith("/user") %} class="active"{% endif %}>
@@ -39,7 +39,7 @@
         </ul>
       {% if current_user.is_authenticated() %}
       {% cache 60*5 %}
-        <form class="navbar-form navbar-right" role="search" action="{{url_for('frontend.search')}}" method="get" name="search">
+        <form class="navbar-form navbar-right" role="search" action="{{url_for('search.search')}}" method="get" name="search">
           <div class="form-group">
             {{ g.search_form.query(class='form-control', placeholder=g.search_form.query.description)|safe }}
           </div>
@@ -65,7 +65,7 @@
     {% block content %}{% endblock %}
 
 {% cache 60*5 %}
-    {% assets "js_all" %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
+    {% assets "js" %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
 {% endcache %}
   </body>
 </html>

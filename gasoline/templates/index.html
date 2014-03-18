@@ -6,7 +6,7 @@
 
 <ul>
 {% for doc in docs %}
-	<li><a href="{{ url_for('frontend.view_document', doc_id=doc.id) }}">{{ doc.title }}</a> ({{ doc.status }})</li>
+	<li><a href="{{ url_for('dashboard.view', doc_id=doc.id) }}">{{ doc.title }}</a> ({{ doc.status }})</li>
 {% endfor %}
 </ul>
 {% endblock %}

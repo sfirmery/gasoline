@@ -34,3 +34,5 @@ class DefaultConfig(BaseConfig):
     # CACHE_TYPE = 'simple'
     CACHE_TYPE = 'null'
     CACHE_DEFAULT_TIMEOUT = 60
+
+    INDEX_PATH = 'indexdir'

@@ -5,6 +5,8 @@ from flask.ext.wtf import Form
 from wtforms import TextField, TextAreaField
 from wtforms.validators import Required
 
+__all__ = ['BaseDocumentForm']
+
 
 class BaseDocumentForm(Form):
     title = TextField(_('Title'),
@@ -13,8 +15,3 @@ class BaseDocumentForm(Form):
     content = TextAreaField(_('Content'),
                             description=_(u'Content'),
                             validators=[Required()])
-
-
-class SearchForm(Form):
-    query = TextField(_('Search'),
-                      description=_(u'Search'), validators=[Required()])
