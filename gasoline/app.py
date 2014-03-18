@@ -53,7 +53,7 @@ class Application(Flask):
         #   jinja2.PackageLoader('abilian.web', 'templates'))
 
         self._assets_bundles = {
-            'css': {'options': dict(filters='cssmin, cssrewrite',
+            'css': {'options': dict(filters='cssmin',
                                     output='css/style-%(version)s.min.css')},
             'js-top': {'options': dict(output='js/top-%(version)s.min.js')},
             'js': {'options': dict(output='js/app-%(version)s.min.js')},
