@@ -37,7 +37,7 @@ def initdb():
 @manager.command
 def reindex(clear=False):
     """Reindex documents"""
-    from gasoline.frontend.models import BaseDocument
+    from gasoline.models import BaseDocument
 
     indexer = current_app.services['indexer']
     documents = BaseDocument.objects.all()
@@ -47,6 +47,14 @@ def reindex(clear=False):
         print "WILL CLEAR INDEX BEFORE REINDEXING"
         print "*" * 80
     indexer.index_documents(documents, clear)
+
+
+@manager.command
+def routes():
+    for rule in sorted(current_app.url_map._rules, key=lambda x: x.rule):
+        print '%s (%s) -> %s' % (rule.rule,
+                                 ", ".join(rule.methods),
+                                 rule.endpoint)
 
 
 def _make_context():
