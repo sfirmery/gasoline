@@ -19,7 +19,7 @@ route = blueprint_user.route
 @route('/login', methods=['GET', 'POST'])
 def login():
     if current_user is not None and current_user.is_authenticated():
-        return redirect(url_for('index'))
+        return redirect(url_for('dashboard.index'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.objects(name=form.name.data).first()
