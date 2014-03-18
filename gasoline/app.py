@@ -12,13 +12,13 @@ from werkzeug.datastructures import ImmutableDict
 
 from gasoline.config import DefaultConfig
 # from .extensions import db, cache, lm, assets
-from gasoline.core import extensions
-# from .signals import signals
+from gasoline.core import extensions, signals
 from gasoline.models import User
 from gasoline.views import (
     blueprint_search, blueprint_document, blueprint_user, blueprint_dashboard)
 from gasoline.services import indexer_service, event_service
 
+logger = logging.getLogger('gasoline')
 
 default_config = dict(Flask.default_config)
 default_config.update(
@@ -48,10 +48,6 @@ class Application(Flask):
         # setup logging
         self.setup_logging()
 
-        # self._jinja_loaders = list()
-        # self.register_jinja_loaders(
-        #   jinja2.PackageLoader('abilian.web', 'templates'))
-
         self._assets_bundles = {
             'css': {'options': dict(filters='cssmin',
                                     output='css/style-%(version)s.min.css')},
@@ -64,10 +60,14 @@ class Application(Flask):
 
         self.init_extensions()
 
+        self.register_services()
+        # load services
+        self.start_services()
+
         # TODO: register plugins ###
         # self.register_plugins()
+        signals.plugins_registered.send(self)
 
-        self.register_services()
         self.register_blueprints([blueprint_search,
                                   blueprint_document,
                                   blueprint_user,
@@ -79,12 +79,7 @@ class Application(Flask):
             if current_user.is_authenticated():
                     g.search_form = SearchForm()
 
-        # signals.components_registered.send(self)
-
         # request_started.connect(self._setup_breadcrumbs)
-
-        # load services
-        self.start_services()
 
     def init_extensions(self):
         """
@@ -95,9 +90,9 @@ class Application(Flask):
         extensions.db.init_app(self)
 
         # init flask-cache
-        extensions.cache.init_app(self)
-        # cache.init_app(app, config={'CACHE_TYPE': 'null'})
-        # cache.init_app(app, config={'CACHE_TYPE': 'simple'})
+        # extensions.cache.init_app(self)
+        extensions.cache.init_app(self, config={'CACHE_TYPE': 'null'})
+        # extensions.cache.init_app(app, config={'CACHE_TYPE': 'simple'})
 
         # init flask-login
         extensions.lm.login_view = 'user.login'
@@ -109,14 +104,9 @@ class Application(Flask):
         extensions.lm.setup_app(self)
 
         # extensions.mail.init_app(self)
-        # actions.init_app(self)
 
-        # from abilian.core.jinjaext import DeferredJS
+        #  DeferredJS
         # DeferredJS(self)
-
-        # # webassets
-        # self._setup_asset_extension()
-        # self._register_base_assets()
 
         extensions.assets.init_app(self)
         self._assets_bundles['js']['files'] = [
@@ -140,11 +130,12 @@ class Application(Flask):
         @extensions.babel.localeselector
         def get_locale():
             accept_languages = self.config.get('ACCEPT_LANGUAGES')
-            negociated = Locale.negotiate(request.accept_languages.values(),
-                                          accept_languages)
+            negociated = Locale.\
+                negotiate(request.accept_languages.values(), accept_languages)
             if negociated is None:
-                negociated = Locale.negotiate(request.accept_languages.values(),
-                                              accept_languages, sep='-')
+                negociated = Locale.\
+                    negotiate(request.accept_languages.values(),
+                              accept_languages, sep='-')
             return negociated
 
         # # CSRF by default
@@ -157,13 +148,14 @@ class Application(Flask):
         self.logger  # force flask to create application logger before logging
                      # configuration; else, flask will overwrite our settings
         # logger = logging.getLogger(__name__)
-        # logger = app.logger
 
         # define logging level
         if self.debug or self.testing:
-            self.logger.setLevel(logging.DEBUG)
+            logger.setLevel(logging.DEBUG)
         else:
-            self.logger.setLevel(logging.INFO)
+            logger.setLevel(logging.INFO)
+
+        logger.setLevel(logging.DEBUG)
 
         if hasattr(logging, 'captureWarnings'):
             # New in Python 2.7
@@ -176,7 +168,7 @@ class Application(Flask):
     %(levelname)s %(message)s'
         console_formatter = logging.Formatter(console_format, '%b %d %H:%M:%S')
         console_handler.setFormatter(console_formatter)
-        self.logger.addHandler(console_handler)
+        logger.addHandler(console_handler)
 
     def register_blueprints(self, blueprints):
         """register flask blueprints"""
@@ -202,89 +194,3 @@ class Application(Flask):
 
 def create_app(config=DefaultConfig):
     return Application(config=config)
-
-
-# def create_app():
-#         """create flask app"""
-#         app = Flask('gasoline')
-#         app.config.from_object(DefaultConfig)
-
-#         # initialise flask extensions
-#         init_extensions(app)
-
-#         # initialise search engine
-#         init_search_engine(app)
-
-#         # register blueprints
-#         register_blueprints(app, [frontend, user])
-
-#         @app.before_request
-#         def before_request():
-#                 from .frontend.forms import SearchForm
-#                 if current_user.is_authenticated():
-#                         g.search_form = SearchForm()
-
-#         # load request profiler
-#         from werkzeug.contrib.profiler import ProfilerMiddleware
-#         app.wsgi_app = ProfilerMiddleware(app.wsgi_app,
-#                                                                             restrictions=['gasoline'])
-
-#         event_service = EventService()
-#         event_service.init_app(app)
-#         event_service.start()
-
-#         indexer_ = IndexerService()
-#         indexer_.init_app(app)
-#         indexer_.start()
-
-#         # initalialise logging app
-#         init_logging(app)
-
-#         return app
-
-
-# def init_extensions(app):
-#     """initialise flask extensions"""
-#     # init flask-assets
-#     assets.init_app(app)
-#     jsasset = Bundle('vendors/jquery/jquery.js',
-#                      'vendors/bootstrap/js/bootstrap.js',
-#                      'vendors/bootstrap-datepicker/js/bootstrap-datepicker.js',
-#                      filters='jsmin', output='js/gasoline.js')
-#     assets.register('js_all', jsasset)
-#     css = Bundle('vendors/bootstrap/css/bootstrap.css',
-#                  'vendors/bootstrap-datepicker/css/datepicker3.css',
-#                  'vendors/font-awesome/css/font-awesome.css',
-#                  filters='cssmin', output='css/gasoline.css')
-#     assets.register('css_all', css)
-
-
-# def register_blueprints(app, blueprints):
-#     """register flask blueprints"""
-#     for blueprint in blueprints:
-#         app.register_blueprint(blueprint)
-
-
-# def init_logging(app):
-#     """logging initialisation"""
-#     # logger = logging.getLogger(__name__)
-#     logger = app.logger
-
-#     # define logging level
-#     if app.debug or app.testing:
-#        logger.setLevel(logging.DEBUG)
-#     else:
-#         logger.setLevel(logging.INFO)
-
-#     if hasattr(logging, 'captureWarnings'):
-#         # New in Python 2.7
-#         logging.captureWarnings(True)
-
-#     # define logging handler
-#     console_handler = logging.StreamHandler()
-#     # console_handler.setLevel(logging.DEBUG)
-#     console_format = '%(asctime)s - %(name)s:%(lineno)d(%(funcName)s): \
-# %(levelname)s %(message)s'
-#     console_formatter = logging.Formatter(console_format, '%b %d %H:%M:%S')
-#     console_handler.setFormatter(console_formatter)
-#     logger.addHandler(console_handler)

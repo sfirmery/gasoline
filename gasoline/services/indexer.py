@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os.path
+import logging
 from whoosh.fields import SchemaClass
 from whoosh.fields import TEXT, KEYWORD, ID, DATETIME, NGRAM, NGRAMWORDS
 from whoosh.analysis import StemmingAnalyzer
@@ -9,8 +10,10 @@ from whoosh import scoring
 from whoosh.qparser import MultifieldParser
 from whoosh.writing import AsyncWriter, CLEAR
 
-from gasoline.core.signals import event
+from gasoline.core.signals import event, plugins_registered
 from gasoline.services.base import Service
+
+logger = logging.getLogger('gasoline')
 
 __all__ = ['IndexerService', 'MainSchema', 'NGramSchema']
 
@@ -53,26 +56,27 @@ class IndexerService(Service):
     ngram_schema = None
     ngram_search_field = _ngram_default_search_field
 
-    _plugins_fields_main = {'dyn_1': TEXT()}
+    _plugins_fields_main = {'dyn_1': TEXT(stored=True)}
     _plugins_fields_ngram = {}
 
     def __init__(self):
         self.schema = MainSchema()
         self.ngram_schema = NGramSchema()
-
-        self._open_indexes()
         super(IndexerService, self).__init__()
 
     def init_app(self, app):
         """intialise indexer with flask configuration"""
+        self._open_indexes()
         super(IndexerService, self).init_app(app)
 
     def start(self):
         event.connect(self.index_document_callback, 'document')
+        plugins_registered.connect(self.plugins_registered_callback)
         super(IndexerService, self).start()
 
     def stop(self):
         event.disconnect(self.index_document_callback)
+        plugins_registered.disconnect(self.plugins_registered_callback)
         super(IndexerService, self).stop()
 
     def _open_indexes(self):
@@ -93,35 +97,48 @@ class IndexerService(Service):
                 create_index(NGramSchema, indexname='ngram')
         self.ngram_ix = storage.open_index(indexname='ngram')
 
-    def register_main_field(self, name, field):
-        """register plugins fields in main index"""
+    def add_plugin_field(self, name, field, searchable=False):
+        """add plugin field in main index schema and search field"""
         if name not in self._plugins_fields_main:
             self._plugins_fields_main[name] = field
+        if name not in self.search_field and searchable:
+            self.search_field.append(name)
 
-    def register_ngram_field(self, name, field):
-        """register plugins fields in ngram index"""
+    def add_plugin_ngram_field(self, name, field, searchable=False):
+        """add plugin field in ngram index schema and ngram search field"""
         if name not in self._plugins_fields_ngram:
             self._plugins_fields_ngram[name] = field
+        if name not in self.ngram_search_field and searchable:
+            self.ngram_search_field.append(name)
 
-    def _update_fields(self):
-        """register dynamics field in index"""
+    def _update_schemas(self):
+        """update main and ngram schema with plugins fields"""
+        # update main schema
         with self.ix.writer() as writer:
             for name, field in self._plugins_fields_main.items():
-                print 'plugin field -> name: %r, field: %r' % (name, field)
                 if name not in self.ix.schema:
-                    print 'add field in index schema'
                     writer.add_field(name, field)
+                    logger.info('field %r added to main index', name)
+                elif self.ix.schema[name] != field:
+                    logger.error(
+                        'field %r exists in main index but is incorrect', name)
+                else:
+                    logger.info('field %r already in main index', name)
                 if name not in self.schema:
-                    print 'add field in schema'
+                    logger.info('field %r added to main schema', name)
                     self.schema.add(name, field)
+        # update ngram schema
         with self.ngram_ix.writer() as ngram_writer:
             for name, field in self._plugins_fields_ngram.items():
-                print 'plugin field -> name: %r, field: %r' % (name, field)
                 if name not in self.ngram_ix.schema:
-                    print 'add field in index schema'
+                    logger.info('field %r added to ngram index', name)
                     ngram_writer.add_field(name, field)
+                elif self.ix.schema[name] != field:
+                    logger.info('field %r not correct in ngram index', name)
+                else:
+                    logger.info('field %r already in ngram index', name)
                 if name not in self.ngram_schema:
-                    print 'add field in schema'
+                    logger.info('field %r added to ngram schema', name)
                     self.schema.add(name, field)
 
     def _update_index(self, document, writer, ngram_writer):
@@ -187,5 +204,11 @@ class IndexerService(Service):
             return results, results_list
 
     def index_document_callback(self, sender, **extra):
+        """signals callback for indexing document"""
         if 'document' in extra:
             self.index_document(extra['document'])
+
+    def plugins_registered_callback(self, sender, **extra):
+        """signals callback for updating schemas when all plugins are
+        registered"""
+        self._update_schemas()
