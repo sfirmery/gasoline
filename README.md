@@ -14,6 +14,9 @@ Collaborative Wiki
   * diff-match-patch
   * markdown2
   * wikipedia
+  * Whoosh
+  * blinker
+  * cssmin
 
 * Flask
   * Flask-Script
