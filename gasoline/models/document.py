@@ -157,10 +157,10 @@ class BaseDocument(db.DynamicDocument):
         # update metadata
         self.last_update = datetime.utcnow()
 
+        super(BaseDocument, self).save()
+
         # send document update evetn
         event.send('document', document=self)
-
-        super(BaseDocument, self).save()
 
     def __repr__(self):
         return '<BaseDocument id=%s name=%s>' % (self.id, self.title)
