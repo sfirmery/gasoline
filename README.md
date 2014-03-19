@@ -13,7 +13,7 @@ Collaborative Wiki
   * pip
   * diff-match-patch
   * markdown2
-  * wikipedia
+  * mediawiki
   * Whoosh
   * blinker
   * cssmin

@@ -2,6 +2,7 @@
 
 from datetime import datetime
 import markdown2
+import mediawiki
 
 from gasoline.core.extensions import db
 from gasoline.core.signals import event
@@ -32,6 +33,7 @@ class BaseDocument(db.DynamicDocument):
     author = db.ReferenceField(User)
     last_author = db.ReferenceField(User)
     current_revision = db.IntField(default=0)
+    markup = db.StringField(default=u'xhtml')
 
     meta = {
         'indexes': ['title', 'space']
@@ -98,7 +100,12 @@ class BaseDocument(db.DynamicDocument):
 
     @property
     def content_html(self):
-        return markdown2.markdown(self.content)
+        if self.markup == 'xhtml':
+            return self.content
+        elif self.markup == 'mediawiki':
+            return mediawiki.wiki2html(self.content, True)
+        else:
+            return markdown2.markdown(self.content)
 
     @property
     def content(self):
