@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
 """initialise flask application"""
 import logging
+from functools import partial
 
 from babel import Locale
 
 # flask
-from flask import Flask, request, g
+from flask import Flask, render_template, request, g
 from flask.ext.login import current_user
 from flask.ext.assets import Bundle
 from werkzeug.datastructures import ImmutableDict
 
 from gasoline.config import DefaultConfig
-# from .extensions import db, cache, lm, assets
 from gasoline.core import extensions, signals
 from gasoline.models import User
 from gasoline.views import (
-    blueprint_search, blueprint_document, blueprint_user, blueprint_dashboard)
-from gasoline.services import indexer_service, event_service
+    blueprint_search, blueprint_document, blueprint_user, blueprint_dashboard,
+    blueprint_urlshortener)
+from gasoline.services import (
+    indexer_service, event_service, urlshortener_service)
 
 logger = logging.getLogger('gasoline')
 
@@ -35,8 +37,12 @@ class Application(Flask):
     default_config = default_config
 
     services = {}
-
-    APP_PLUGINS = ('',)
+    plugins = []
+    _blueprints = [blueprint_search,
+                   blueprint_document,
+                   blueprint_user,
+                   blueprint_dashboard,
+                   blueprint_urlshortener]
 
     def __init__(self, name=None, config=None, *args, **kwargs):
         name = name or __name__
@@ -65,13 +71,10 @@ class Application(Flask):
         self.start_services()
 
         # TODO: register plugins ###
-        # self.register_plugins()
+        self.register_plugins()
         signals.plugins_registered.send(self)
 
-        self.register_blueprints([blueprint_search,
-                                  blueprint_document,
-                                  blueprint_user,
-                                  blueprint_dashboard])
+        self.register_blueprints()
 
         @self.before_request
         def before_request():
@@ -143,6 +146,11 @@ class Application(Flask):
         #     extensions.csrf.init_app(self)
         #     self.extensions['csrf'] = extensions.csrf
 
+        # define error handlers
+        for http_error_code in (403, 404, 410, 500):
+            handler = partial(self.handle_http_error, http_error_code)
+            self.errorhandler(http_error_code)(handler)
+
     def setup_logging(self):
         """logging initialisation"""
         self.logger  # force flask to create application logger before logging
@@ -170,16 +178,12 @@ class Application(Flask):
         console_handler.setFormatter(console_formatter)
         logger.addHandler(console_handler)
 
-    def register_blueprints(self, blueprints):
-        """register flask blueprints"""
-        for blueprint in blueprints:
-            self.register_blueprint(blueprint)
-
     def register_services(self):
         """Register Gasoline services"""
         # Gasoline services
         indexer_service.init_app(self)
         event_service.init_app(self)
+        urlshortener_service.init_app(self)
 
     def start_services(self):
         """Start registred services"""
@@ -190,6 +194,20 @@ class Application(Flask):
         """Stop registred services"""
         for svc in self.services.values():
             svc.stop()
+
+    def register_plugins(self):
+        """register plugins"""
+        pass
+
+    def register_blueprints(self):
+        """register flask blueprints"""
+        for blueprint in self._blueprints:
+            self.register_blueprint(blueprint)
+
+    def handle_http_error(self, code, error):
+        """error handler"""
+        template = 'errors/error{:d}.html'.format(code)
+        return render_template(template, error=error), code
 
 
 def create_app(config=DefaultConfig):
