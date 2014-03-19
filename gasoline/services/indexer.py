@@ -21,6 +21,7 @@ __all__ = ['IndexerService', 'MainSchema', 'NGramSchema']
 class MainSchema(SchemaClass):
     """Whoosh schema for global indexer"""
     id = ID(stored=True, unique=True)
+    doc_id = ID(stored=True)
     doc_type = KEYWORD(stored=True)
     title = TEXT()
     space = KEYWORD()
@@ -67,6 +68,8 @@ class IndexerService(Service):
     def init_app(self, app):
         """intialise indexer with flask configuration"""
         self._open_indexes()
+        # update index schema
+        self._update_schemas()
         super(IndexerService, self).init_app(app)
 
     def start(self):
@@ -112,9 +115,16 @@ class IndexerService(Service):
             self.ngram_search_field.append(name)
 
     def _update_schemas(self):
-        """update main and ngram schema with plugins fields"""
+        """update main and ngram schema"""
         # update main schema
-        with self.ix.writer() as writer:
+        with AsyncWriter(self.ix) as writer:
+            for name, field in self.schema.items():
+                if name not in self.ix.schema:
+                    writer.add_field(name, field)
+                    logger.info('field %r added to main index', name)
+                elif self.ix.schema[name] != field:
+                    logger.error(
+                        'field %r exists in main index but is incorrect', name)
             for name, field in self._plugins_fields_main.items():
                 if name not in self.ix.schema:
                     writer.add_field(name, field)
@@ -122,21 +132,24 @@ class IndexerService(Service):
                 elif self.ix.schema[name] != field:
                     logger.error(
                         'field %r exists in main index but is incorrect', name)
-                else:
-                    logger.info('field %r already in main index', name)
                 if name not in self.schema:
                     logger.info('field %r added to main schema', name)
                     self.schema.add(name, field)
         # update ngram schema
-        with self.ngram_ix.writer() as ngram_writer:
+        with AsyncWriter(self.ngram_ix) as ngram_writer:
+            for name, field in self.ngram_schema.items():
+                if name not in self.ngram_ix.schema:
+                    writer.add_field(name, field)
+                    logger.info('field %r added to ngram index', name)
+                elif self.ngram_ix.schema[name] != field:
+                    logger.error(
+                        'field %r exists in ngram index but is incorrect', name)
             for name, field in self._plugins_fields_ngram.items():
                 if name not in self.ngram_ix.schema:
                     logger.info('field %r added to ngram index', name)
                     ngram_writer.add_field(name, field)
-                elif self.ix.schema[name] != field:
+                elif self.ngram_ix.schema[name] != field:
                     logger.info('field %r not correct in ngram index', name)
-                else:
-                    logger.info('field %r already in ngram index', name)
                 if name not in self.ngram_schema:
                     logger.info('field %r added to ngram schema', name)
                     self.schema.add(name, field)
@@ -145,6 +158,7 @@ class IndexerService(Service):
         """update or add document"""
         # update or add in main index
         writer.update_document(id=unicode(document.id),
+                               doc_id=unicode(document.id),
                                title=document.title,
                                space=document.space,
                                content=document.content,
