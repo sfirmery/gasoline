@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from flask import Blueprint, render_template, redirect
+import logging
+
+from flask import Blueprint, render_template, redirect, abort
 from flask import flash, url_for
 from flask.ext.login import login_required
 from flask.ext.babel import gettext as _
@@ -13,13 +15,19 @@ blueprint_document = Blueprint('document',
                                url_prefix='/document')
 route = blueprint_document.route
 
+logger = logging.getLogger('gasoline')
+
 
 @route('/view/<doc_id>', methods=['GET', 'POST'])
 @route('/revision/<doc_id>/<int:revision>', methods=['GET', 'POST'])
 @login_required
 def view(doc_id=None, revision=None):
-    doc = BaseDocument.objects(id=doc_id).first()
-    history = DocumentHistory.objects(document=doc.id).first()
+    try:
+        doc = BaseDocument.objects(id=doc_id).first()
+        history = DocumentHistory.objects(document=doc.id).first()
+    except:
+        logger.info('document not found %r', doc_id)
+        abort(404)
     if revision is not None:
         doc.get_revision(revision)
     return render_template('view_document.html', **locals())
