@@ -20,7 +20,7 @@ def index():
 @route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    docs = BaseDocument.objects
+    docs = BaseDocument.objects.limit(50)
     return render_template('dashboard.html', **locals())
 
 
