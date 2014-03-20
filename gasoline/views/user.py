@@ -31,7 +31,7 @@ def login():
                             url_for('dashboard.index'))
 
         flash(_('Logging failed.'), 'danger')
-        return redirect(url_for('dashboard.login'))
+        return redirect(url_for('.login'))
     return render_template('login.html',
                            title='Sign In',
                            form=form)
