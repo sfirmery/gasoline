@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import Blueprint, render_template
-from flask import request, current_app
+from flask import request, current_app, g
 from flask.ext.login import login_required
 
 blueprint_search = Blueprint('search', __name__)
@@ -14,5 +14,6 @@ route = blueprint_search.route
 def search(query=None):
     if query is None:
         query = request.args.get('query', '')
+    g.search_form.query.data = query
     results, results_list = current_app.services['indexer'].search(query)
     return render_template('search_results.html', **locals())
