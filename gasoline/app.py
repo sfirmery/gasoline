@@ -146,7 +146,7 @@ class Application(Flask):
         #     extensions.csrf.init_app(self)
         #     self.extensions['csrf'] = extensions.csrf
 
-        # define error handlers
+        # define errors handlers
         for http_error_code in (403, 404, 410, 500):
             handler = partial(self.handle_http_error, http_error_code)
             self.errorhandler(http_error_code)(handler)
