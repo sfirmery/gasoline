@@ -19,7 +19,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#">Gasoline</a>
+        <a class="navbar-brand" href="/">Gasoline</a>
       </div>
 
       <!-- Collect the nav links, forms, and other content for toggling -->
@@ -28,24 +28,30 @@
           <li{% if request.path in "/" "/index" %} class="active"{% endif %}>
             <a href="{{ url_for('dashboard.index') }}">{{ _('Dashboard') }}</a>
           </li>
-        {% if current_user.is_authenticated() %}
-          <li{% if request.path.startswith("/user") %} class="active"{% endif %}>
-            <a href="{{ url_for('user.profile', name=current_user.name) }}">{{ _('My account') }}</a>
-          </li>
-          <li{% if request.path == "/logout" %} class="active"{% endif %}>
-            <a href="{{ url_for('user.logout') }}">{{ _('Logout') }}</a>
-          </li>
-        {% endif %}
         </ul>
       {% if current_user.is_authenticated() %}
-      {% cache 60*5 %}
-        <form class="navbar-form navbar-right" role="search" action="{{url_for('search.search')}}" method="get" name="search">
-          <div class="form-group">
-            {{ g.search_form.query(class='form-control', placeholder=g.search_form.query.description)|safe }}
-          </div>
-          <button type="button" value="{{ _('Search') }}" class="btn btn-default"><i class="fa fa-search fa-fw"></i></button>
-        </form>
-      {% endcache %}
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+        {% cache 60*5 %}
+          <form class="navbar-form navbar-right form-inline" role="search" action="{{url_for('search.search')}}" method="get" name="search">
+            <div class="form-group has-feedback" id="search_input">
+              {{ g.search_form.query(class='form-control', style='width: 180px', placeholder=g.search_form.query.description)|safe }}
+              <i class="fa fa-search fa-fw form-control-feedback"></i>
+            </div><!-- /input-group -->
+          </form>
+        {% endcache %}
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user fa-lg"></i> <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li{% if request.path.startswith("/user") %} class="active"{% endif %}>
+              <a href="{{ url_for('user.profile', name=current_user.name) }}">{{ _('My account') }}</a>
+            </li>
+            <li class="divider"></li>
+            <li><a href="{{ url_for('user.logout') }}">{{ _('Logout') }}</a></li>
+          </ul>
+        </li>
+      </ul>
       {% endif %}
       </div><!-- /.navbar-collapse -->
     </nav>
@@ -56,7 +62,7 @@
         {% for category, message in messages %}
           <div class="alert alert-{{ category }} alert-dismissable">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-            {{ message }}
+            <i class="fa {% if category == 'success' %}fa-check{% elif category == 'danger' %}fa-warning{% elif category == 'info' %}fa-info-circle{% endif %}"></i> {{ message }}
           </div>
         {% endfor %}
       {% endif %}
@@ -67,5 +73,16 @@
 {% cache 60*5 %}
     {% assets "js" %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
 {% endcache %}
+    <script type="text/javascript">
+$('#search_input').find('input').on('focus',function(){
+  $(this).animate({
+    width: '300px'
+    },200); // Time of the animation in milliseconds
+  }).on('focusout', function() {
+   $(this).animate({
+        width: '180px'
+  },200); // Time of the animation in milliseconds
+});
+    </script>
   </body>
 </html>

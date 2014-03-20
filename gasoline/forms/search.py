@@ -9,5 +9,5 @@ __all__ = ['SearchForm']
 
 
 class SearchForm(Form):
-    query = TextField(_('Search'),
+    query = TextField(_('Search'), id='search_query',
                       description=_(u'Search'), validators=[Required()])
