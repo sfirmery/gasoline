@@ -23,8 +23,8 @@ class MainSchema(SchemaClass):
     id = ID(stored=True, unique=True)
     doc_id = ID(stored=True)
     doc_type = KEYWORD(stored=True)
-    title = TEXT()
-    space = KEYWORD()
+    title = TEXT(stored=True)
+    space = KEYWORD(stored=True)
     content = TEXT(analyzer=StemmingAnalyzer())
     last_author = KEYWORD()
     author = KEYWORD()
@@ -114,7 +114,7 @@ class IndexerService(Service):
         if name not in self.ngram_search_field and searchable:
             self.ngram_search_field.append(name)
 
-    def _update_schemas(self):
+    def _update_schemas(self, force=False):
         """update main and ngram schema"""
         # update main schema
         with AsyncWriter(self.ix) as writer:
@@ -123,15 +123,23 @@ class IndexerService(Service):
                     writer.add_field(name, field)
                     logger.info('field %r added to main index', name)
                 elif self.ix.schema[name] != field:
-                    logger.error(
-                        'field %r exists in main index but is incorrect', name)
+                    if force:
+                        writer.remove_field(name)
+                        writer.add_field(name, field)
+                        logger.info('field %r recreated in main index', name)
+                    else:
+                        logger.error('field %r exists in main index but is incorrect', name)
             for name, field in self._plugins_fields_main.items():
                 if name not in self.ix.schema:
                     writer.add_field(name, field)
                     logger.info('field %r added to main index', name)
                 elif self.ix.schema[name] != field:
-                    logger.error(
-                        'field %r exists in main index but is incorrect', name)
+                    if force:
+                        writer.remove_field(name)
+                        writer.add_field(name, field)
+                        logger.info('field %r recreated in main index', name)
+                    else:
+                        logger.error('field %r exists in main index but is incorrect', name)
                 if name not in self.schema:
                     logger.info('field %r added to main schema', name)
                     self.schema.add(name, field)
@@ -139,17 +147,26 @@ class IndexerService(Service):
         with AsyncWriter(self.ngram_ix) as ngram_writer:
             for name, field in self.ngram_schema.items():
                 if name not in self.ngram_ix.schema:
-                    writer.add_field(name, field)
+                    ngram_writer.add_field(name, field)
                     logger.info('field %r added to ngram index', name)
                 elif self.ngram_ix.schema[name] != field:
-                    logger.error(
-                        'field %r exists in ngram index but is incorrect', name)
+                    if force:
+                        ngram_writer.remove_field(name)
+                        ngram_writer.add_field(name, field)
+                        logger.info('field %r recreated in ngram index', name)
+                    else:
+                        logger.error('field %r exists in ngram index but is incorrect', name)
             for name, field in self._plugins_fields_ngram.items():
                 if name not in self.ngram_ix.schema:
                     logger.info('field %r added to ngram index', name)
                     ngram_writer.add_field(name, field)
                 elif self.ngram_ix.schema[name] != field:
-                    logger.info('field %r not correct in ngram index', name)
+                    if force:
+                        ngram_writer.remove_field(name)
+                        ngram_writer.add_field(name, field)
+                        logger.info('field %r recreated in ngram index', name)
+                    else:
+                        logger.info('field %r exists in ngram index but is incorrect', name)
                 if name not in self.ngram_schema:
                     logger.info('field %r added to ngram schema', name)
                     self.schema.add(name, field)
@@ -180,6 +197,8 @@ class IndexerService(Service):
 
     def index_documents(self, documents, clear=False):
         """batch index documents"""
+        if clear:
+            self._update_schemas(force=True)
         with AsyncWriter(self.ix) as w, AsyncWriter(self.ngram_ix) as ngw:
             if clear:
                 w.mergetype = CLEAR
@@ -201,6 +220,8 @@ class IndexerService(Service):
                    'list': []}
             for i, r in enumerate(results):
                 res['list'].append({'id': r['id'],
+                                    'space': r['space'],
+                                    'title': r['title'],
                                     'rank': r.rank,
                                     'score': results.score(i)})
             return res
@@ -219,6 +240,8 @@ class IndexerService(Service):
                    'list': []}
             for i, r in enumerate(results):
                 res['list'].append({'id': r['id'],
+                                    'space': r['space'],
+                                    'title': r['title'],
                                     'rank': r.rank,
                                     'score': results.score(i)})
         return results
