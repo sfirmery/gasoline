@@ -26,7 +26,7 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
           <li{% if request.path in "/" "/index" %} class="active"{% endif %}>
-            <a href="{{ url_for('dashboard.index') }}">{{ _('Dashboard') }}</a>
+            <a href="{{ url_for('index.index') }}">{{ _('Dashboard') }}</a>
           </li>
         </ul>
       {% if current_user.is_authenticated() %}
@@ -45,10 +45,10 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user fa-lg"></i> <b class="caret"></b></a>
           <ul class="dropdown-menu">
             <li{% if request.path.startswith("/user") %} class="active"{% endif %}>
-              <a href="{{ url_for('user.profile', name=current_user.name) }}">{{ _('My account') }}</a>
+              <a href="{{ url_for('user.profile', name=current_user.name) }}"><i class="fa fa-user"></i> {{ _('My account') }}</a>
             </li>
             <li class="divider"></li>
-            <li><a href="{{ url_for('user.logout') }}">{{ _('Logout') }}</a></li>
+            <li><a href="{{ url_for('user.logout') }}"><i class="fa fa-sign-out"></i> {{ _('Logout') }}</a></li>
           </ul>
         </li>
       </ul>

@@ -15,10 +15,10 @@ from gasoline.config import DefaultConfig
 from gasoline.core import extensions, signals
 from gasoline.models import User
 from gasoline.views import (
-    blueprint_search, blueprint_document, blueprint_user, blueprint_dashboard,
+    blueprint_search, blueprint_document, blueprint_user, blueprint_index,
     blueprint_urlshortener)
 from gasoline.services import (
-    indexer_service, event_service, urlshortener_service)
+    acl_service, indexer_service, event_service, urlshortener_service)
 
 logger = logging.getLogger('gasoline')
 
@@ -38,10 +38,10 @@ class Application(Flask):
 
     services = {}
     plugins = []
-    _blueprints = [blueprint_search,
+    _blueprints = [blueprint_index,
                    blueprint_document,
                    blueprint_user,
-                   blueprint_dashboard,
+                   blueprint_search,
                    blueprint_urlshortener]
 
     def __init__(self, name=None, config=None, *args, **kwargs):
@@ -80,7 +80,7 @@ class Application(Flask):
         def before_request():
             from gasoline.forms import SearchForm
             if current_user.is_authenticated():
-                    g.search_form = SearchForm()
+                g.search_form = SearchForm()
 
         # request_started.connect(self._setup_breadcrumbs)
 
@@ -115,11 +115,13 @@ class Application(Flask):
         self._assets_bundles['js']['files'] = [
             'vendors/jquery/jquery.js',
             'vendors/bootstrap/js/bootstrap.js',
-            'vendors/bootstrap-datepicker/js/bootstrap-datepicker.js']
+            'vendors/bootstrap-datepicker/js/bootstrap-datepicker.js',
+            'vendors/select2/select2.js']
         self._assets_bundles['css']['files'] = [
             'vendors/bootstrap/css/bootstrap.css',
             'vendors/bootstrap-datepicker/css/datepicker3.css',
-            'vendors/font-awesome/css/font-awesome.css']
+            'vendors/font-awesome/css/font-awesome.css',
+            'vendors/select2/select2.css']
 
         for name, data in self._assets_bundles.items():
             files = data.get('files', [])
@@ -181,6 +183,7 @@ class Application(Flask):
     def register_services(self):
         """Register Gasoline services"""
         # Gasoline services
+        acl_service.init_app(self)
         indexer_service.init_app(self)
         event_service.init_app(self)
         urlshortener_service.init_app(self)

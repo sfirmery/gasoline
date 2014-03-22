@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from .document import BaseDocument, DocumentHistory
 from .user import User
+from .space import Space
+from .document import BaseDocument, DocumentHistory
 
-__all__ = ['BaseDocument', 'DocumentHistory', 'User']
+__all__ = ['User', 'Space', 'BaseDocument', 'DocumentHistory']

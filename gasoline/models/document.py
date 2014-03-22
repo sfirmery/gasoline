@@ -7,8 +7,9 @@ import mediawiki
 from gasoline.core.extensions import db
 from gasoline.core.signals import event
 from gasoline.core.diff import Diff
-
+from gasoline.services.acl import ACE
 from .user import User
+# from .space import Space
 
 
 class DocumentRevision(db.EmbeddedDocument):
@@ -24,8 +25,10 @@ class DocumentRevision(db.EmbeddedDocument):
 
 class BaseDocument(db.DynamicDocument):
     _title = db.StringField(db_field='title', unique_with='_space')
-    _space = db.StringField(db_field='space', default=u'root')
+    _space = db.StringField(db_field='space', default=u'main')
     _content = db.StringField(db_field='content')
+
+    acl = db.ListField(db.EmbeddedDocumentField(ACE))
 
     # document Metadata
     creation = db.DateTimeField(default=datetime.utcnow)
