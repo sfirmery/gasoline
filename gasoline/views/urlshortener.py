@@ -10,6 +10,6 @@ route = blueprint_urlshortener.route
 def urlshortener(short_url=None):
     url = current_app.services['urlshortener'].extend(short_url)
     if url is None:
-        return redirect(url_for('dashboard.index'))
+        return redirect(url_for('index.index'))
     print url
     return redirect(url)
