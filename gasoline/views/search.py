@@ -15,5 +15,5 @@ def search(query=None):
     if query is None:
         query = request.args.get('query', '')
     g.search_form.query.data = query
-    results, results_list = current_app.services['indexer'].search(query)
-    return render_template('search_results.html', **locals())
+    results = current_app.services['indexer'].search(query)
+    return render_template('search_results.html', results=results)

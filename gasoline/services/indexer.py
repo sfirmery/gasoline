@@ -194,13 +194,16 @@ class IndexerService(Service):
             qp = MultifieldParser(self.search_field,
                                   schema=self.ix.schema)
             q = qp.parse(query)
-            results = searcher.search(q, limit=25)
-            print 'results %r' % results
-            results_list = []
+            results = searcher.search(q, limit=25).copy()
+            res = {'estimated_length': results.estimated_length(),
+                   'scored_length': results.scored_length(),
+                   'runtime': results.runtime,
+                   'list': []}
             for i, r in enumerate(results):
-                print r, i, results.score(i)
-                results_list.append({'res': r, 'score': results.score(i)})
-            return results, results_list
+                res['list'].append({'id': r['id'],
+                                    'rank': r.rank,
+                                    'score': results.score(i)})
+            return res
 
     def ngram_search(self, query):
         """search on ngram index"""
@@ -209,13 +212,16 @@ class IndexerService(Service):
             qp = MultifieldParser(self.ngram_search_field,
                                   schema=self.ngram_ix.schema)
             q = qp.parse(query)
-            results = searcher.search(q, limit=25)
-            print 'results %r' % results
-            results_list = []
+            results = searcher.search(q, limit=25).copy()
+            res = {'estimated_length': results.estimated_length(),
+                   'scored_length': results.scored_length(),
+                   'runtime': results.runtime,
+                   'list': []}
             for i, r in enumerate(results):
-                print r, i, results.score(i)
-                results_list.append({'res': r, 'score': results.score(i)})
-            return results, results_list
+                res['list'].append({'id': r['id'],
+                                    'rank': r.rank,
+                                    'score': results.score(i)})
+        return results
 
     def index_document_callback(self, sender, **extra):
         """signals callback for indexing document"""
