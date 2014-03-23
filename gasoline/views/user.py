@@ -2,7 +2,7 @@
 
 from flask import Blueprint, render_template, flash, redirect, session
 from flask import url_for, request
-from flask.ext.babel import gettext as _, ngettext as n_
+from flask.ext.babel import gettext as _, ngettext as _n
 from flask.ext.login import login_user, logout_user
 from flask.ext.login import current_user, login_required
 
@@ -48,6 +48,6 @@ def logout():
 def profile(name):
     user = User.objects(name=name).first()
     if user is None:
-        flash(n_('User %(name) not found.', name), 'danger')
+        flash(_n('User %(name) not found.', name), 'danger')
         return redirect(url_for('index.index'))
     return render_template('profile.html', **locals())
