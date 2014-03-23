@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <title>{% block title %}{{ page_title|default(_('Project')) }}{% endblock %} - Gasoline</title>
     {% assets "css" %}<link href="{{ ASSET_URL }}" rel="stylesheet" media="screen">{% endassets %}
+    <style media="screen" type="text/css">
+.search_results {padding: 0 10px;}
+    </style>
     <meta name="description" content="Gasoline, collaborative wiki">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
@@ -28,19 +31,20 @@
           <li{% if request.path in "/" "/index" %} class="active"{% endif %}>
             <a href="{{ url_for('index.index') }}">{{ _('Dashboard') }}</a>
           </li>
+      {% if current_user.is_authenticated() %}
+          <li>
+            <form class="navbar-form navbar-left form-inline" role="search" action="{{url_for('search.search')}}" method="get" name="search">
+              <div class="form-group has-feedback dropdown" id="search_input">
+                {{ g.search_form.query(class='form-control', style='width: 180px', autocomplete='off', placeholder=g.search_form.query.description)|safe }}
+                <i id="search_button" class="fa fa-search fa-fw form-control-feedback"></i>
+                <ul id="search_results" class="dropdown-menu"></ul>
+              </div><!-- /input-group -->
+            </form>
+          </li>
+      {% endif %}
         </ul>
       {% if current_user.is_authenticated() %}
       <ul class="nav navbar-nav navbar-right">
-        <li>
-        {% cache 60*5 %}
-          <form class="navbar-form navbar-right form-inline" role="search" action="{{url_for('search.search')}}" method="get" name="search">
-            <div class="form-group has-feedback" id="search_input">
-              {{ g.search_form.query(class='form-control', style='width: 180px', placeholder=g.search_form.query.description)|safe }}
-              <i class="fa fa-search fa-fw form-control-feedback"></i>
-            </div><!-- /input-group -->
-          </form>
-        {% endcache %}
-        </li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user fa-lg"></i> <b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -75,13 +79,45 @@
 {% endcache %}
     <script type="text/javascript">
 $('#search_input').find('input').on('focus',function(){
-  $(this).animate({
-    width: '300px'
-    },200); // Time of the animation in milliseconds
+    $(this).animate({width: '300px'},200);
+    $("#search_results").animate({width: '300px'},200).show();
   }).on('focusout', function() {
-   $(this).animate({
-        width: '180px'
-  },200); // Time of the animation in milliseconds
+    $(this).animate({width: '180px'},200);
+    $("#search_results").animate({width: '180px'},200).show();
+});
+
+$('#search_input').find('input').keyup(function() {
+  var searchbox = $(this).val();
+  var dataString = 'query='+ searchbox;
+  if(searchbox=='') {}
+  else {
+    $("#search_button").removeClass('fa-search');
+    $("#search_button").addClass('fa-spinner fa-spin');
+    $.ajax({
+      type: "GET",
+      url: "/api/quick_search",
+      data: dataString,
+      cache: false,
+      success: function(data) {
+        console.log(JSON.stringify(data, null, 4));
+        console.log($("#search_results").get(0));
+        console.log(data.results.list);
+        var html = '';
+        for (var i=0;i<data.results.list.length;i++) {
+          result = data.results.list[i];
+          html += '<li class="search_results">';
+          html += '<a href="'+result.url+'">'+result.title+'</a>'
+          html += ''+result.space+''
+          html += '</li>';
+        }
+        html += '';
+        $("#search_results").html(html);
+        $("#search_button").removeClass('fa-spinner fa-spin');
+        $("#search_button").addClass('fa-search');
+      }
+    });
+  }
+  return false; 
 });
     </script>
   </body>
