@@ -2,6 +2,7 @@
 
 import os.path
 import logging
+from flask import url_for
 from whoosh.fields import SchemaClass
 from whoosh.fields import TEXT, KEYWORD, ID, DATETIME, NGRAM, NGRAMWORDS
 from whoosh.analysis import StemmingAnalyzer
@@ -15,10 +16,10 @@ from gasoline.services.base import Service
 
 logger = logging.getLogger('gasoline')
 
-__all__ = ['IndexerService', 'MainSchema', 'NGramSchema']
+__all__ = ['IndexerService', 'IndexerSchema']
 
 
-class MainSchema(SchemaClass):
+class IndexerSchema(SchemaClass):
     """Whoosh schema for global indexer"""
     id = ID(stored=True, unique=True)
     doc_id = ID(stored=True)
@@ -26,23 +27,20 @@ class MainSchema(SchemaClass):
     title = TEXT(stored=True)
     space = KEYWORD(stored=True)
     content = TEXT(analyzer=StemmingAnalyzer())
-    last_author = KEYWORD()
+
+    # document metadata
     author = KEYWORD()
+    last_author = KEYWORD(stored=True)
     creation = DATETIME()
-    last_update = DATETIME()
+    last_update = DATETIME(stored=True)
 
-_main_default_search_field = ['title', 'space', 'content']
+    # ngram fields for live search
+    ngram_title = NGRAM(minsize=2, maxsize=10)
+    ngram_space = NGRAMWORDS(minsize=2, maxsize=10)
+    ngram_tag = NGRAMWORDS(minsize=2, maxsize=10)
 
-
-class NGramSchema(SchemaClass):
-    """Whoosh schema for N-Gram indexer"""
-    id = ID(stored=True, unique=True)
-    doc_type = KEYWORD(stored=True)
-    title = NGRAM(minsize=2, maxsize=10, stored=True)
-    space = NGRAMWORDS(minsize=2, maxsize=10, stored=True)
-    tag = NGRAMWORDS(minsize=2, maxsize=10, stored=True)
-
-_ngram_default_search_field = ['title', 'space', 'tag']
+_default_search_field = ['title', 'space', 'content']
+_default_live_search_field = ['ngram_title', 'ngram_space', 'ngram_tag']
 
 
 class IndexerService(Service):
@@ -51,18 +49,13 @@ class IndexerService(Service):
 
     ix = None
     schema = None
-    search_field = _main_default_search_field
+    search_field = _default_search_field
+    live_search_field = _default_live_search_field
 
-    ngram_ix = None
-    ngram_schema = None
-    ngram_search_field = _ngram_default_search_field
-
-    _plugins_fields_main = {'dyn_1': TEXT(stored=True)}
-    _plugins_fields_ngram = {}
+    _plugins_fields = {'dyn_1': TEXT(stored=True)}
 
     def __init__(self):
-        self.schema = MainSchema()
-        self.ngram_schema = NGramSchema()
+        self.schema = IndexerSchema()
         super(IndexerService, self).__init__()
 
     def init_app(self, app):
@@ -88,36 +81,24 @@ class IndexerService(Service):
             os.mkdir("index")
         storage = FileStorage("index")
 
-        # open or initialise main index
+        # open or initialise index
         if not storage.index_exists(indexname='MAIN'):
             self.ix = storage.\
-                create_index(MainSchema, indexname='MAIN')
+                create_index(IndexerSchema, indexname='MAIN')
         self.ix = storage.open_index(indexname='MAIN')
-
-        # open or initialise ngram index
-        if not storage.index_exists(indexname='ngram'):
-            self.ngram_ix = storage.\
-                create_index(NGramSchema, indexname='ngram')
-        self.ngram_ix = storage.open_index(indexname='ngram')
 
     def add_plugin_field(self, name, field, searchable=False):
         """add plugin field in main index schema and search field"""
-        if name not in self._plugins_fields_main:
-            self._plugins_fields_main[name] = field
+        if name not in self._plugins_fields:
+            self._plugins_fields[name] = field
         if name not in self.search_field and searchable:
             self.search_field.append(name)
 
-    def add_plugin_ngram_field(self, name, field, searchable=False):
-        """add plugin field in ngram index schema and ngram search field"""
-        if name not in self._plugins_fields_ngram:
-            self._plugins_fields_ngram[name] = field
-        if name not in self.ngram_search_field and searchable:
-            self.ngram_search_field.append(name)
-
     def _update_schemas(self, force=False):
-        """update main and ngram schema"""
-        # update main schema
+        """update indexer schema"""
+        # with an async writer
         with AsyncWriter(self.ix) as writer:
+            # check index schema
             for name, field in self.schema.items():
                 if name not in self.ix.schema:
                     writer.add_field(name, field)
@@ -128,8 +109,10 @@ class IndexerService(Service):
                         writer.add_field(name, field)
                         logger.info('field %r recreated in main index', name)
                     else:
-                        logger.error('field %r exists in main index but is incorrect', name)
-            for name, field in self._plugins_fields_main.items():
+                        logger.error('field %r exists in main index but is\
+ incorrect', name)
+            # check plugins fields
+            for name, field in self._plugins_fields.items():
                 if name not in self.ix.schema:
                     writer.add_field(name, field)
                     logger.info('field %r added to main index', name)
@@ -139,72 +122,42 @@ class IndexerService(Service):
                         writer.add_field(name, field)
                         logger.info('field %r recreated in main index', name)
                     else:
-                        logger.error('field %r exists in main index but is incorrect', name)
+                        logger.error('field %r exists in main index but is\
+ incorrect', name)
                 if name not in self.schema:
                     logger.info('field %r added to main schema', name)
                     self.schema.add(name, field)
-        # update ngram schema
-        with AsyncWriter(self.ngram_ix) as ngram_writer:
-            for name, field in self.ngram_schema.items():
-                if name not in self.ngram_ix.schema:
-                    ngram_writer.add_field(name, field)
-                    logger.info('field %r added to ngram index', name)
-                elif self.ngram_ix.schema[name] != field:
-                    if force:
-                        ngram_writer.remove_field(name)
-                        ngram_writer.add_field(name, field)
-                        logger.info('field %r recreated in ngram index', name)
-                    else:
-                        logger.error('field %r exists in ngram index but is incorrect', name)
-            for name, field in self._plugins_fields_ngram.items():
-                if name not in self.ngram_ix.schema:
-                    logger.info('field %r added to ngram index', name)
-                    ngram_writer.add_field(name, field)
-                elif self.ngram_ix.schema[name] != field:
-                    if force:
-                        ngram_writer.remove_field(name)
-                        ngram_writer.add_field(name, field)
-                        logger.info('field %r recreated in ngram index', name)
-                    else:
-                        logger.info('field %r exists in ngram index but is incorrect', name)
-                if name not in self.ngram_schema:
-                    logger.info('field %r added to ngram schema', name)
-                    self.schema.add(name, field)
 
-    def _update_index(self, document, writer, ngram_writer):
+    def _update_index(self, document, writer):
         """update or add document"""
-        # update or add in main index
-        writer.update_document(id=unicode(document.id),
-                               doc_id=unicode(document.id),
+        doc_id = unicode(document.id)
+        writer.update_document(id=doc_id,
+                               doc_id=doc_id,
                                title=document.title,
                                space=document.space,
                                content=document.content,
                                last_author=document.last_author,
                                author=document.author,
                                last_update=document.last_update,
-                               creation=document.creation)
-        # update or add to ngram index
-        ngram_writer.update_document(id=unicode(document.id),
-                                     title=document.title,
-                                     space=document.space,
-                                     tag=None)
+                               creation=document.creation,
+                               ngram_title=document.title,
+                               ngram_space=document.space,
+                               ngram_tag=u'')
 
     def index_document(self, document):
         """index document"""
-        with self.ix.writer() as writer, self.\
-                ngram_ix.writer() as ngram_writer:
-            self._update_index(document, writer, ngram_writer)
+        with self.ix.writer() as writer:
+            self._update_index(document, writer)
 
     def index_documents(self, documents, clear=False):
         """batch index documents"""
         if clear:
             self._update_schemas(force=True)
-        with AsyncWriter(self.ix) as w, AsyncWriter(self.ngram_ix) as ngw:
+        with AsyncWriter(self.ix) as writer:
             if clear:
-                w.mergetype = CLEAR
-                ngw.mergetype = CLEAR
+                writer.mergetype = CLEAR
             for document in documents:
-                self._update_index(document, w, ngw)
+                self._update_index(document, writer)
 
     def search(self, query):
         """search on main index"""
@@ -218,20 +171,28 @@ class IndexerService(Service):
                    'scored_length': results.scored_length(),
                    'runtime': results.runtime,
                    'list': []}
+            print res
+            print results
             for i, r in enumerate(results):
-                res['list'].append({'id': r['id'],
-                                    'space': r['space'],
-                                    'title': r['title'],
+                if 'id' in r and 'space' in r:
+                    url = url_for('document.view', space=r['space'],
+                                  doc_id=r['id'])
+                else:
+                    url = None
+                res['list'].append({'id': r.get('id', ''),
+                                    'space': r.get('space', ''),
+                                    'title': r.get('title', ''),
                                     'rank': r.rank,
+                                    'url': url,
                                     'score': results.score(i)})
             return res
 
-    def ngram_search(self, query):
-        """search on ngram index"""
-        with self.ngram_ix.\
+    def live_search(self, query):
+        """live search on ngram field"""
+        with self.ix.\
                 searcher(weighting=scoring.BM25F(title_B=2)) as searcher:
-            qp = MultifieldParser(self.ngram_search_field,
-                                  schema=self.ngram_ix.schema)
+            qp = MultifieldParser(self.live_search_field,
+                                  schema=self.ix.schema)
             q = qp.parse(query)
             results = searcher.search(q, limit=25).copy()
             res = {'estimated_length': results.estimated_length(),
@@ -239,12 +200,18 @@ class IndexerService(Service):
                    'runtime': results.runtime,
                    'list': []}
             for i, r in enumerate(results):
-                res['list'].append({'id': r['id'],
-                                    'space': r['space'],
-                                    'title': r['title'],
+                if 'id' in r and 'space' in r:
+                    url = url_for('document.view', space=r['space'],
+                                  doc_id=r['id'])
+                else:
+                    url = None
+                res['list'].append({'id': r.get('id', ''),
+                                    'space': r.get('space', ''),
+                                    'title': r.get('title', ''),
                                     'rank': r.rank,
+                                    'url': url,
                                     'score': results.score(i)})
-        return results
+        return res
 
     def index_document_callback(self, sender, **extra):
         """signals callback for indexing document"""
