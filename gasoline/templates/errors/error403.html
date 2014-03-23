@@ -2,6 +2,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{ _('Forbidden') }}</h1>
-<p>{{ error.description|default(_('Access denied.')) }}</p>
+<h1>{{ _('Access denied') }}</h1>
+<p>{{ error.description|default(_('You don\'t have permission to access to this ressource.')) }}</p>
 {% endblock %}

@@ -3,5 +3,5 @@
 
 {% block content %}
 <h1>{{ _('Not Found') }}</h1>
-<p>{{ _('Page not found')}}</p>
+<p>{{ error.description|default(_('Page not found')) }}</p>
 {% endblock %}
