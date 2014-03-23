@@ -1,12 +1,26 @@
 # -*- coding: utf-8 -*-
 """"""
 
-from collections import Container, Callable
+import logging
+from collections import Container
+from functools import wraps
+from flask import abort
 from flask.ext.login import current_user
+from flask.ext.babel import gettext as _, lazy_gettext as _l
 
 from gasoline.services.base import Service
 
 __all__ = ['ACLService']
+
+logger = logging.getLogger('gasoline')
+
+PERMISSIONS = {
+    'read': _l('read'),
+    'write': _l('write'),
+    'delete': _l('delete'),
+    'write.comments': _l('write comments'),
+    'write.attachments': _l('write attachments'),
+}
 
 
 class ACLService(Service):
@@ -16,69 +30,99 @@ class ACLService(Service):
         """intialise ACL service with flask configuration"""
         super(ACLService, self).init_app(app)
 
-    def can(self, permission, **kwargs):
-        """check if user can do something"""
-        print 'kwargs: %r' % kwargs
-        space = kwargs.pop('space', None)
-        if space is not None:
-            print '(space.acl %r, permission %r)' % (space.acl, permission)
-            if self.check(space.acl, permission):
-                return True
-        return False
+    def apply(self, permission, acl, resource=_l('resource')):
+        """apply acl, abort if not allowed"""
+        logger.debug('check %r with acl %r', permission, acl)
+        if isinstance(acl, Container) and len(acl) < 0:
+            return
+        thruth = self.get_thruth(permission, current_user, acl)
+        if thruth == 'ALLOW':
+            logger.debug('ALLOW for space')
+            return
+        elif thruth == 'DENY':
+            logger.debug('DENY for space')
+            abort(403,
+                  _('You are not allowed to "%(permission)s" this\
+ %(resource)s',
+                    permission=PERMISSIONS.get(permission, _('unknown')),
+                    resource=resource))
+        else:
+            logger.debug('no match for space, ignore')
+            return
+
+    def can(self, permission, acl):
+        """return whether user can do action or not"""
+        logger.debug('check %r with acl %r', permission, acl)
+        if isinstance(acl, Container) and len(acl) < 0:
+            return True
+        thruth = self.get_thruth(permission, current_user, acl)
+        if thruth == 'ALLOW':
+            return True
+        elif thruth == 'DENY':
+            return False
+        else:
+            return True
+
+    def acl(self, permission, *args, **kwargs):
+        from gasoline.models import Space
+
+        def decorator(f):
+            @wraps(f)
+            def wrapped(*args, **kwargs):
+                if 'space' in kwargs:
+                    space = Space.objects(name=kwargs.get('space')).first()
+                    if space is not None:
+                        acl = space.acl
+                    resource = _('space')
+                if acl:
+                    self.apply(permission, space.acl, resource)
+                return f(*args, **kwargs)
+
+            return wrapped
+        return decorator
 
     @classmethod
-    def check(cls, acl, permission):
-        print 'check for acl %r and permission %r' % (acl, permission)
+    def get_thruth(cls, permission, user, acl):
+        """get thruth value from acl for permission and user"""
+        logger.debug('get thruth for permission %r for user %r with acl %r',
+                     permission, user, acl)
+        match = []
         for ace in acl:
-            print 'enter ace %r' % ace
-            # predicate_match = current_user == ace.predicate
-            # predicate_match = True
             predicate_match = cls.check_predicate(ace.predicate, current_user)
-            print 'predicate_match %r' % predicate_match
             perm_match = cls.check_permission(ace.permission, permission)
-            print 'perm_match %r' % perm_match
             if predicate_match and perm_match:
-                return ace.truth
+                match.append(ace.truth)
+        if len(match) > 0:
+            if 'DENY' in match:
+                return 'DENY'
+            else:
+                return match[0]
+        else:
+            return None
 
     @classmethod
     def check_predicate(cls, predicate, user):
+        logger.debug('check predicate %r with %r', predicate, user)
         if predicate == 'ANY':
             return True
-        if user == predicate:
-            return True
-        return False
-
-# def parse_predicate(input):
-#     if isinstance(input, basestring):
-#         negate = input.startswith('!')
-#         if negate:
-#             input = input[1:]
-#         predicate = current_auth.predicates.get(input)
-#         if not predicate:
-#             raise ValueError('unknown predicate: %r' % input)
-#         if negate:
-#             predicate = Not(predicate)
-#         return predicate
-#     if isinstance(input, (tuple, list)):
-#         return And(parse_predicate(x) for x in input)
-#     return input
-#     def predicate(self, name, predicate=None):
-#         if predicate is None:
-#             return functools.partial(self.predicate, name)
-#         self.predicates[name] = predicate
-#         return predicate
+        elif predicate == 'OWNER':
+            # TODO: check resource owner
+            return False
+        elif predicate.startswith('g:'):
+            predicate = predicate[2:]
+            # TODO: check on user's groups
+            return False
+        elif predicate.startswith('u:'):
+            predicate = predicate[2:]
+            if predicate == user.name:
+                return True
+        else:
+            return False
 
     @classmethod
     def check_permission(cls, perms, req_perm):
-        print 'check perm %r with %r' % (perms, req_perm)
-        print 'check type: %r' % type(perms)
-        if isinstance(perms, basestring):
-            print 'perm string'
-            return req_perm == perms
-        elif isinstance(perms, Container):
-            print 'perm container'
+        logger.debug('check perm %r with %r', perms, req_perm)
+        if isinstance(perms, Container):
             return req_perm in perms
-        elif isinstance(perms, Callable):
-            return perms(req_perm)
         else:
-            raise TypeError('permission set must be a string, container, or callable')
+            raise TypeError('permissions must be a container')

@@ -22,6 +22,6 @@ class LoginForm(Form):
             return False
         user = User.objects(name=self.name.data).first()
         if user is None:
-            self.name.errors.append(_l('Username or password mismatch.'))
+            self.name.errors.append(_l(u'Username or password mismatch.'))
             return False
         return True

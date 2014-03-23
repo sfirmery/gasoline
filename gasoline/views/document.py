@@ -20,25 +20,32 @@ logger = logging.getLogger('gasoline')
 
 
 @route('/<space>/dashboard', methods=['GET', 'POST'])
+@acl.acl('read')
 @login_required
 def dashboard(space='main'):
-    docs = BaseDocument.objects.limit(50)
+    # check acl for space
+    # acl.apply('read', Space.objects(name=space).first().acl, _('space'))
+    docs = BaseDocument.objects(space=space).limit(50)
     return render_template('dashboard.html', **locals())
 
 
 @route('/<space>/view/<doc_id>', methods=['GET', 'POST'])
 @route('/<space>/revision/<doc_id>/<int:revision>', methods=['GET', 'POST'])
+@acl.acl('read')
 @login_required
 def view(space='main', doc_id=None, revision=None):
-    if not acl.can('read', space=Space.objects(name=space).first()):
-        abort(403)
+    # check acl for space
+    # acl.apply('read', Space.objects(name=space).first().acl, _('space'))
     try:
         doc = BaseDocument.objects(id=doc_id, space=space).first()
-        print 'doc %r' % doc
-        history = DocumentHistory.objects(document=doc.id).first()
     except:
+        doc = None
+    if doc is None:
         logger.info('document not found %r', doc_id)
-        abort(404)
+        abort(404, _('document not found'))
+    # check acl for document
+    acl.apply('read', doc.acl, _('document'))
+    history = DocumentHistory.objects(document=doc.id).first()
     if revision is not None:
         doc.get_revision(revision)
     return render_template('view_document.html', **locals())
@@ -46,10 +53,15 @@ def view(space='main', doc_id=None, revision=None):
 
 @route('/<space>/new', methods=['GET', 'POST'])
 @route('/<space>/edit/<doc_id>', methods=['GET', 'POST'])
+@acl.acl('write')
 @login_required
 def edit(space='main', doc_id=None):
+    # check acl for space
+    acl.apply('read', Space.objects(name=space).first().acl, _('space'))
     if doc_id is not None:
         doc = BaseDocument.objects(id=doc_id).first()
+        # check acl for document
+        acl.apply('write', doc.acl, _('document'))
     else:
         doc = BaseDocument()
     form = BaseDocumentForm(obj=doc)
