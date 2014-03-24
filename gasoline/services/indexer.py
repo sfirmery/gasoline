@@ -191,7 +191,7 @@ class IndexerService(Service):
         """live search on ngram field"""
         with self.ix.\
                 searcher(weighting=scoring.BM25F(title_B=2)) as searcher:
-            qp = MultifieldParser(self.live_search_field,
+            qp = MultifieldParser(self.live_search_field + self.search_field,
                                   schema=self.ix.schema)
             q = qp.parse(query)
             results = searcher.search(q, limit=25).copy()
