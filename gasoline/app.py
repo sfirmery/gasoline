@@ -9,6 +9,7 @@ from babel import Locale
 from flask import Flask, render_template, request, g
 from flask.ext.login import current_user
 from flask.ext.assets import Bundle
+from flask.ext.babel import format_date, format_datetime, format_time
 from werkzeug.datastructures import ImmutableDict
 
 from gasoline.config import DefaultConfig
@@ -18,7 +19,7 @@ from gasoline.views import (
     blueprint_search, blueprint_document, blueprint_user, blueprint_index,
     blueprint_urlshortener)
 from gasoline.services import (
-    acl_service, indexer_service, event_service, urlshortener_service)
+    acl_service, indexer_service, activity_service, urlshortener_service)
 
 logger = logging.getLogger('gasoline')
 
@@ -143,6 +144,18 @@ class Application(Flask):
                               accept_languages, sep='-')
             return negociated
 
+        @self.template_filter('date')
+        def _jinja2_filter_date(date):
+            return format_date(date)
+
+        @self.template_filter('time')
+        def _jinja2_filter_time(date):
+            return format_time(date)
+
+        @self.template_filter('datetime')
+        def _jinja2_filter_datetime(date):
+            return format_datetime(date)
+
         # # CSRF by default
         # if self.config.get('CSRF_ENABLED'):
         #     extensions.csrf.init_app(self)
@@ -185,7 +198,7 @@ class Application(Flask):
         # Gasoline services
         acl_service.init_app(self)
         indexer_service.init_app(self)
-        event_service.init_app(self)
+        activity_service.init_app(self)
         urlshortener_service.init_app(self)
 
     def start_services(self):

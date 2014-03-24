@@ -64,6 +64,7 @@ class ACLService(Service):
             return True
 
     def acl(self, permission, *args, **kwargs):
+        """apply global and space acl before request"""
         from gasoline.models import Space
 
         def decorator(f):

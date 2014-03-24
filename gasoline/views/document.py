@@ -10,6 +10,7 @@ from flask.ext.babel import gettext as _
 from gasoline.services import acl_service as acl
 from gasoline.forms import BaseDocumentForm
 from gasoline.models import BaseDocument, DocumentHistory, Space
+from gasoline.services.activity import Activity
 
 blueprint_document = Blueprint('document',
                                __name__,
@@ -26,6 +27,7 @@ def dashboard(space='main'):
     # check acl for space
     # acl.apply('read', Space.objects(name=space).first().acl, _('space'))
     docs = BaseDocument.objects(space=space).limit(50)
+    activity = Activity.objects.limit(50)
     return render_template('dashboard.html', **locals())
 
 

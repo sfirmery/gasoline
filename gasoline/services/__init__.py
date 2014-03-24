@@ -7,7 +7,7 @@ from .base import Service
 # from .audit import audit_service
 from .acl import ACLService
 from .indexer import IndexerService
-from .event import EventService
+from .activity import ActivityService
 from .urlshortener import URLShortenerService
 
 __all__ = [
@@ -15,12 +15,12 @@ __all__ = [
     'get_service',
     'acl_service',
     'indexer_service',
-    'event_service',
+    'activity_service',
     'urlshortener_service']
 
 acl_service = ACLService()
 indexer_service = IndexerService()
-event_service = EventService()
+activity_service = ActivityService()
 urlshortener_service = URLShortenerService()
 
 
