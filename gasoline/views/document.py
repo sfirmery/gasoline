@@ -9,7 +9,7 @@ from flask.ext.babel import gettext as _
 
 from gasoline.services import acl_service as acl
 from gasoline.forms import BaseDocumentForm
-from gasoline.models import BaseDocument, DocumentHistory, Space
+from gasoline.models import BaseDocument, DocumentHistory
 from gasoline.services.activity import Activity
 
 blueprint_document = Blueprint('document',
@@ -24,10 +24,8 @@ logger = logging.getLogger('gasoline')
 @acl.acl('read')
 @login_required
 def dashboard(space='main'):
-    # check acl for space
-    # acl.apply('read', Space.objects(name=space).first().acl, _('space'))
     docs = BaseDocument.objects(space=space).limit(50)
-    activity = Activity.objects.limit(50)
+    activity = Activity.objects.order_by('-date').limit(50)
     return render_template('dashboard.html', **locals())
 
 
@@ -36,8 +34,6 @@ def dashboard(space='main'):
 @acl.acl('read')
 @login_required
 def view(space='main', doc_id=None, revision=None):
-    # check acl for space
-    # acl.apply('read', Space.objects(name=space).first().acl, _('space'))
     try:
         doc = BaseDocument.objects(id=doc_id, space=space).first()
     except:
@@ -58,8 +54,6 @@ def view(space='main', doc_id=None, revision=None):
 @acl.acl('write')
 @login_required
 def edit(space='main', doc_id=None):
-    # check acl for space
-    acl.apply('read', Space.objects(name=space).first().acl, _('space'))
     if doc_id is not None:
         doc = BaseDocument.objects(id=doc_id).first()
         # check acl for document
