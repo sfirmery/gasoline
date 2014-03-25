@@ -21,7 +21,7 @@ class URLShortenerService(Service):
     last_id = 0
 
     def init_app(self, app):
-        """intialise url shortener service with flask configuration"""
+        """initialise url shortener service with flask configuration"""
         last_url = ShortURL.objects.order_by('-id').first()
         if last_url is not None:
             self.last_id = last_url.id
