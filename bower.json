@@ -6,12 +6,13 @@
 		"jquery": "*",
 		"bootstrap": "*",
 		"bootstrap-datepicker": "*",
-		"font-awesome": "*"
+		"font-awesome": "*",
+		"jquery-timeago": "*"
 	},
 	"exportsOverride": {
 		"bootstrap": {
-			"js": "dist/js/bootstrap.js",
-			"css": "dist/css/bootstrap.css",
+			"js": "dist/js/*.js",
+			"css": [ "dist/css/bootstrap.css",  "dist/css/bootstrap.min.css" ],
 			"fonts": "dist/fonts/*"
 		},
 		"bootstrap-datepicker": {
@@ -20,8 +21,15 @@
 			"css": "css/datepicker3.css"
 		},
 		"font-awesome": {
-			"css": "css/font-awesome.css",
+			"css": [ "css/*.css", "css/*.min.css" ],
 			"fonts": "fonts/*"
+		},
+		"jquery": {
+			"js": [ "dist/*.js", "dist/*.min.js" ]
+		},
+		"jquery-timeago": {
+			"js": "jquery.timeago.js",
+			"js/locales": "locales/*.js"
 		}
 	}
 }

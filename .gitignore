@@ -11,3 +11,5 @@ node_modules/
 
 # bower
 bower_components
+
+gasoline/static/assets/

@@ -56,10 +56,20 @@ class Application(Flask):
         self.setup_logging()
 
         self._assets_bundles = {
-            'css': {'options': dict(filters='cssmin',
-                                    output='css/style-%(version)s.min.css')},
-            'js-top': {'options': dict(output='js/top-%(version)s.min.js')},
-            'js': {'options': dict(output='js/app-%(version)s.min.js')},
+            'css': {
+                'options': dict(
+                    filters='cssmin',
+                    output='assets/style-%(version)s.min.css')
+            },
+            'js-top': {
+                'options': dict(output='assets/top-%(version)s.min.js')},
+            'js': {
+                'options': dict(output='assets/app-%(version)s.min.js')},
+        }
+
+        self._assets_locales = {
+            'locales': ['fr'],
+            'output': 'assets/app-%(version)s.min.',
         }
 
         # for http_error_code in (403, 404, 500):
@@ -109,26 +119,43 @@ class Application(Flask):
 
         # extensions.mail.init_app(self)
 
-        #  DeferredJS
-        # DeferredJS(self)
-
         extensions.assets.init_app(self)
+
         self._assets_bundles['js']['files'] = [
-            'vendors/jquery/jquery.js',
+            'vendors/jquery/js/jquery.js',
             'vendors/bootstrap/js/bootstrap.js',
             'vendors/bootstrap-datepicker/js/bootstrap-datepicker.js',
-            'vendors/select2/select2.js']
+            'vendors/jquery-timeago/js/jquery.timeago.js',
+        ]
+        self._assets_bundles['js']['files'].append('js/gasoline.js')
+
         self._assets_bundles['css']['files'] = [
             'vendors/bootstrap/css/bootstrap.css',
             'vendors/bootstrap-datepicker/css/datepicker3.css',
             'vendors/font-awesome/css/font-awesome.css',
-            'vendors/select2/select2.css']
+        ]
+        self._assets_bundles['css']['files'].append('css/gasoline.css')
+
+        self._assets_locales['files'] = [
+            'vendors/bootstrap-datepicker/js/locales/bootstrap-datepicker.',
+            'vendors/jquery-timeago/js/locales/jquery.timeago.',
+        ]
 
         for name, data in self._assets_bundles.items():
             files = data.get('files', [])
             options = data.get('options', {})
             if files:
                 extensions.assets.register(name, Bundle(*files, **options))
+
+        for locale in self._assets_locales['locales']:
+            files = self._assets_locales.get('files', [])
+            files = [file + locale + '.js' for file in files]
+            options = self._assets_locales.get('options', {})
+            output = self._assets_locales.get('output', {})
+            options['output'] = output + locale + '.js'
+            if files:
+                extensions.assets.register('js-' + locale,
+                                           Bundle(*files, **options))
 
         # flask-babel
         extensions.babel.init_app(self)

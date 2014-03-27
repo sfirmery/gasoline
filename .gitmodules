@@ -1,3 +1,0 @@
-[submodule "gasoline/static/vendors/jquery-timeago"]
-	path = gasoline/static/vendors/jquery-timeago
-	url = https://github.com/rmm5t/jquery-timeago.git

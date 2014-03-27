@@ -1,0 +1,11 @@
+div.content {
+    padding: 0 6px;
+}
+
+.activity-stream p {
+    padding-left: 24px;
+}
+
+.activity-stream div div {
+    padding: 6px;
+}
