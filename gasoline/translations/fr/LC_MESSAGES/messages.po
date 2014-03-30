@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-15 12:41+0100\n"
+"POT-Creation-Date: 2014-03-30 14:33+0200\n"
 "PO-Revision-Date: 2014-03-10 14:23+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -17,115 +17,231 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: gasoline/frontend/forms.py:10 gasoline/frontend/forms.py:11
+#: gasoline/forms/document.py:12 gasoline/forms/document.py:13
 msgid "Title"
 msgstr "Titre"
 
-#: gasoline/frontend/forms.py:13 gasoline/frontend/forms.py:14
+#: gasoline/forms/document.py:15 gasoline/forms/document.py:16
 msgid "Content"
 msgstr "Contenu"
 
-#: gasoline/frontend/forms.py:19 gasoline/frontend/forms.py:20
-#: gasoline/templates/base.html:46
+#: gasoline/forms/search.py:12 gasoline/forms/search.py:13
 msgid "Search"
 msgstr "Rechercher"
 
-#: gasoline/frontend/views.py:59 gasoline/frontend/views.py:74
-msgid "Document saved successfuly."
-msgstr "Document sauvegardé avec succès."
+#: gasoline/forms/user.py:12 gasoline/forms/user.py:13
+msgid "Username"
+msgstr "Utilisateur"
 
-#: gasoline/frontend/templates/dashboard.html:5
+#: gasoline/forms/user.py:14 gasoline/forms/user.py:15
+msgid "Password"
+msgstr "Mot de passe"
+
+#: gasoline/forms/user.py:17 gasoline/forms/user.py:18
+msgid "Remember me"
+msgstr "Se souvenir de moi"
+
+#: gasoline/forms/user.py:25
+msgid "Username or password mismatch."
+msgstr "Utilisateur ou mot de passe incorrect."
+
+#: gasoline/services/acl/service.py:18
+#, fuzzy
+msgid "read"
+msgstr "Créer"
+
+#: gasoline/services/acl/service.py:19
+#, fuzzy
+msgid "write"
+msgstr "Titre"
+
+#: gasoline/services/acl/service.py:20
+msgid "delete"
+msgstr ""
+
+#: gasoline/services/acl/service.py:21
+msgid "write comments"
+msgstr ""
+
+#: gasoline/services/acl/service.py:22
+msgid "write attachments"
+msgstr ""
+
+#: gasoline/services/acl/service.py:33
+msgid "resource"
+msgstr ""
+
+#: gasoline/services/acl/service.py:47
+#, python-format
+msgid "You are not allowed to \"%(permission)s\" this %(resource)s"
+msgstr ""
+
+#: gasoline/services/acl/service.py:77
+msgid "space"
+msgstr "espace"
+
+#: gasoline/services/activity/models.py:48
+msgid "create page"
+msgstr "a créé la page"
+
+#: gasoline/services/activity/models.py:49
+msgid "create event"
+msgstr "a créé l'évènement"
+
+#: gasoline/services/activity/models.py:50
+msgid "create issue"
+msgstr ""
+
+#: gasoline/services/activity/models.py:51
+msgid "create task"
+msgstr "a créé la tâche"
+
+#: gasoline/services/activity/models.py:54
+msgid "update page"
+msgstr "a édité la page"
+
+#: gasoline/services/activity/models.py:57
+msgid "remove page"
+msgstr "a supprimé la page"
+
+#: gasoline/services/activity/models.py:60
+msgid "attach file"
+msgstr "a attaché un fichier à"
+
+#: gasoline/services/activity/models.py:63
+msgid "comment"
+msgstr "a commenté"
+
+#: gasoline/services/activity/models.py:66
+msgid "share bookmark"
+msgstr "a partagé un lien"
+
+#: gasoline/services/activity/models.py:103
+msgid "$(verb)s on"
+msgstr "$(verb)s sur"
+
+#: gasoline/templates/base.html:5
+msgid "Project"
+msgstr "Gasoline"
+
+#: gasoline/templates/base.html:20
+msgid "Toggle navigation"
+msgstr "Afficher la navigation"
+
+#: gasoline/templates/base.html:32
+msgid "Dashboard"
+msgstr "Tableau de bord"
+
+#: gasoline/templates/base.html:52
+msgid "My account"
+msgstr "Mon Compte"
+
+#: gasoline/templates/base.html:55
+msgid "Logout"
+msgstr "Deconnexion"
+
+#: gasoline/templates/dashboard.html:5
 msgid "Create"
 msgstr "Créer"
 
-#: gasoline/frontend/templates/edit_document.html:32
+#: gasoline/templates/dashboard.html:9
+msgid "Documents:"
+msgstr "Documents :"
+
+#: gasoline/templates/dashboard.html:18
+msgid "Activity Stream:"
+msgstr "Flux d'activité :"
+
+#: gasoline/templates/edit_document.html:32
 msgid "Submit"
 msgstr "Soumettre"
 
-#: gasoline/frontend/templates/search_results.html:5
+#: gasoline/templates/login.html:8 gasoline/templates/login.html:23
+msgid "Sign in"
+msgstr "Connexion"
+
+#: gasoline/templates/profile.html:4
+msgid "Profile"
+msgstr "Profil"
+
+#: gasoline/templates/profile.html:10
+msgid "User:"
+msgstr "Utilisateur :"
+
+#: gasoline/templates/profile.html:11
+msgid "Last seen on:"
+msgstr "Dernière connexion :"
+
+#: gasoline/templates/search_results.html:5
 #, python-format
 msgid "%(count)d of %(num)i result found in %(seconds)fs"
 msgid_plural "%(count)d of %(num)i results found in %(seconds)fs"
 msgstr[0] "%(count)d of %(num)i résultat trouvé en %(seconds)fs"
 msgstr[1] "%(count)d sur %(num)i résultats trouvés en %(seconds)fs"
 
-#: gasoline/frontend/templates/view_document.html:6
+#: gasoline/templates/view_document.html:6
 msgid "Create on"
 msgstr "Créé le"
 
-#: gasoline/frontend/templates/view_document.html:6
+#: gasoline/templates/view_document.html:6
 msgid "last update"
 msgstr "dernière modification"
 
-#: gasoline/frontend/templates/view_document.html:6
+#: gasoline/templates/view_document.html:6
 msgid "edit"
-msgstr "edition"
+msgstr "édition"
 
-#: gasoline/frontend/templates/view_document.html:7
+#: gasoline/templates/view_document.html:7
 msgid "Current revision is"
 msgstr "Version actuelle"
 
-#: gasoline/frontend/templates/view_document.html:11
+#: gasoline/templates/view_document.html:11
 msgid "History:"
 msgstr "Historique :"
 
-#: gasoline/templates/base.html:5
-msgid "Project"
-msgstr "Gasoline"
+#: gasoline/templates/errors/error403.html:5
+msgid "Access denied"
+msgstr "Accès refusé"
 
-#: gasoline/templates/base.html:17
-msgid "Toggle navigation"
-msgstr "Afficher la navigation"
+#: gasoline/templates/errors/error403.html:6
+msgid "You don't have permission to access to this ressource."
+msgstr ""
 
-#: gasoline/templates/base.html:29
-msgid "Dashboard"
-msgstr "Tableau de bord"
+#: gasoline/templates/errors/error404.html:5
+msgid "Not Found"
+msgstr "Non Trouvé"
 
-#: gasoline/templates/base.html:33
-msgid "My account"
-msgstr "Mon Compte"
+#: gasoline/templates/errors/error404.html:6
+msgid "Page not found"
+msgstr "Page non trouvé"
 
-#: gasoline/templates/base.html:36
-msgid "Logout"
-msgstr "Deconnexion"
+#: gasoline/templates/errors/error410.html:5
+msgid "Gone"
+msgstr ""
 
-#: gasoline/user/forms.py:12 gasoline/user/forms.py:13
-msgid "Username"
-msgstr "Utilisateur"
+#: gasoline/templates/errors/error410.html:6
+msgid ""
+"The requested resource is no longer available and will not be available "
+"again."
+msgstr ""
 
-#: gasoline/user/forms.py:14 gasoline/user/forms.py:15
-msgid "Password"
-msgstr "Mot de passe"
+#: gasoline/views/document.py:43
+msgid "document not found"
+msgstr "document non trouvé"
 
-#: gasoline/user/forms.py:16 gasoline/user/forms.py:17
-msgid "Remember me"
-msgstr "Se souvenir de moi"
+#: gasoline/views/document.py:45 gasoline/views/document.py:60
+msgid "document"
+msgstr ""
 
-#: gasoline/user/forms.py:24
-msgid "Username or password mismatch."
-msgstr "Utilisateur ou mot de passe incorrect."
+#: gasoline/views/document.py:70
+msgid "Document saved successfully."
+msgstr "Document sauvegardé avec succès."
 
-#: gasoline/user/views.py:30
+#: gasoline/views/user.py:29
 msgid "Logged in successfully."
 msgstr "Authentification réussie."
 
-#: gasoline/user/views.py:34
+#: gasoline/views/user.py:33
 msgid "Logging failed."
 msgstr "Erreur lors de l'authentification."
-
-#: gasoline/user/templates/login.html:8 gasoline/user/templates/login.html:23
-msgid "Sign in"
-msgstr "Connexion"
-
-#: gasoline/user/templates/profile.html:4
-msgid "Profile"
-msgstr "Profil"
-
-#: gasoline/user/templates/profile.html:10
-msgid "User:"
-msgstr "Utilisateur :"
-
-#: gasoline/user/templates/profile.html:11
-msgid "Last seen on:"
-msgstr "Dernière connexion :"
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-15 12:41+0100\n"
+"POT-Creation-Date: 2014-03-30 14:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,115 +17,229 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: gasoline/frontend/forms.py:10 gasoline/frontend/forms.py:11
+#: gasoline/forms/document.py:12 gasoline/forms/document.py:13
 msgid "Title"
 msgstr ""
 
-#: gasoline/frontend/forms.py:13 gasoline/frontend/forms.py:14
+#: gasoline/forms/document.py:15 gasoline/forms/document.py:16
 msgid "Content"
 msgstr ""
 
-#: gasoline/frontend/forms.py:19 gasoline/frontend/forms.py:20
-#: gasoline/templates/base.html:46
+#: gasoline/forms/search.py:12 gasoline/forms/search.py:13
 msgid "Search"
 msgstr ""
 
-#: gasoline/frontend/views.py:59 gasoline/frontend/views.py:74
-msgid "Document saved successfuly."
+#: gasoline/forms/user.py:12 gasoline/forms/user.py:13
+msgid "Username"
 msgstr ""
 
-#: gasoline/frontend/templates/dashboard.html:5
-msgid "Create"
+#: gasoline/forms/user.py:14 gasoline/forms/user.py:15
+msgid "Password"
 msgstr ""
 
-#: gasoline/frontend/templates/edit_document.html:32
-msgid "Submit"
+#: gasoline/forms/user.py:17 gasoline/forms/user.py:18
+msgid "Remember me"
 msgstr ""
 
-#: gasoline/frontend/templates/search_results.html:5
+#: gasoline/forms/user.py:25
+msgid "Username or password mismatch."
+msgstr ""
+
+#: gasoline/services/acl/service.py:18
+msgid "read"
+msgstr ""
+
+#: gasoline/services/acl/service.py:19
+msgid "write"
+msgstr ""
+
+#: gasoline/services/acl/service.py:20
+msgid "delete"
+msgstr ""
+
+#: gasoline/services/acl/service.py:21
+msgid "write comments"
+msgstr ""
+
+#: gasoline/services/acl/service.py:22
+msgid "write attachments"
+msgstr ""
+
+#: gasoline/services/acl/service.py:33
+msgid "resource"
+msgstr ""
+
+#: gasoline/services/acl/service.py:47
 #, python-format
-msgid "%(count)d of %(num)i result found in %(seconds)fs"
-msgid_plural "%(count)d of %(num)i results found in %(seconds)fs"
-msgstr[0] ""
-msgstr[1] ""
-
-#: gasoline/frontend/templates/view_document.html:6
-msgid "Create on"
+msgid "You are not allowed to \"%(permission)s\" this %(resource)s"
 msgstr ""
 
-#: gasoline/frontend/templates/view_document.html:6
-msgid "last update"
+#: gasoline/services/acl/service.py:77
+msgid "space"
 msgstr ""
 
-#: gasoline/frontend/templates/view_document.html:6
-msgid "edit"
+#: gasoline/services/activity/models.py:48
+msgid "create page"
 msgstr ""
 
-#: gasoline/frontend/templates/view_document.html:7
-msgid "Current revision is"
+#: gasoline/services/activity/models.py:49
+msgid "create event"
 msgstr ""
 
-#: gasoline/frontend/templates/view_document.html:11
-msgid "History:"
+#: gasoline/services/activity/models.py:50
+msgid "create issue"
+msgstr ""
+
+#: gasoline/services/activity/models.py:51
+msgid "create task"
+msgstr ""
+
+#: gasoline/services/activity/models.py:54
+msgid "update page"
+msgstr ""
+
+#: gasoline/services/activity/models.py:57
+msgid "remove page"
+msgstr ""
+
+#: gasoline/services/activity/models.py:60
+msgid "attach file"
+msgstr ""
+
+#: gasoline/services/activity/models.py:63
+msgid "comment"
+msgstr ""
+
+#: gasoline/services/activity/models.py:66
+msgid "share bookmark"
+msgstr ""
+
+#: gasoline/services/activity/models.py:103
+msgid "$(verb)s on"
 msgstr ""
 
 #: gasoline/templates/base.html:5
 msgid "Project"
 msgstr ""
 
-#: gasoline/templates/base.html:17
+#: gasoline/templates/base.html:20
 msgid "Toggle navigation"
 msgstr ""
 
-#: gasoline/templates/base.html:29
+#: gasoline/templates/base.html:32
 msgid "Dashboard"
 msgstr ""
 
-#: gasoline/templates/base.html:33
+#: gasoline/templates/base.html:52
 msgid "My account"
 msgstr ""
 
-#: gasoline/templates/base.html:36
+#: gasoline/templates/base.html:55
 msgid "Logout"
 msgstr ""
 
-#: gasoline/user/forms.py:12 gasoline/user/forms.py:13
-msgid "Username"
+#: gasoline/templates/dashboard.html:5
+msgid "Create"
 msgstr ""
 
-#: gasoline/user/forms.py:14 gasoline/user/forms.py:15
-msgid "Password"
+#: gasoline/templates/dashboard.html:9
+msgid "Documents:"
 msgstr ""
 
-#: gasoline/user/forms.py:16 gasoline/user/forms.py:17
-msgid "Remember me"
+#: gasoline/templates/dashboard.html:18
+msgid "Activity Stream:"
 msgstr ""
 
-#: gasoline/user/forms.py:24
-msgid "Username or password mismatch."
+#: gasoline/templates/edit_document.html:32
+msgid "Submit"
 msgstr ""
 
-#: gasoline/user/views.py:30
-msgid "Logged in successfully."
-msgstr ""
-
-#: gasoline/user/views.py:34
-msgid "Logging failed."
-msgstr ""
-
-#: gasoline/user/templates/login.html:8 gasoline/user/templates/login.html:23
+#: gasoline/templates/login.html:8 gasoline/templates/login.html:23
 msgid "Sign in"
 msgstr ""
 
-#: gasoline/user/templates/profile.html:4
+#: gasoline/templates/profile.html:4
 msgid "Profile"
 msgstr ""
 
-#: gasoline/user/templates/profile.html:10
+#: gasoline/templates/profile.html:10
 msgid "User:"
 msgstr ""
 
-#: gasoline/user/templates/profile.html:11
+#: gasoline/templates/profile.html:11
 msgid "Last seen on:"
+msgstr ""
+
+#: gasoline/templates/search_results.html:5
+#, python-format
+msgid "%(count)d of %(num)i result found in %(seconds)fs"
+msgid_plural "%(count)d of %(num)i results found in %(seconds)fs"
+msgstr[0] ""
+msgstr[1] ""
+
+#: gasoline/templates/view_document.html:6
+msgid "Create on"
+msgstr ""
+
+#: gasoline/templates/view_document.html:6
+msgid "last update"
+msgstr ""
+
+#: gasoline/templates/view_document.html:6
+msgid "edit"
+msgstr ""
+
+#: gasoline/templates/view_document.html:7
+msgid "Current revision is"
+msgstr ""
+
+#: gasoline/templates/view_document.html:11
+msgid "History:"
+msgstr ""
+
+#: gasoline/templates/errors/error403.html:5
+msgid "Access denied"
+msgstr ""
+
+#: gasoline/templates/errors/error403.html:6
+msgid "You don't have permission to access to this ressource."
+msgstr ""
+
+#: gasoline/templates/errors/error404.html:5
+msgid "Not Found"
+msgstr ""
+
+#: gasoline/templates/errors/error404.html:6
+msgid "Page not found"
+msgstr ""
+
+#: gasoline/templates/errors/error410.html:5
+msgid "Gone"
+msgstr ""
+
+#: gasoline/templates/errors/error410.html:6
+msgid ""
+"The requested resource is no longer available and will not be available "
+"again."
+msgstr ""
+
+#: gasoline/views/document.py:43
+msgid "document not found"
+msgstr ""
+
+#: gasoline/views/document.py:45 gasoline/views/document.py:60
+msgid "document"
+msgstr ""
+
+#: gasoline/views/document.py:70
+msgid "Document saved successfully."
+msgstr ""
+
+#: gasoline/views/user.py:29
+msgid "Logged in successfully."
+msgstr ""
+
+#: gasoline/views/user.py:33
+msgid "Logging failed."
 msgstr ""
 
