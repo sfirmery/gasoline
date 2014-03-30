@@ -1,35 +1,79 @@
 # -*- coding: utf-8 -*-
+"""
+Based on:
+Activity Stream Specs: http://activitystrea.ms/specs/json/1.0/
+"""
+
+
+from datetime import datetime
 
 from gasoline.core.extensions import db
-from flask.ext.babel import lazy_gettext as _l
+from flask.ext.babel import gettext as _, lazy_gettext as _l
 
 ACTIONS = {
-    'edit': _l('edit'),
-    'new': _l('new'),
-    'delete': _l('delete'),
+    'create': {
+        'page': _l('create page'),
+        'event': _l('create event'),
+        'issue': _l('create issue'),
+        'task': _l('create task'),
+    },
+    'update': {
+        'page': _l('update page'),
+    },
+    'remove': {
+        'page': _l('remove page'),
+    },
+    'attach': {
+        'file': _l('attach file'),
+    },
+    'add': {
+        'comment': _l('comment'),
+    },
+    'share': {
+        'bookmark': _l('share bookmark'),
+    },
 }
 
-ICON = {
-    'edit': 'fa fa-edit',
-    'new': 'fa fa-plus',
-    'delete': 'fa fa-trash-o',
+ICONS_MAP = {
+    'page': 'fa-file-text-o',
+    'comment': 'fa-comments',
+    'file': 'fa-file',
+    'bookmark': 'fa-bookmark-o',
+    'event': 'fa-calender',
+    'issue': 'fa-bug',
+    'task': 'fa-tasks',
 }
+
+
+class DocumentObject(db.EmbeddedDocument):
+    object_type = db.StringField(default='page')
+    id = db.StringField()
+    display_name = db.StringField()
+    url = db.StringField()
+
+    def __repr__(self):
+        return '<DocumentObject %s>' % self.display_name
 
 
 class Activity(db.Document):
-    date = db.DateTimeField()
-    action = db.StringField()
-    user = db.ReferenceField('User')
-    document = db.ReferenceField('BaseDocument')
+    actor = db.ReferenceField('User')
+    published = db.DateTimeField(default=datetime.utcnow)
+    verb = db.StringField()
+    object = db.EmbeddedDocumentField(DocumentObject)
+    target = db.StringField()
 
     @property
-    def action_localized(self):
-        return ACTIONS.get(self.action, self.action)
+    def action(self):
+        try:
+            action = ACTIONS.get(self.verb).get(self.object.object_type)
+        except:
+            action = _('$(verb)s on', self.verb)
+        return action
 
     @property
     def icon(self):
-        return ICON.get(self.action, 'fa fa-square-o')
+        return 'fa ' + ICONS_MAP.get(self.object.object_type) + ' fa-lg'
 
     def __repr__(self):
-        return '<Activity date=%r, action=%s document=%s>' % (
-            self.date, self.action, self.document)
+        return '<Activity published=%r, verb=%s object=%s>' % (
+            self.published, self.verb, self.object)

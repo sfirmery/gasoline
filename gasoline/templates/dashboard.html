@@ -6,20 +6,26 @@
 
 <div class="row">
     <div class="col-md-6">
-        <h3>Activity Stream:</h3>
-        <ul>
-        {% for event in activity %}
-            <li><i class="{{ event.icon }}"></i> <a href="{{ url_for('user.profile', name=event.user.name) }}">{{ event.user.name }}</a> {{ event.action_localized }} <a href="{{ url_for('document.view', space=event.document.space, doc_id=event.document.id) }}">{{ event.document.title }}</a> on  {{ event.date | datetime }}</li>
-        {% endfor %}
-        </ul>
-    </div>
-    <div class="col-md-6">
-        <h3>Documents:</h3>
+        <h3>{{ _('Documents:') }}</h3>
         <ul>
         {% for doc in docs %}
         	<li><a href="{{ url_for('document.view', space=space, doc_id=doc.id) }}">{{ doc.title }}</a> ({{ doc.current_revision }}) - {{ doc.id }}</li>
         {% endfor %}
         </ul>
-        {% endblock %}
+    </div>
+    <div class="col-md-6">
+        <div class="activity-stream">
+            <h3>{{ _('Activity Stream:') }}</h3>
+            {% for event in activity %}
+            <div>
+                <div class="pull-left"><i class="{{ event.icon }}"></i></div>
+                <p>
+                    <a href="{{ url_for('user.profile', name=event.actor.name) }}">{{ event.actor.name }}</a> {{ event.action }}  <a href="{{ event.object.url }}">{{ event.object.display_name }}</a><br />
+                    <small><time class="timeago" datetime="{{ event.published }}Z" data-toggle="tooltip" data-placement="bottom">{{ event.published | datetime }}</time></small>
+                </p>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 </div>
+{% endblock %}

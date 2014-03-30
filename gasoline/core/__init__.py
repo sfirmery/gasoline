@@ -7,4 +7,4 @@ from signals import event, plugins_registered
 __all__ = [
     'Diff',
     'db', 'cache', 'lm', 'assets', 'babel',
-    'event', 'plugins_registered']
+    'event', 'activity', 'plugins_registered']

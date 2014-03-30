@@ -5,11 +5,10 @@ import markdown2
 import mediawiki
 
 from gasoline.core.extensions import db
-from gasoline.core.signals import event
+from gasoline.core.signals import event, activity
 from gasoline.core.diff import Diff
 from gasoline.services.acl import ACE
 from .user import User
-# from .space import Space
 
 
 class DocumentRevision(db.EmbeddedDocument):
@@ -20,7 +19,7 @@ class DocumentRevision(db.EmbeddedDocument):
     date = db.DateTimeField()
 
     def __repr__(self):
-        return '<DocumentVersion number=%s>' % (self.number)
+        return '<DocumentVersion number=%s>' % self.number
 
 
 class BaseDocument(db.DynamicDocument):
@@ -162,15 +161,23 @@ class BaseDocument(db.DynamicDocument):
         if self._next_revision is not None:
             self._get_history()
             self._history.update_one(push__revisions=self._next_revision)
-            self.current_revision = self.current_revision + 1
+            self.current_revision += 1
 
         # update metadata
         self.last_update = datetime.utcnow()
 
+        # is a new document ?
+        verb = 'update'
+        if self.id is None:
+            verb = 'create'
+
         super(BaseDocument, self).save()
 
-        # send document update evetn
+        # send document update event
         event.send('document', document=self)
+
+        # send activity event
+        activity.send(verb=verb, object=self, object_type='page')
 
     def __repr__(self):
         return '<BaseDocument id=%s name=%s>' % (self.id, self.title)
