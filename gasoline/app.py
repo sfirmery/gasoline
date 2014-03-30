@@ -171,6 +171,10 @@ class Application(Flask):
                               accept_languages, sep='-')
             return negociated
 
+        @extensions.babel.timezoneselector
+        def get_timezone():
+            return
+
         @self.template_filter('date')
         def _jinja2_filter_date(date):
             return format_date(date)

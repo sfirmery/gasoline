@@ -2,8 +2,6 @@
 
 import os
 
-# from utils import make_dir, INSTANCE_FOLDER_PATH
-
 
 class BaseConfig(object):
 
@@ -29,6 +27,7 @@ class DefaultConfig(BaseConfig):
     # Flask-babel: http://pythonhosted.org/Flask-Babel/
     ACCEPT_LANGUAGES = ['fr']
     BABEL_DEFAULT_LOCALE = 'en'
+    BABEL_DEFAULT_TIMEZONE = 'Europe/Paris'
 
     # Flask-cache: http://pythonhosted.org/Flask-Cache/
     # CACHE_TYPE = 'simple'
@@ -36,3 +35,5 @@ class DefaultConfig(BaseConfig):
     CACHE_DEFAULT_TIMEOUT = 60
 
     INDEX_PATH = 'indexdir'
+
+    ASSETS_DEBUG = True
