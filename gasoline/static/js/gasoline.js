@@ -1,13 +1,21 @@
 $(document).ready(function() {
-  $("abbr.timeago").timeago();
+  $("time.timeago").timeago();
+  $('time.timeago').tooltip({container: 'body', delay: {show: 400}})
 });
 
-$('#search_input').find('input').on('focus',function(){
+$('#search_input').find('input').focus(function(){
     $(this).animate({width: '300px'},200);
-    $("#search_results").animate({width: '300px'},200).show();
-  }).on('focusout', function() {
+    $("#search_results").animate({width: '300px'},200).show().unbind('mouseleave');
+  }).focusout(function() {
     $(this).animate({width: '180px'},200);
-    $("#search_results").animate({width: '180px'},200).hide();
+    if($("#search_results").is(':hover')) {
+      $("#search_results").mouseleave(function(){
+        $(this).animate({width: '180px'},200).hide();
+      })
+    }
+    else {
+      $("#search_results").animate({width: '180px'},200).hide();
+    }
 });
 
 var search_timer = 0;
