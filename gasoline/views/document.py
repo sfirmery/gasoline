@@ -25,7 +25,7 @@ logger = logging.getLogger('gasoline')
 @login_required
 def dashboard(space='main'):
     docs = BaseDocument.objects(space=space).limit(50)
-    activity = Activity.objects.order_by('-date').limit(50)
+    activity = Activity.objects.order_by('-published').limit(50)
     return render_template('dashboard.html', **locals())
 
 
@@ -67,6 +67,6 @@ def edit(space='main', doc_id=None):
         if form.content.data != doc.content:
             doc.content = form.content.data
         doc.save()
-        flash(_('Document saved successfuly.'), 'info')
+        flash(_('Document saved successfully.'), 'info')
         return redirect(url_for('.view', space=space, doc_id=doc.id))
     return render_template('edit_document.html', **locals())
