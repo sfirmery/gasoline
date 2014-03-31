@@ -39,6 +39,7 @@ class ActivityService(Service):
                             actor=current_user.id,
                             target=object.space)
         activity.object = DocumentObject(
+            object_type=object_type,
             id=str(object.id),
             display_name=object.title,
             url=url_for('document.view', space=object.space, doc_id=str(object.id))
