@@ -1,0 +1,38 @@
+{%- extends "document.html" -%}
+{% block document_content -%}
+<div class="page-header">
+<h1><a href="{{ url_for('document.view', space=space, doc_id=doc.id) }}">{{ doc.title }}</a></h1>
+<small>{{ _('Created') }} <time class="timeago" datetime="{{ doc.creation }}Z" data-toggle="tooltip" data-placement="bottom">{{ doc.creation | datetime }}</time>, {{ _('last update') }} <time class="timeago" datetime="{{ doc.last_update }}Z" data-toggle="tooltip" data-placement="bottom">{{ doc.last_update | datetime }}</time> (v.{{ doc.current_revision }})</small>
+</div>
+
+{% if request.endpoint != 'document.view' %}
+<div class="alert alert-warning"><i class="fa fa-warning fa-lg"></i> {{ _('Old version. View') }} <a href="{{ url_for('document.view', space=space, doc_id=doc.id) }}">{{ _('current version') }}</a>.</div>
+{% endif %}
+
+<div>{{ doc.content_html|safe }}</div>
+
+{%- for comment in doc.comments recursive -%}
+<blockquote>
+  <footer><a href="{{ url_for('user.profile', name=comment.author.id) }}">{{ comment.author.id }}</a> <time class="timeago" datetime="{{ comment.date }}Z" data-toggle="tooltip" data-placement="bottom">{{ comment.date | datetime }}</time></footer>
+  <p>{{ comment.content }}</p>
+</blockquote>
+    {%- if comment.reply -%}
+        <ul>{{ loop(comment.reply) }}</ul>
+    {%- endif -%}
+{%- endfor -%}
+{% from "macros.html" import render_bootstrap_field %}
+<form class="form-horizontal" role="form" action="" method="post" name="login">
+    {{comment_form.hidden_tag()}}
+    {% if comment_form.csrf_token.errors %}
+        {% for error in comment_form.csrf_token.errors %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endfor %}
+    {% endif %}
+    {{ render_bootstrap_field(comment_form.content) }}
+    <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-4">
+        <button type="submit" class="btn btn-default">{{ _('Comment') }}</button>
+    </div>
+    </div>
+</form>
+{%- endblock document_content %}

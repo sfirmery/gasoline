@@ -4,12 +4,12 @@ import logging
 
 from flask import Blueprint, render_template, redirect, abort
 from flask import flash, url_for
-from flask.ext.login import login_required
+from flask.ext.login import login_required, current_user
 from flask.ext.babel import gettext as _
 
 from gasoline.services import acl_service as acl
-from gasoline.forms import BaseDocumentForm
-from gasoline.models import BaseDocument, DocumentHistory
+from gasoline.forms import BaseDocumentForm, CommentForm
+from gasoline.models import BaseDocument, DocumentHistory, Comment
 from gasoline.services.activity import Activity
 
 blueprint_document = Blueprint('document',
@@ -30,10 +30,9 @@ def dashboard(space='main'):
 
 
 @route('/<space>/view/<doc_id>', methods=['GET', 'POST'])
-@route('/<space>/revision/<doc_id>/<int:revision>', methods=['GET', 'POST'])
 @acl.acl('read')
 @login_required
-def view(space='main', doc_id=None, revision=None):
+def view(space='main', doc_id=None):
     try:
         doc = BaseDocument.objects(id=doc_id, space=space).first()
     except:
@@ -46,7 +45,59 @@ def view(space='main', doc_id=None, revision=None):
     history = DocumentHistory.objects(document=doc.id).first()
     if revision is not None:
         doc.get_revision(revision)
-    return render_template('view_document.html', **locals())
+
+    comment_form = CommentForm()
+    if comment_form.validate_on_submit():
+        comment = Comment(author=current_user._get_current_object(),
+                          content=comment_form.content.data)
+        doc.add_comment(comment)
+        flash(_('Comment added successfully.'), 'info')
+        return redirect(url_for('.view', space=space, doc_id=doc.id))
+    return render_template('document_view.html', **locals())
+
+
+@route('/<space>/revision/<doc_id>/<int:revision>', methods=['GET', 'POST'])
+@acl.acl('read')
+@login_required
+def revision(space='main', doc_id=None, revision=None):
+    try:
+        doc = BaseDocument.objects(id=doc_id, space=space).first()
+    except:
+        doc = None
+    if doc is None:
+        logger.info('document not found %r', doc_id)
+        abort(404, _('document not found'))
+    # check acl for document
+    acl.apply('read', doc.acl, _('document'))
+    history = DocumentHistory.objects(document=doc.id).first()
+    if revision is not None:
+        doc.get_revision(revision)
+
+    comment_form = CommentForm()
+    if comment_form.validate_on_submit():
+        comment = Comment(author=current_user._get_current_object(),
+                          content=comment_form.content.data)
+        doc.add_comment(comment)
+        flash(_('Comment added successfully.'), 'info')
+        return redirect(url_for('.view', space=space, doc_id=doc.id))
+    return render_template('document_view.html', **locals())
+
+
+@route('/<space>/history/<doc_id>', methods=['GET', 'POST'])
+@acl.acl('read')
+@login_required
+def history(space='main', doc_id=None):
+    try:
+        doc = BaseDocument.objects(id=doc_id, space=space).first()
+    except:
+        doc = None
+    if doc is None:
+        logger.info('document not found %r', doc_id)
+        abort(404, _('document not found'))
+    # check acl for document
+    acl.apply('read', doc.acl, _('document'))
+    history = DocumentHistory.objects(document=doc.id).first()
+    return render_template('document_history.html', **locals())
 
 
 @route('/<space>/new', methods=['GET', 'POST'])
@@ -66,7 +117,8 @@ def edit(space='main', doc_id=None):
             doc.title = form.title.data
         if form.content.data != doc.content:
             doc.content = form.content.data
+        doc.last_author = current_user._get_current_object()
         doc.save()
         flash(_('Document saved successfully.'), 'info')
         return redirect(url_for('.view', space=space, doc_id=doc.id))
-    return render_template('edit_document.html', **locals())
+    return render_template('document_edit.html', **locals())

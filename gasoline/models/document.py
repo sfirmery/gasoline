@@ -9,14 +9,16 @@ from gasoline.core.signals import event, activity
 from gasoline.core.diff import Diff
 from gasoline.services.acl import ACE
 from .user import User
+from .comment import Comment
 
 
 class DocumentRevision(db.EmbeddedDocument):
-    number = db.IntField(primary_key=True, default=0)
+    number = db.IntField(primary_key=True, default=1)
     title_diff = db.StringField(default=None)
     space_diff = db.StringField(default=None)
     content_diff = db.StringField(default=None)
     date = db.DateTimeField()
+    author = db.ReferenceField(User)
 
     def __repr__(self):
         return '<DocumentVersion number=%s>' % self.number
@@ -26,6 +28,7 @@ class BaseDocument(db.DynamicDocument):
     _title = db.StringField(db_field='title', unique_with='_space')
     _space = db.StringField(db_field='space', default=u'main')
     _content = db.StringField(db_field='content')
+    comments = db.ListField(db.EmbeddedDocumentField(Comment))
 
     acl = db.ListField(db.EmbeddedDocumentField(ACE))
 
@@ -34,7 +37,7 @@ class BaseDocument(db.DynamicDocument):
     last_update = db.DateTimeField(default=datetime.utcnow)
     author = db.ReferenceField(User)
     last_author = db.ReferenceField(User)
-    current_revision = db.IntField(default=0)
+    current_revision = db.IntField(default=1)
     markup = db.StringField(default=u'xhtml')
 
     meta = {
@@ -60,6 +63,7 @@ class BaseDocument(db.DynamicDocument):
             self._next_revision = DocumentRevision()
             self._next_revision.date = self.last_update
             self._next_revision.number = self.current_revision
+            self._next_revision.author = self.last_author
 
     def _get_diff(self):
         # get diff object
@@ -155,6 +159,11 @@ class BaseDocument(db.DynamicDocument):
                     patch_apply(content_patches, self.content)[0]
             self.current_revision = revision.number
             self.last_update = revision.date
+
+    def add_comment(self, comment):
+        self.update(push__comments=comment)
+        # send activity event
+        activity.send(verb='add', object=self, object_type='comment')
 
     def save(self):
         # append revision to history

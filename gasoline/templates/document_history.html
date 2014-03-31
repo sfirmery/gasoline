@@ -1,0 +1,26 @@
+{%- extends "document.html" -%}
+{% block document_content -%}
+<div class="page-header">
+<h1>{{ _('History') }}</h1>
+</div>
+{%- if doc.current_revision > 1 -%}
+<table class="table table-hover">
+    <thead>
+    <tr>
+        <th>{{ _('Version') }}</th>
+        <th>{{ _('Date') }}</th>
+        <th>{{ _('Author') }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for revision in history.reverse_revisions -%}
+    <tr>
+        <td><a href="{{ url_for('document.revision', space=space, doc_id=doc.id, revision=revision.number) }}">v. {{ revision.number }}</a></td>
+        <td><time datetime="{{ revision.date }}Z">{{ revision.date | datetime }}</time></td>
+        <td><a href="{{ url_for('user.profile', name=revision.author.id) }}">{{ revision.author.id }}</a></td>
+    </tr>
+    {%- endfor %}
+    </tbody>
+</table>
+{%- endif %}
+{%- endblock document_content %}

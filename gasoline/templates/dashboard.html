@@ -2,14 +2,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p><a href="{{ url_for('document.edit', space=space) }}" class="btn btn-default">{{ _('Create') }}</a></p>
-
 <div class="row">
     <div class="col-md-6">
         <h3>{{ _('Documents:') }}</h3>
         <ul>
         {% for doc in docs %}
-        	<li><a href="{{ url_for('document.view', space=space, doc_id=doc.id) }}">{{ doc.title }}</a> ({{ doc.current_revision }}) - {{ doc.id }}</li>
+        	<li><a href="{{ url_for('document.view', space=space, doc_id=doc.id) }}">{{ doc.title }}</a><br /><small><time datetime="{{ doc.last_update }}Z">{{ doc.last_update | date }}</time> by Someone</small></li>
         {% endfor %}
         </ul>
     </div>

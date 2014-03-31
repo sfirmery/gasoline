@@ -1,8 +1,8 @@
-<!-- extend base layout -->
-{% extends "base.html" %}
-
-{% block content %}
+{%- extends "document.html" -%}
+{% block document_content -%}
 {% from "macros.html" import render_bootstrap_field %}
+<div class="page-header">
+</div>
 <form class="form-horizontal" role="form" action="" method="post" name="edit_document">
 	{{form.hidden_tag()}}
 	{% if form.csrf_token.errors %}
@@ -33,4 +33,4 @@
 	</div>
 	</div>
 </form>
-{% endblock %}
+{%- endblock document_content %}
