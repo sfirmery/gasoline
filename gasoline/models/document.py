@@ -29,6 +29,7 @@ class BaseDocument(db.DynamicDocument):
     _space = db.StringField(db_field='space', default=u'main')
     _content = db.StringField(db_field='content')
     comments = db.ListField(db.EmbeddedDocumentField(Comment))
+    attachments = db.ListField(db.FileField())
 
     acl = db.ListField(db.EmbeddedDocumentField(ACE))
 

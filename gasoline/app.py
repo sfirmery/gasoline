@@ -72,9 +72,6 @@ class Application(Flask):
             'output': 'assets/app-%(version)s.min.',
         }
 
-        # for http_error_code in (403, 404, 500):
-        #   self.install_default_handler(http_error_code)
-
         self.init_extensions()
 
         self.register_services()
@@ -94,6 +91,11 @@ class Application(Flask):
                 g.search_form = SearchForm()
 
         # request_started.connect(self._setup_breadcrumbs)
+
+        # # load request profiler
+        # from werkzeug.contrib.profiler import ProfilerMiddleware
+        # self.wsgi_app = ProfilerMiddleware(self.wsgi_app,
+        #                                    restrictions=['gasoline'])
 
     def init_extensions(self):
         """
