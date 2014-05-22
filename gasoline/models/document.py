@@ -171,24 +171,27 @@ class BaseDocument(db.DynamicDocument):
     def get_attachment(self, filename):
         """get attached file"""
         # get attachment if exist
-        # for idx, attachment in enumerate(self.attachments):
-        #     if filename == attachment.filename:
-        #         return attachment
-        if filename in self.attachments:
-            print filename
+        for idx, attachment in enumerate(self.attachments):
+            if filename == attachment.filename:
+                return attachment.attachment
+        # if filename in self.attachments:
+        #     print filename
         raise
 
-    def add_attachment(self, file, filename, content_type):
+    def add_attachment(self, file, filename, content_type, user):
         """attach file to document"""
         # update file if already exists
         for idx, attachment in enumerate(self.attachments):
             if filename == attachment.filename:
                 # update file in gridfs
-                file_ = GridFSProxy(attachment.grid_id)
+                file_ = GridFSProxy(attachment.attachment.grid_id)
                 file_.replace(file.read(), content_type=content_type,
                               filename=filename)
+                attachment.attachment = file_
+                attachment.date = datetime.utcnow
+                attachment.author = user
                 # update document with new id
-                self.update(**({'set__attachments__%s' % idx: file_.grid_id}))
+                self.update(**({'set__attachments__%s' % idx: attachment}))
 
                 # send activity event
                 activity.send(verb='update', object=self, object_type='file')
@@ -199,7 +202,10 @@ class BaseDocument(db.DynamicDocument):
         file_.put(file.read(), content_type=content_type,
                   filename=filename)
         # add file id in document
-        self.update(push__attachments=file_.grid_id)
+        attachment = Attachment(filename=filename, attachment=file_,
+                                author=user,
+                                comment='')
+        self.update(push__attachments=attachment)
 
         # send activity event
         activity.send(verb='attach', object=self, object_type='file')

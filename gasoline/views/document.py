@@ -198,9 +198,11 @@ def upload(space='main', doc_id=None):
 
     if file.filename != '':
         try:
-            doc.add_attachment(file, file.filename, file.content_type)
+            doc.add_attachment(file, file.filename, file.content_type,
+                               current_user._get_current_object())
             flash(_('File uploaded successfully.'), 'info')
         except:
+            logger.exception('error while uploading file')
             flash(_('Error while uploading file.'), 'danger')
     else:
         flash(_('File empty.'), 'warning')
