@@ -6,7 +6,6 @@ from flask import Blueprint, render_template, redirect, abort
 from flask import flash, url_for, request, Response
 from flask.ext.login import login_required, current_user
 from flask.ext.babel import gettext as _
-from mongoengine.fields import GridFSProxy
 
 from gasoline.services import acl_service as acl
 from gasoline.forms import BaseDocumentForm, CommentForm
@@ -57,7 +56,7 @@ def view(space='main', doc_id=None):
     return render_template('document_view.html', **locals())
 
 
-@route('/<space>/revision/<doc_id>/<int:revision>', methods=['GET', 'POST'])
+@route('/<space>/view/revision/<doc_id>/<int:revision>', methods=['GET', 'POST'])
 @acl.acl('read')
 @login_required
 def revision(space='main', doc_id=None, revision=None):
@@ -84,7 +83,7 @@ def revision(space='main', doc_id=None, revision=None):
     return render_template('document_view.html', **locals())
 
 
-@route('/<space>/history/<doc_id>', methods=['GET', 'POST'])
+@route('/<space>/view/history/<doc_id>', methods=['GET', 'POST'])
 @acl.acl('read')
 @login_required
 def history(space='main', doc_id=None):
@@ -101,24 +100,26 @@ def history(space='main', doc_id=None):
     return render_template('document_history.html', **locals())
 
 
-@route('/<space>/attachment/<doc_id>/<file>', methods=['GET', 'POST'])
+@route('/<space>/view/attachment/<doc_id>/<filename>', methods=['GET', 'POST'])
 @acl.acl('read')
 @login_required
-def attachment(space='main', doc_id=None, file=None):
+def attachment(space='main', doc_id=None, filename=None):
     try:
         doc = BaseDocument.objects(id=doc_id, space=space).first()
     except:
         doc = None
     if doc is None:
-        logger.info('attachment not found %r', doc_id)
-        abort(404, _('attachment not found'))
+        logger.info('document not found %r', doc_id)
+        abort(404, _('document not found'))
     # check acl for document
     acl.apply('read', doc.acl, _('document'))
 
-    # get attachment
-    for attachment in doc.attachments:
-        if str(attachment.grid_id) == file:
-            break
+    try:
+        # get attachment
+        attachment = doc.get_attachment(filename)
+    except:
+        logger.info('attachment not found %r', filename)
+        abort(404, _('attachment not found'))
 
     # iterator for file streaming
     def generate(file):
@@ -135,8 +136,30 @@ def attachment(space='main', doc_id=None, file=None):
     return Response(generate(attachment), mimetype=attachment.contentType)
 
 
-@route('/<space>/new', methods=['GET', 'POST'])
-@route('/<space>/edit/<doc_id>', methods=['GET', 'POST'])
+@route('/<space>/delete/attachment/<doc_id>/<filename>', methods=['GET'])
+@acl.acl('write')
+@login_required
+def delete_attachment(space='main', doc_id=None, filename=None):
+    try:
+        doc = BaseDocument.objects(id=doc_id, space=space).first()
+    except:
+        doc = None
+    if doc is None:
+        logger.info('document not found %r', doc_id)
+        abort(404, _('document not found'))
+    # check acl for document
+    acl.apply('write', doc.acl, _('document'))
+
+    try:
+        doc.delete_attachment(filename)
+    except:
+        logger.info('attachment not found %r', filename)
+        abort(404, _('attachment not found'))
+    return redirect(url_for('.view', space=space, doc_id=doc.id))
+
+
+@route('/<space>/new/document', methods=['GET', 'POST'])
+@route('/<space>/edit/document/<doc_id>', methods=['GET', 'POST'])
 @acl.acl('write')
 @login_required
 def edit(space='main', doc_id=None):
@@ -159,11 +182,10 @@ def edit(space='main', doc_id=None):
     return render_template('document_edit.html', **locals())
 
 
-@route('/<space>/upload/<doc_id>', methods=['POST'])
+@route('/<space>/upload/attachment/<doc_id>', methods=['POST'])
 @acl.acl('write')
 @login_required
 def upload(space='main', doc_id=None):
-    print 'enter request'
     if doc_id is None:
         redirect(url_for('.dashboard'))
     else:
@@ -171,13 +193,15 @@ def upload(space='main', doc_id=None):
         # check acl for document
         acl.apply('write', doc.acl, _('document'))
 
-    print request.files
-
+    # get uploaded file
     file = request.files['upload']
-    file_ = GridFSProxy()
-    file_.put(file.read(), content_type=file.content_type, filename=file.filename)
-    doc.attachments.append(file_)
-    doc.save()
 
-    flash(_('File uploaded successfully.'), 'info')
+    if file.filename != '':
+        try:
+            doc.add_attachment(file, file.filename, file.content_type)
+            flash(_('File uploaded successfully.'), 'info')
+        except:
+            flash(_('Error while uploading file.'), 'danger')
+    else:
+        flash(_('File empty.'), 'warning')
     return redirect(url_for('.view', space=space, doc_id=doc.id))

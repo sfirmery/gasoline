@@ -1,0 +1,19 @@
+{%- extends "document.html" -%}
+{% block document_content -%}
+<div class="page-header">
+<h1>{{ _('Attachments') }}</h1>
+</div>
+{% if doc.attachments|length < 1 %}
+<div>{{ _('There are currently no attachments on this document.') }}</div>
+{% else %}
+<ul>
+{% for file in doc.attachments %}
+    <li><a href="{{ url_for('document.attachment', space=space, doc_id=doc.id, filename=file.filename) }}">{{ file.filename }}</a> - {{ file.length }}ko </li>
+{% endfor %}
+</ul>
+{%- endif %}
+<form method="POST" enctype="multipart/form-data" action="{{ url_for('document.upload', space=space, doc_id=doc.id) }}">
+    <input type="file" name="upload">
+    <button type="submit" class="btn btn-default">{{ _('Upload') }}</button>
+</form>
+{%- endblock document_content %}
