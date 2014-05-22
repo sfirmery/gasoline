@@ -16,7 +16,7 @@
             <h3>{{ _('Activity Stream:') }}</h3>
             {% for event in activity %}
             <div>
-                <div class="pull-left"><i class="{{ event.icon }}"></i></div>
+                <div class="pull-left"><i class="{{ event.icon }} fa-fw"></i></div>
                 <p>
                     <a href="{{ url_for('user.profile', name=event.actor.name) }}">{{ event.actor.name }}</a> {{ event.action }}  <a href="{{ event.object.url }}">{{ event.object.display_name }}</a><br />
                     <small><time class="timeago" datetime="{{ event.published }}Z" data-toggle="tooltip" data-placement="bottom">{{ event.published | datetime }}</time></small>
