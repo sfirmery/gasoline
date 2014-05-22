@@ -19,9 +19,13 @@ ACTIONS = {
     },
     'update': {
         'page': _l('update page'),
+        'file': _l('update file'),
     },
     'remove': {
         'page': _l('remove page'),
+    },
+    'delete': {
+        'file': _l('delete file'),
     },
     'attach': {
         'file': _l('attach file'),
@@ -37,7 +41,7 @@ ACTIONS = {
 ICONS_MAP = {
     'page': 'fa-file-text-o',
     'comment': 'fa-comments',
-    'file': 'fa-file',
+    'file': 'fa-paperclip',
     'bookmark': 'fa-bookmark-o',
     'event': 'fa-calender',
     'issue': 'fa-bug',
