@@ -3,6 +3,7 @@
 from datetime import datetime
 import markdown2
 import mediawiki
+from mongoengine.fields import GridFSProxy
 
 from gasoline.core.extensions import db
 from gasoline.core.signals import event, activity
@@ -10,6 +11,7 @@ from gasoline.core.diff import Diff
 from gasoline.services.acl import ACE
 from .user import User
 from .comment import Comment
+from .attachment import Attachment
 
 
 class DocumentRevision(db.EmbeddedDocument):
@@ -21,7 +23,7 @@ class DocumentRevision(db.EmbeddedDocument):
     author = db.ReferenceField(User)
 
     def __repr__(self):
-        return '<DocumentVersion number=%s>' % self.number
+        return '<DocumentVersion number=%r>' % self.number
 
 
 class BaseDocument(db.DynamicDocument):
@@ -29,7 +31,7 @@ class BaseDocument(db.DynamicDocument):
     _space = db.StringField(db_field='space', default=u'main')
     _content = db.StringField(db_field='content')
     comments = db.ListField(db.EmbeddedDocumentField(Comment))
-    attachments = db.ListField(db.FileField())
+    attachments = db.ListField(db.EmbeddedDocumentField(Attachment))
 
     acl = db.ListField(db.EmbeddedDocumentField(ACE))
 
@@ -166,6 +168,55 @@ class BaseDocument(db.DynamicDocument):
         # send activity event
         activity.send(verb='add', object=self, object_type='comment')
 
+    def get_attachment(self, filename):
+        """get attached file"""
+        # get attachment if exist
+        # for idx, attachment in enumerate(self.attachments):
+        #     if filename == attachment.filename:
+        #         return attachment
+        if filename in self.attachments:
+            print filename
+        raise
+
+    def add_attachment(self, file, filename, content_type):
+        """attach file to document"""
+        # update file if already exists
+        for idx, attachment in enumerate(self.attachments):
+            if filename == attachment.filename:
+                # update file in gridfs
+                file_ = GridFSProxy(attachment.grid_id)
+                file_.replace(file.read(), content_type=content_type,
+                              filename=filename)
+                # update document with new id
+                self.update(**({'set__attachments__%s' % idx: file_.grid_id}))
+
+                # send activity event
+                activity.send(verb='update', object=self, object_type='file')
+                return
+
+        # add new file
+        file_ = GridFSProxy()
+        file_.put(file.read(), content_type=content_type,
+                  filename=filename)
+        # add file id in document
+        self.update(push__attachments=file_.grid_id)
+
+        # send activity event
+        activity.send(verb='attach', object=self, object_type='file')
+
+    def delete_attachment(self, filename):
+        """delete attached file from document"""
+        for idx, attachment in enumerate(self.attachments):
+            if filename == attachment.filename:
+                # delete file in gridfs
+                file_ = GridFSProxy(attachment.grid_id)
+                file_.delete()
+                # delete file in document
+                self.update(pull__attachments=attachment.grid_id)
+
+                # send activity event
+                activity.send(verb='delete', object=self, object_type='file')
+
     def save(self):
         # append revision to history
         if self._next_revision is not None:
@@ -190,7 +241,7 @@ class BaseDocument(db.DynamicDocument):
         activity.send(verb=verb, object=self, object_type='page')
 
     def __repr__(self):
-        return '<BaseDocument id=%s name=%s>' % (self.id, self.title)
+        return '<BaseDocument id=%s name=%r>' % (self.id, self.title)
 
 
 class DocumentHistory(db.Document):
