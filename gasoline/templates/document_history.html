@@ -3,7 +3,6 @@
 <div class="page-header">
 <h1>{{ _('History') }}</h1>
 </div>
-{%- if doc.current_revision > 1 -%}
 <table class="table table-hover">
     <thead>
     <tr>
@@ -13,14 +12,18 @@
     </tr>
     </thead>
     <tbody>
+    <tr>
+        <td><a href="{{ url_for('document.view', space=space, doc_id=doc.id) }}">{{ _('CURRENT') }}</a> (v. {{ doc.current_revision }})</td>
+        <td><time datetime="{{ doc.last_update }}Z">{{ doc.last_update | datetime }}</time></td>
+        <td><a href="{{ url_for('user.profile', name=doc.last_author.id) }}">{{ doc.last_author.display_name }}</a></td>
+    </tr>
     {% for revision in history.reverse_revisions -%}
     <tr>
         <td><a href="{{ url_for('document.revision', space=space, doc_id=doc.id, revision=revision.number) }}">v. {{ revision.number }}</a></td>
         <td><time datetime="{{ revision.date }}Z">{{ revision.date | datetime }}</time></td>
-        <td><a href="{{ url_for('user.profile', name=revision.author.id) }}">{{ revision.author.id }}</a></td>
+        <td><a href="{{ url_for('user.profile', name=revision.author.id) }}">{{ revision.author.display_name }}</a></td>
     </tr>
     {%- endfor %}
     </tbody>
 </table>
-{%- endif %}
 {%- endblock document_content %}
