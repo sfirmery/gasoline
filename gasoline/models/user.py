@@ -29,3 +29,7 @@ class User(db.Document):
 
     def get_id(self):
         return unicode(self.name)
+
+    @property
+    def display_name(self):
+        return self.name
