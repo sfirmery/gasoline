@@ -215,10 +215,10 @@ class BaseDocument(db.DynamicDocument):
         for idx, attachment in enumerate(self.attachments):
             if filename == attachment.filename:
                 # delete file in gridfs
-                file_ = GridFSProxy(attachment.grid_id)
+                file_ = GridFSProxy(attachment.attachment.grid_id)
                 file_.delete()
                 # delete file in document
-                self.update(pull__attachments=attachment.grid_id)
+                self.update(pull__attachments=attachment)
 
                 # send activity event
                 activity.send(verb='delete', object=self, object_type='file')
