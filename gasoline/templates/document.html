@@ -7,7 +7,7 @@
     <ul class="dropdown-menu" role="menu">
         <li><a href="{{ url_for('document.edit', space=space, doc_id=doc.id) }}">{{ _('Edit') }}</a></li>
         <li><a href="{{ url_for('document.history', space=space, doc_id=doc.id) }}">{{ _('History') }}</a></li>
-        <li><a href="#">{{ _('Attachments') }}</a></li>
+        <li><a href="{{ url_for('document.attachments', space=space, doc_id=doc.id) }}">{{ _('Attachments') }} ({{ doc.attachments|length }})</a></li>
         <li><a href="#">{{ _('Rights') }}</a></li>
         <li class="divider"></li>
         <li><a href="#">{{ _('Links') }}</a></li>
