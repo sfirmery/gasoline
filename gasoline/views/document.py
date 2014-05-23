@@ -21,6 +21,20 @@ route = blueprint_document.route
 logger = logging.getLogger('gasoline')
 
 
+def get_document(doc_id, space, right):
+    """get document and apply acl"""
+    try:
+        doc = BaseDocument.objects(id=doc_id, space=space).first()
+    except:
+        doc = None
+    if doc is None:
+        logger.info('document not found %r', doc_id)
+        abort(404, _('document not found'))
+    # check acl for document
+    acl.apply(right, doc.acl, _('document'))
+    return doc
+
+
 @route('/<space>/dashboard', methods=['GET', 'POST'])
 @acl.acl('read')
 @login_required
@@ -34,15 +48,9 @@ def dashboard(space='main'):
 @acl.acl('read')
 @login_required
 def view(space='main', doc_id=None):
-    try:
-        doc = BaseDocument.objects(id=doc_id, space=space).first()
-    except:
-        doc = None
-    if doc is None:
-        logger.info('document not found %r', doc_id)
-        abort(404, _('document not found'))
-    # check acl for document
-    acl.apply('read', doc.acl, _('document'))
+    right = 'read'
+    doc = get_document(doc_id, space, right)
+
     history = DocumentHistory.objects(document=doc.id).first()
     if revision is not None:
         doc.get_revision(revision)
@@ -57,19 +65,14 @@ def view(space='main', doc_id=None):
     return render_template('document_view.html', **locals())
 
 
-@route('/<space>/revision/<doc_id>/<int:revision>', methods=['GET', 'POST'])
+@route('/<space>/view/revision/<doc_id>/<int:revision>',
+       methods=['GET', 'POST'])
 @acl.acl('read')
 @login_required
 def revision(space='main', doc_id=None, revision=None):
-    try:
-        doc = BaseDocument.objects(id=doc_id, space=space).first()
-    except:
-        doc = None
-    if doc is None:
-        logger.info('document not found %r', doc_id)
-        abort(404, _('document not found'))
-    # check acl for document
-    acl.apply('read', doc.acl, _('document'))
+    right = 'read'
+    doc = get_document(doc_id, space, right)
+
     history = DocumentHistory.objects(document=doc.id).first()
     if revision is not None:
         doc.get_revision(revision)
@@ -88,15 +91,9 @@ def revision(space='main', doc_id=None, revision=None):
 @acl.acl('read')
 @login_required
 def history(space='main', doc_id=None):
-    try:
-        doc = BaseDocument.objects(id=doc_id, space=space).first()
-    except:
-        doc = None
-    if doc is None:
-        logger.info('document not found %r', doc_id)
-        abort(404, _('document not found'))
-    # check acl for document
-    acl.apply('read', doc.acl, _('document'))
+    right = 'read'
+    doc = get_document(doc_id, space, right)
+
     history = DocumentHistory.objects(document=doc.id).first()
     return render_template('document_history.html', **locals())
 
@@ -105,6 +102,9 @@ def history(space='main', doc_id=None):
 @acl.acl('read')
 @login_required
 def attachment(space='main', doc_id=None, file=None):
+    right = 'read'
+    doc = get_document(doc_id, space, right)
+
     try:
         doc = BaseDocument.objects(id=doc_id, space=space).first()
     except:
@@ -166,12 +166,9 @@ def upload(space='main', doc_id=None):
     print 'enter request'
     if doc_id is None:
         redirect(url_for('.dashboard'))
-    else:
-        doc = BaseDocument.objects(id=doc_id).first()
-        # check acl for document
-        acl.apply('write', doc.acl, _('document'))
 
-    print request.files
+    right = 'write'
+    doc = get_document(doc_id, space, right)
 
     file = request.files['upload']
     file_ = GridFSProxy()
