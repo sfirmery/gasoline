@@ -146,10 +146,11 @@ def delete_attachment(space='main', doc_id=None, filename=None):
 
     try:
         doc.delete_attachment(filename)
+        flash(_('File deleted successfully.'), 'info')
     except:
-        logger.info('attachment not found %r', filename)
-        abort(404, _('attachment not found'))
-    return redirect(url_for('.view', space=space, doc_id=doc.id))
+        logger.info('error while deleting file %r', filename)
+        flash(_('Error while deleting file.'), 'danger')
+    return redirect(url_for('.attachments', space=space, doc_id=doc.id))
 
 
 @route('/<space>/new/document', methods=['GET', 'POST'])
@@ -199,4 +200,4 @@ def upload(space='main', doc_id=None):
             flash(_('Error while uploading file.'), 'danger')
     else:
         flash(_('File empty.'), 'warning')
-    return redirect(url_for('.view', space=space, doc_id=doc.id))
+    return redirect(url_for('.attachments', space=space, doc_id=doc.id))

@@ -222,6 +222,8 @@ class BaseDocument(db.DynamicDocument):
 
                 # send activity event
                 activity.send(verb='delete', object=self, object_type='file')
+                return
+        raise
 
     def save(self):
         # append revision to history
