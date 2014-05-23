@@ -4,6 +4,7 @@ from datetime import datetime
 # from mongoengine.fields import GridFSProxy
 
 from gasoline.core.extensions import db
+from gasoline.core.utils import sizeof_fmt
 # from gasoline.core.signals import event, activity
 from .user import User
 
@@ -18,3 +19,7 @@ class Attachment(db.EmbeddedDocument):
 
     def __repr__(self):
         return '<Attachment filename=%r>' % self.filename
+
+    @property
+    def size(self):
+        return sizeof_fmt(self.attachment.length)

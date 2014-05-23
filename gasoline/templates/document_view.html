@@ -13,7 +13,6 @@
 
 <ul class="nav nav-tabs">
   <li class="active"><a href="#comments" data-toggle="tab">{{ _('Comments') }}</a></li>
-  <li><a href="#upload" data-toggle="tab">{{ _('Uploads') }}</a></li>
 </ul>
 
 <div class="tab-content">
@@ -41,18 +40,6 @@
                 <button type="submit" class="btn btn-default">{{ _('Comment') }}</button>
             </div>
             </div>
-        </form>
-    </div>
-    <div class="tab-pane" id="upload">
-
-        <ul>
-        {% for file in doc.attachments %}
-            <li><a href="{{ url_for('document.attachment', space=space, doc_id=doc.id, filename=file.filename) }}">{{ file.filename }}</a> - {{ file.length }}ko </li>
-        {% endfor %}
-        </ul>
-        <form method="POST" enctype="multipart/form-data" action="{{ url_for('document.upload', space=space, doc_id=doc.id) }}">
-            <input type="file" name="upload">
-            <button type="submit" class="btn btn-default">{{ _('Upload') }}</button>
         </form>
     </div>
 </div>

@@ -97,6 +97,17 @@ def history(space='main', doc_id=None):
     return render_template('document_history.html', **locals())
 
 
+@route('/<space>/view/attachments/<doc_id>', methods=['GET', 'POST'])
+@acl.acl('read')
+@login_required
+def attachments(space='main', doc_id=None):
+    right = 'read'
+    doc = get_document(doc_id, space, right)
+
+    history = DocumentHistory.objects(document=doc.id).first()
+    return render_template('document_attachments.html', **locals())
+
+
 @route('/<space>/view/attachment/<doc_id>/<filename>', methods=['GET', 'POST'])
 @acl.acl('read')
 @login_required
@@ -130,15 +141,8 @@ def attachment(space='main', doc_id=None, filename=None):
 @acl.acl('write')
 @login_required
 def delete_attachment(space='main', doc_id=None, filename=None):
-    try:
-        doc = BaseDocument.objects(id=doc_id, space=space).first()
-    except:
-        doc = None
-    if doc is None:
-        logger.info('document not found %r', doc_id)
-        abort(404, _('document not found'))
-    # check acl for document
-    acl.apply('write', doc.acl, _('document'))
+    right = 'write'
+    doc = get_document(doc_id, space, right)
 
     try:
         doc.delete_attachment(filename)

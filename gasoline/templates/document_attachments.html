@@ -8,7 +8,7 @@
 {% else %}
 <ul>
 {% for file in doc.attachments %}
-    <li><a href="{{ url_for('document.attachment', space=space, doc_id=doc.id, filename=file.filename) }}">{{ file.filename }}</a> - {{ file.length }}ko </li>
+    <li><a href="{{ url_for('document.attachment', space=space, doc_id=doc.id, filename=file.filename) }}">{{ file.filename }}</a> - {{ file.size }}<a href="{{ url_for('document.delete_attachment', space=space, doc_id=doc.id, filename=file.filename) }}"><i class="pull-right fa fa-trash-o"></i></a></li>
 {% endfor %}
 </ul>
 {%- endif %}
