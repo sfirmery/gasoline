@@ -1,5 +1,5 @@
 {%- extends "document.html" -%}
-{% block document_content -%}
+{%- block document_header -%}
 <div class="page-header">
 <h1><a href="{{ url_for('document.view', space=space, doc_id=doc.id) }}">{{ doc.title }}</a></h1>
 <small>{{ _('Created') }} <time class="timeago" datetime="{{ doc.creation }}Z" data-toggle="tooltip" data-placement="bottom">{{ doc.creation | datetime }}</time>, {{ _('last update') }} <time class="timeago" datetime="{{ doc.last_update }}Z" data-toggle="tooltip" data-placement="bottom">{{ doc.last_update | datetime }}</time> (v.{{ doc.current_revision }})</small>
@@ -8,9 +8,13 @@
 {% if request.endpoint != 'document.view' %}
 <div class="alert alert-warning"><i class="fa fa-warning fa-lg"></i> {{ _('Old version. View') }} <a href="{{ url_for('document.view', space=space, doc_id=doc.id) }}">{{ _('current version') }}</a>.</div>
 {% endif %}
+{%- endblock document_header %}
 
+{%- block document_content -%}
 <div>{{ doc.content_html|safe }}</div>
+{%- endblock document_content %}
 
+{%- block document_footer -%}
 <ul class="nav nav-tabs">
   <li class="active"><a href="#comments" data-toggle="tab">{{ _('Comments') }}</a></li>
 </ul>
@@ -43,4 +47,4 @@
         </form>
     </div>
 </div>
-{%- endblock document_content %}
+{%- endblock document_footer %}

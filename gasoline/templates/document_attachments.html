@@ -1,8 +1,11 @@
 {%- extends "document.html" -%}
-{% block document_content -%}
+{%- block document_header -%}
 <div class="page-header">
 <h1>{{ _('Attachments') }}</h1>
 </div>
+{%- endblock document_header %}
+
+{%- block document_content -%}
 {% if doc.attachments|length < 1 %}
 <div>{{ _('There are currently no attachments on this document.') }}</div>
 {% else %}
