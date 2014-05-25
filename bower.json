@@ -7,7 +7,8 @@
 		"bootstrap": "*",
 		"bootstrap-datepicker": "*",
 		"font-awesome": "*",
-		"jquery-timeago": "*"
+		"jquery-timeago": "*",
+		"bootstrap-tags": "*"
 	},
 	"exportsOverride": {
 		"bootstrap": {
@@ -30,6 +31,10 @@
 		"jquery-timeago": {
 			"js": "jquery.timeago.js",
 			"js/locales": "locales/*.js"
+		},
+		"bootstrap-tags": {
+			"js": [ "dist/js/*.js" ],
+			"css": [ "dist/css/*.css" ]
 		}
 	}
 }

@@ -128,6 +128,7 @@ class Application(Flask):
             'vendors/bootstrap/js/bootstrap.js',
             'vendors/bootstrap-datepicker/js/bootstrap-datepicker.js',
             'vendors/jquery-timeago/js/jquery.timeago.js',
+            'vendors/bootstrap-tags/js/bootstrap-tags.js',
         ]
         self._assets_bundles['js']['files'].append('js/gasoline.js')
 
@@ -135,6 +136,7 @@ class Application(Flask):
             'vendors/bootstrap/css/bootstrap.css',
             'vendors/bootstrap-datepicker/css/datepicker3.css',
             'vendors/font-awesome/css/font-awesome.css',
+            'vendors/bootstrap-tags/css/bootstrap-tags.css',
         ]
         self._assets_bundles['css']['files'].append('css/gasoline.css')
 
