@@ -230,6 +230,8 @@ class BaseDocument(db.DynamicDocument):
         """add tag if necessary"""
         if tag not in self.tags:
             self.update(push__tags=tag)
+            # send document update event
+            event.send('document', document=self)
             # send activity event
             activity.send(verb='add', object=self, object_type='tag')
         else:
@@ -239,6 +241,8 @@ class BaseDocument(db.DynamicDocument):
         """remove tag"""
         if tag in self.tags:
             self.update(pull__tags=tag)
+            # send document update event
+            event.send('document', document=self)
             # send activity event
             activity.send(verb='remove', object=self, object_type='tag')
         else:
