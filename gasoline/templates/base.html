@@ -77,8 +77,8 @@
 
     {% block content %}{% endblock %}
   </div>
-
     {% assets "js" %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
     {% assets "js-fr" %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
+    {% block js %}{% endblock %}
   </body>
 </html>
