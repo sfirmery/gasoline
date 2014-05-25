@@ -3,7 +3,7 @@
 import logging
 
 from flask import Blueprint, render_template, redirect, abort
-from flask import flash, url_for, request, Response
+from flask import flash, url_for, request, Response, jsonify
 from flask.ext.login import login_required, current_user
 from flask.ext.babel import gettext as _
 
@@ -151,6 +151,40 @@ def delete_attachment(space='main', doc_id=None, filename=None):
         logger.info('error while deleting file %r', filename)
         flash(_('Error while deleting file.'), 'danger')
     return redirect(url_for('.attachments', space=space, doc_id=doc.id))
+
+
+@route('/<space>/add/tag/<doc_id>/<tag>', methods=['GET'])
+@acl.acl('write')
+@login_required
+def add_tag(space='main', doc_id=None, tag=None):
+    right = 'write'
+    doc = get_document(doc_id, space, right)
+
+    try:
+        doc.add_tag(tag)
+        # flash(_('Tag added successfully.'), 'info')
+    except:
+        logger.info('error while deleting file %r', tag)
+        # flash(_('Error while removing tag.'), 'danger')
+        abort(500, jsonify(ret="Error"))
+    return jsonify(ret="Success")
+
+
+@route('/<space>/remove/tag/<doc_id>/<tag>', methods=['GET'])
+@acl.acl('write')
+@login_required
+def remove_tag(space='main', doc_id=None, tag=None):
+    right = 'write'
+    doc = get_document(doc_id, space, right)
+
+    try:
+        doc.remove_tag(tag)
+        # flash(_('Tag removed successfully.'), 'info')
+    except:
+        # logger.info('error while deleting tag %r', tag)
+        flash(_('Error while deleting file.'), 'danger')
+        abort(500, jsonify(ret="Error"))
+    return jsonify(ret="Success")
 
 
 @route('/<space>/new/document', methods=['GET', 'POST'])
