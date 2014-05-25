@@ -164,7 +164,7 @@ def add_tag(space='main', doc_id=None, tag=None):
         doc.add_tag(tag)
         # flash(_('Tag added successfully.'), 'info')
     except:
-        logger.info('error while deleting file %r', tag)
+        logger.exception('error while adding tag %r', tag)
         # flash(_('Error while removing tag.'), 'danger')
         abort(500, jsonify(ret="Error"))
     return jsonify(ret="Success")
@@ -181,7 +181,7 @@ def remove_tag(space='main', doc_id=None, tag=None):
         doc.remove_tag(tag)
         # flash(_('Tag removed successfully.'), 'info')
     except:
-        # logger.info('error while deleting tag %r', tag)
+        logger.exception('error while deleting tag %r', tag)
         flash(_('Error while deleting file.'), 'danger')
         abort(500, jsonify(ret="Error"))
     return jsonify(ret="Success")
