@@ -16,9 +16,15 @@ check:
 
 clean:
 	rm -rf build/ MANIFEST dist build my_program.egg-info deb_dist
+	find . -name '*.pyc' -delete
+	rm -rf bower_components/*
+	rm -rf gasoline/static/vendors/*
 	rm -rf gasoline/static/.webassets-cache
 	rm -rf gasoline/static/assets/*
-	find . -name '*.pyc' -delete
+
+assets:
+	grunt
+	python manager.py assets build
 
 update-pot:
 	pybabel extract -F babel.cfg -k _l -o gasoline/translations/messages.pot .
