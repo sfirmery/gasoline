@@ -23,6 +23,7 @@ ACTIONS = {
     },
     'remove': {
         'page': _l('remove page'),
+        'tag': _l('remove tag from'),
     },
     'delete': {
         'file': _l('delete file'),
@@ -32,6 +33,7 @@ ACTIONS = {
     },
     'add': {
         'comment': _l('comment'),
+        'tag': _l('add tag on'),
     },
     'share': {
         'bookmark': _l('share bookmark'),
@@ -46,6 +48,7 @@ ICONS_MAP = {
     'event': 'fa-calender',
     'issue': 'fa-bug',
     'task': 'fa-tasks',
+    'tag': 'fa-tag',
 }
 
 

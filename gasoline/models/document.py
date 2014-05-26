@@ -30,6 +30,7 @@ class BaseDocument(db.DynamicDocument):
     _title = db.StringField(db_field='title', unique_with='_space')
     _space = db.StringField(db_field='space', default=u'main')
     _content = db.StringField(db_field='content')
+    tags = db.ListField(db.StringField())
     comments = db.ListField(db.EmbeddedDocumentField(Comment))
     attachments = db.ListField(db.EmbeddedDocumentField(Attachment))
 
@@ -224,6 +225,28 @@ class BaseDocument(db.DynamicDocument):
                 activity.send(verb='delete', object=self, object_type='file')
                 return
         raise
+
+    def add_tag(self, tag):
+        """add tag if necessary"""
+        if tag not in self.tags:
+            self.update(push__tags=tag)
+            # send document update event
+            event.send('document', document=self)
+            # send activity event
+            activity.send(verb='add', object=self, object_type='tag')
+        else:
+            raise
+
+    def remove_tag(self, tag):
+        """remove tag"""
+        if tag in self.tags:
+            self.update(pull__tags=tag)
+            # send document update event
+            event.send('document', document=self)
+            # send activity event
+            activity.send(verb='remove', object=self, object_type='tag')
+        else:
+            raise
 
     def save(self):
         # append revision to history

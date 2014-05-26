@@ -27,6 +27,7 @@ class IndexerSchema(SchemaClass):
     title = TEXT(stored=True)
     space = KEYWORD(stored=True)
     content = TEXT(analyzer=StemmingAnalyzer())
+    tags = KEYWORD(stored=True)
 
     # document metadata
     author = KEYWORD()
@@ -37,10 +38,10 @@ class IndexerSchema(SchemaClass):
     # ngram fields for live search
     ngram_title = NGRAM(minsize=2, maxsize=10)
     ngram_space = NGRAMWORDS(minsize=2, maxsize=10)
-    ngram_tag = NGRAMWORDS(minsize=2, maxsize=10)
+    ngram_tags = NGRAMWORDS(minsize=2, maxsize=10)
 
-_default_search_field = ['title', 'space', 'content']
-_default_live_search_field = ['ngram_title', 'ngram_space', 'ngram_tag']
+_default_search_field = ['title', 'space', 'content', 'tags']
+_default_live_search_field = ['ngram_title', 'ngram_space', 'ngram_tags']
 
 
 class IndexerService(Service):
@@ -136,13 +137,14 @@ class IndexerService(Service):
                                title=document.title,
                                space=document.space,
                                content=document.content,
+                               tags=u' '.join(document.tags),
                                last_author=document.last_author.id,
                                author=document.author.id,
                                last_update=document.last_update,
                                creation=document.creation,
                                ngram_title=document.title,
                                ngram_space=document.space,
-                               ngram_tag=u'')
+                               ngram_tags=u' '.join(document.tags))
 
     def index_document(self, document):
         """index document"""
