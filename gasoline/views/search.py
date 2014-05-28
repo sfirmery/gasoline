@@ -17,7 +17,7 @@ def search(query=None):
         query = request.args.get('query', '')
     g.search_form.query.data = query
     results = current_app.services['indexer'].search(query)
-    return render_template('search_results.html', results=results)
+    return render_template('search_results.html.jinja2', results=results)
 
 from flask import jsonify
 

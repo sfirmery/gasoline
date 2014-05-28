@@ -257,7 +257,7 @@ class Application(Flask):
 
     def handle_http_error(self, code, error):
         """error handler"""
-        template = 'errors/error{:d}.html'.format(code)
+        template = 'errors/error{:d}.html.jinja2'.format(code)
         return render_template(template, error=error), code
 
 

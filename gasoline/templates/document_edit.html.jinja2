@@ -1,6 +1,6 @@
-{%- extends "document.html" -%}
+{%- extends "document.html.jinja2" -%}
 {% block document_content -%}
-{% from "macros.html" import render_bootstrap_field %}
+{% from "macros.html.jinja2" import render_bootstrap_field %}
 <div class="page-header">
 </div>
 <form class="form-horizontal" role="form" action="" method="post" name="edit_document">

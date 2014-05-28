@@ -40,7 +40,7 @@ def get_document(doc_id, space, right):
 def dashboard(space='main'):
     docs = BaseDocument.objects(space=space).limit(50)
     activity = Activity.objects.order_by('-published').limit(50)
-    return render_template('dashboard.html', **locals())
+    return render_template('dashboard.html.jinja2', **locals())
 
 
 @route('/<space>/view/<doc_id>', methods=['GET', 'POST'])
@@ -61,7 +61,7 @@ def view(space='main', doc_id=None):
         doc.add_comment(comment)
         flash(_('Comment added successfully.'), 'info')
         return redirect(url_for('.view', space=space, doc_id=doc.id))
-    return render_template('document_view.html', **locals())
+    return render_template('document_view.html.jinja2', **locals())
 
 
 @route('/<space>/view/revision/<doc_id>/<int:revision>',
@@ -83,7 +83,7 @@ def revision(space='main', doc_id=None, revision=None):
         doc.add_comment(comment)
         flash(_('Comment added successfully.'), 'info')
         return redirect(url_for('.view', space=space, doc_id=doc.id))
-    return render_template('document_view.html', **locals())
+    return render_template('document_view.html.jinja2', **locals())
 
 
 @route('/<space>/view/history/<doc_id>', methods=['GET', 'POST'])
@@ -94,7 +94,7 @@ def history(space='main', doc_id=None):
     doc = get_document(doc_id, space, right)
 
     history = DocumentHistory.objects(document=doc.id).first()
-    return render_template('document_history.html', **locals())
+    return render_template('document_history.html.jinja2', **locals())
 
 
 @route('/<space>/view/attachments/<doc_id>', methods=['GET', 'POST'])
@@ -105,7 +105,7 @@ def attachments(space='main', doc_id=None):
     doc = get_document(doc_id, space, right)
 
     history = DocumentHistory.objects(document=doc.id).first()
-    return render_template('document_attachments.html', **locals())
+    return render_template('document_attachments.html.jinja2', **locals())
 
 
 @route('/<space>/view/attachment/<doc_id>/<filename>', methods=['GET', 'POST'])
@@ -208,7 +208,7 @@ def edit(space='main', doc_id=None):
         doc.save()
         flash(_('Document saved successfully.'), 'info')
         return redirect(url_for('.view', space=space, doc_id=doc.id))
-    return render_template('document_edit.html', **locals())
+    return render_template('document_edit.html.jinja2', **locals())
 
 
 @route('/<space>/upload/attachment/<doc_id>', methods=['POST'])

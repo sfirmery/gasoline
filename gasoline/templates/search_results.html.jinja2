@@ -1,5 +1,5 @@
 <!-- extend base layout -->
-{% extends "base.html" %}
+{% extends "base.html.jinja2" %}
 
 {% block content %}
 <h4>{{ ngettext('%(count)d of %(num)i result found in %(seconds)fs', '%(count)d of %(num)i results found in %(seconds)fs', results['estimated_length'], count=results['scored_length'], seconds=results['runtime']) }}</h4>
