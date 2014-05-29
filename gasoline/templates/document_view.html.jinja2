@@ -1,4 +1,4 @@
-{%- extends "document.html" -%}
+{%- extends "document.html.jinja2" -%}
 {%- block document_header -%}
 <div class="page-header">
 <h1><a href="{{ url_for('document.view', space=space, doc_id=doc.id) }}">{{ doc.title }}</a></h1>
@@ -32,7 +32,7 @@
                 <ul>{{ loop(comment.reply) }}</ul>
             {%- endif -%}
         {%- endfor -%}
-        {% from "macros.html" import render_bootstrap_field %}
+        {% from "macros.html.jinja2" import render_bootstrap_field %}
         <form class="form-horizontal" role="form" action="" method="post" name="login">
             {{comment_form.hidden_tag()}}
             {% if comment_form.csrf_token.errors %}

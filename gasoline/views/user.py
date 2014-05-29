@@ -32,7 +32,7 @@ def login():
 
         flash(_('Logging failed.'), 'danger')
         return redirect(url_for('.login'))
-    return render_template('login.html',
+    return render_template('login.html.jinja2',
                            title='Sign In',
                            form=form)
 
@@ -50,4 +50,4 @@ def profile(name):
     if user is None:
         flash(_n('User %(name) not found.', name), 'danger')
         return redirect(url_for('index.index'))
-    return render_template('profile.html', **locals())
+    return render_template('profile.html.jinja2', **locals())
