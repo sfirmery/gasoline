@@ -18,6 +18,8 @@ from gasoline.models import User
 from gasoline.views import (
     blueprint_search, blueprint_document, blueprint_user, blueprint_index,
     blueprint_urlshortener)
+from gasoline.api import (
+    blueprint_api_document)
 from gasoline.services import (
     acl_service, indexer_service, activity_service, urlshortener_service)
 
@@ -43,7 +45,8 @@ class Application(Flask):
                    blueprint_document,
                    blueprint_user,
                    blueprint_search,
-                   blueprint_urlshortener]
+                   blueprint_urlshortener,
+                   blueprint_api_document]
 
     def __init__(self, name=None, config=None, *args, **kwargs):
         name = name or __name__
