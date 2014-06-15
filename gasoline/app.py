@@ -20,7 +20,8 @@ from gasoline.views import (
     blueprint_search, blueprint_document, blueprint_user, blueprint_index,
     blueprint_urlshortener)
 from gasoline.api import (
-    blueprint_api_document)
+    blueprint_api_users, blueprint_api_spaces,
+    blueprint_api_documents, blueprint_api_comments)
 from gasoline.services import (
     acl_service, indexer_service, activity_service, urlshortener_service)
 
@@ -42,12 +43,17 @@ class Application(Flask):
 
     services = {}
     plugins = []
-    _blueprints = [blueprint_index,
-                   blueprint_document,
-                   blueprint_user,
-                   blueprint_search,
-                   blueprint_urlshortener,
-                   blueprint_api_document]
+    _blueprints = [
+        blueprint_index,
+        blueprint_document,
+        blueprint_user,
+        blueprint_search,
+        blueprint_urlshortener,
+        blueprint_api_users,
+        blueprint_api_spaces,
+        blueprint_api_documents,
+        blueprint_api_comments,
+    ]
 
     def __init__(self, name=None, config=None, *args, **kwargs):
         name = name or __name__
@@ -268,7 +274,7 @@ class Application(Flask):
             return api_error_handler(code, error)
         else:
             try:
-        return render_template(template, error=error), code
+                return render_template(template, error=error), code
             except:
                 return render_template('errors/error_generic.html.jinja2',
                                        error=error), code
