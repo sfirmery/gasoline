@@ -4,6 +4,8 @@ import logging
 
 from flask import current_app, request
 from flask import json
+from flask import current_app, request, Response, abort
+from flask import json as flask_json
 from bson.objectid import ObjectId
 import datetime
 import mongoengine
@@ -11,6 +13,18 @@ from types import ModuleType
 from collections import Iterable
 
 logger = logging.getLogger('gasoline')
+
+
+def api_error_handler(code, error):
+    """error handler for API with json response"""
+    resp = {
+        'status': error.code,
+        'code': error.response,
+        'message': error.description,
+    }
+
+    return Response(response=rest_jsonify(resp),
+                    mimetype='application/json', status=code)
 
 
 def encode_model(obj, recursive=False):
@@ -64,9 +78,14 @@ def encode_model(obj, recursive=False):
 
 def rest_jsonify(*args, **kwargs):
     indent = None
-    if current_app.config['JSONIFY_PRETTYPRINT_REGULAR'] and not request.is_xhr:
+    if (current_app.config['JSONIFY_PRETTYPRINT_REGULAR']
+            and not request.is_xhr):
         indent = 2
-    data = json.dumps(dict(*args, **kwargs), indent=indent,
+    data = flask_json.dumps(dict(*args, **kwargs), indent=indent,
                       default=encode_model)
 
     return data
+
+
+def restify():
+    pass

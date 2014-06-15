@@ -14,6 +14,7 @@ from werkzeug.datastructures import ImmutableDict
 
 from gasoline.config import DefaultConfig
 from gasoline.core import extensions, signals
+from gasoline.core.api import api_error_handler
 from gasoline.models import User
 from gasoline.views import (
     blueprint_search, blueprint_document, blueprint_user, blueprint_index,
@@ -200,7 +201,8 @@ class Application(Flask):
         #     self.extensions['csrf'] = extensions.csrf
 
         # define errors handlers
-        for http_error_code in (403, 404, 410, 500):
+        for http_error_code in (400, 401, 403, 404, 405, 410, 415, 422, 429,
+                                500):
             handler = partial(self.handle_http_error, http_error_code)
             self.errorhandler(http_error_code)(handler)
 
@@ -261,7 +263,15 @@ class Application(Flask):
     def handle_http_error(self, code, error):
         """error handler"""
         template = 'errors/error{:d}.html.jinja2'.format(code)
+        # return api error handler for URI starting with /api/
+        if str(request.url_rule).startswith('/api/'):
+            return api_error_handler(code, error)
+        else:
+            try:
         return render_template(template, error=error), code
+            except:
+                return render_template('errors/error_generic.html.jinja2',
+                                       error=error), code
 
 
 def create_app(config=DefaultConfig):
