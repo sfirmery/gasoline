@@ -36,7 +36,7 @@ class ActivityService(Service):
         logger.debug('new activity from %r with %r', sender, extra)
 
         activity = Activity(verb=verb,
-                            actor=current_user.id,
+                            actor=current_user.get_id(),
                             target=object.space)
         activity.object = DocumentObject(
             object_type=object_type,
