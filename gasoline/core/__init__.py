@@ -2,7 +2,7 @@
 
 from .diff import Diff
 from .extensions import db, cache, lm, assets, babel
-from signals import event, plugins_registered
+from .signals import event, plugins_registered
 
 __all__ = [
     'Diff',
