@@ -139,6 +139,11 @@ class Application(Flask):
             'vendors/bootstrap-datepicker/js/bootstrap-datepicker.js',
             'vendors/jquery-timeago/js/jquery.timeago.js',
             'vendors/bootstrap-tags/js/bootstrap-tags.js',
+            'vendors/underscore/js/underscore.js',
+            'vendors/backbone/js/backbone.js',
+            'vendors/backbone.marionette/js/backbone.marionette.js',
+            'vendors/backbone.babysitter/js/backbone.babysitter.js',
+            'vendors/backbone.wreqr/js/backbone.wreqr.js',
         ]
         self._assets_bundles['js']['files'].append('js/gasoline.js')
 

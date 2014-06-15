@@ -8,7 +8,8 @@
 		"bootstrap-datepicker": "*",
 		"font-awesome": "*",
 		"jquery-timeago": "*",
-		"bootstrap-tags": "*"
+		"bootstrap-tags": "*",
+		"backbone.marionette": "*"
 	},
 	"exportsOverride": {
 		"bootstrap": {
@@ -35,6 +36,21 @@
 		"bootstrap-tags": {
 			"js": [ "dist/js/*.js" ],
 			"css": [ "dist/css/*.css" ]
+		},
+		"underscore": {
+			"js": [ "underscore.js" ]
+		},
+		"backbone": {
+			"js": [ "backbone.js" ]
+		},
+		"backbone.marionette": {
+			"js": [ "lib/*.js", "lib/*.min.js" ]
+		},
+		"backbone.babysitter": {
+			"js": [ "lib/*.js", "lib/*.min.js" ]
+		},
+		"backbone.wreqr": {
+			"js": [ "lib/*.js", "lib/*.min.js" ]
 		}
 	}
 }
