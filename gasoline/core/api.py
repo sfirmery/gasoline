@@ -18,12 +18,23 @@ from types import ModuleType
 
 logger = logging.getLogger('gasoline')
 
+json_schema_error = {
+    'title': 'Error Schema',
+    'type': 'object',
+    'required': ['status', 'message'],
+    'properties': {
+        'status': {'type': 'integer'},
+        'code': {'type': 'integer'},
+        'message': {'type': 'string'},
+    },
+}
+
 
 def api_error_handler(code, error):
     """error handler for API with json response"""
     resp = {
         'status': error.code,
-        'code': error.response,
+        'code': error.response if error.response is not None else 0,
         'message': error.description,
     }
 
@@ -76,8 +87,8 @@ def sanitize_input(json, cls, json_schema_resource):
             try:
                 data[field_name] = (value if value is None
                                     else field.to_python(value))
-                print 'field {}, data: {}, orig value: {}'.\
-                    format(field, data[field_name], value)
+                # print 'field {}, data: {}, orig value: {}'.\
+                #     format(field, data[field_name], value)
             except (AttributeError, ValueError), e:
                 logger.debug('invalid json input {}'.format(e))
                 abort(400, _('Invalid JSON format.'))
@@ -132,34 +143,35 @@ def to_json(json_schema, recursive=False, **kwargs):
 
     data = {}
 
-    def get_attr(obj, key):
-        """get attribute from dict or object"""
-        if type(obj) in (dict, BaseDict):
-            return obj[key]
-        else:
-            return getattr(obj, key)
+    def parse_attr(obj=None, key=None, attr=None, schema=None):
+        # get attribute from obj if no attr
+        if attr is None:
+            if obj is None or key is None:
+                raise BaseException
 
-    def parse_attr(obj, key, schema=None):
-        attr = get_attr(obj, key)
-        # print 'parse_attr - obj: {}, key: {}, attr: {}'.\
-        #     format(repr(obj), key, repr(attr))
+            if type(obj) in (dict, BaseDict):
+                attr = obj[key]
+            else:
+                attr = getattr(obj, key)
+        # print 'parse_attr - obj: {}, key: {}, attr: {}, schema: {}'.\
+        #     format(repr(obj), key, repr(attr), schema)
 
         # if schema has a type, get value
         if 'type' in schema:
             if schema['type'] == 'array':
                 array = []
-                # try:
-                #     print 'array: {}'.format(attr.__dict__)
-                # except:
-                #     pass
                 for item in attr:
                     if (hasattr(attr, '_instance')
                             and isinstance(item, EmbeddedDocument)):
                         item._instance = getattr(attr, '_instance')
 
-                    array.append(to_json(schema['items'], True,
-                                         **{schema['items']['type']: item}))
-                    # print 'new array: {}'.format(array)
+                    if 'type' not in schema['items']:
+                        array.append(
+                            parse_attr(attr=item, schema=schema['items']))
+                    else:
+                        array.append(
+                            to_json(schema['items'], True,
+                                    **{schema['items']['type']: item}))
                 attr = array
             elif schema['type'] == 'object':
                 attr = to_json(schema, True, **{'object': attr})
@@ -167,13 +179,12 @@ def to_json(json_schema, recursive=False, **kwargs):
                 attr = unicode(attr)
             elif schema['type'] == 'integer':
                 pass
-
         # if schema has a anyOf keyword, use first schema
         elif 'anyOf' in schema:
-            attr = parse_attr(obj, key, schema['anyOf'][0])
+            attr = parse_attr(attr=attr, schema=schema['anyOf'][0])
         else:
             pass
-            # print 'ERROR: no properties {}'.format(schema)
+            print 'ERROR: no properties {}'.format(schema)
 
         # print 'attr {}, value: {}'.format(key, attr)
         return attr
@@ -191,20 +202,20 @@ def to_json(json_schema, recursive=False, **kwargs):
                 key = 'id'
 
             # print 'properties - item: {}'.format(value)
-            data[key] = parse_attr(obj, key, value)
+            data[key] = parse_attr(obj=obj, key=key, schema=value)
 
     elif 'additionalProperties' in json_schema:
         # print "additionalProperties!!! json_schema: {}, obj: {}".\
         #     format(json_schema, obj)
         for key, value in obj.iteritems():
             # print 'item key: {}, value: {}'.format(key, repr(value))
-            data[key] = parse_attr(obj, key,
-                                   json_schema['additionalProperties'])
+            data[key] = parse_attr(obj=obj, key=key,
+                                   schema=json_schema['additionalProperties'])
 
     else:
         # print "NON properties!!! json_schema: {}, obj: {}".\
         #     format(json_schema, obj)
-        data = parse_attr(obj, json_schema['type'], json_schema)
+        data = parse_attr(obj=obj, key=json_schema['type'], schema=json_schema)
 
     # print 'validate data: {} with schema {}'.format(data, json_schema)
 
@@ -236,7 +247,7 @@ def from_json(json, cls, json_schema_resource, base_document=None):
             abort(422, _('{} already exists.'.format(cls._class_name)))
 
     obj = cls(**json)
-    print 'obj dict: {}'.format(obj.__dict__)
+    # print 'obj dict: {}'.format(obj.__dict__)
 
     if EmbeddedDocument not in cls.__bases__:
         # create object
