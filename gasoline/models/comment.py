@@ -50,13 +50,12 @@ class Comment(db.EmbeddedDocument):
 
     def __init__(self, **kwargs):
         # remove date field for new comment
-        if '__auto_convert' not in kwargs:
+        if '__auto_convert' not in kwargs and 'date' in kwargs:
             kwargs.pop('date')
         super(Comment, self).__init__(**kwargs)
 
     @property
     def uri(self):
-        print self._instance.__dict__
         return rest_uri_resource.\
             replace('<space>', self._instance.space).\
             replace('<doc_id>', unicode(self._instance.id)).\
