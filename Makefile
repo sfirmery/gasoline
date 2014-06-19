@@ -22,6 +22,9 @@ clean:
 	rm -rf gasoline/static/.webassets-cache
 	rm -rf gasoline/static/assets/*
 
+test:
+	python tests
+
 assets:
 	grunt
 	python manager.py assets build
