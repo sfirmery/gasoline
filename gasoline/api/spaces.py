@@ -41,23 +41,11 @@ class SpacesAPI(MethodView):
         # get json from request
         json = get_json()
 
-        # reject request for adding more than one space
-        # if len(json['spaces']) > 1:
-        #     logger.debug('space creation failed: too many spaces')
-        #     abort(400, _('Too many space objects.'))
-
         # create space from json
-        space = from_json(json['spaces'][0], Space,
+        space = from_json(json, Space,
                           json_schema_resource)
 
-        # # create space
-        # try:
-        #     space.save()
-        # except:
-        #     logger.exception('')
-        #     logger.debug('space creation failed: database error')
-        #     abort(422, _('Error while creating space.'))
-
+        # create space
         resp = to_json(json_schema_collection, spaces=[space])
         return Response(response=resp, status=201,
                         mimetype='application/json',
@@ -74,6 +62,9 @@ class SpacesAPI(MethodView):
 
         # get json from request
         json = get_json()
+
+        if 'name' in json and json['name'] != name:
+            abort(422, _('Update space name denied.'))
 
         # update space
         update_from_json(json, space, json_schema_resource)
