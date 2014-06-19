@@ -27,15 +27,18 @@ class CommentsAPI(MethodView):
     # @acl.acl('read')
     def get(self, space, doc_id, comment_id):
         if comment_id is None:
-            doc = BaseDocument.objects(space=space, id=doc_id).first()
-            comments = doc.comments
+            try:
+                doc = BaseDocument.objects(space=space, id=doc_id).first()
+                comments = doc.comments
+            except:
+                abort(404, _('Comment not found'))
             resp = to_json(json_schema_collection, comments=comments)
         else:
-            doc = BaseDocument.objects(space=space, id=doc_id).first()
             try:
+                doc = BaseDocument.objects(space=space, id=doc_id).first()
                 comment = doc.comments[comment_id]
             except:
-                abort(404, 'Comment not found')
+                abort(404, _('Comment not found'))
             resp = to_json(json_schema_collection,
                            comments={comment_id: comment})
         return Response(response=resp, status=200,
@@ -56,7 +59,7 @@ class CommentsAPI(MethodView):
             abort(404, _('Document not found.'))
 
         # create comment from json
-        comment = from_json(json['comments'][0], Comment,
+        comment = from_json(json, Comment,
                             json_schema_resource)
 
         # print 'doc dict before: {}'.format(doc.__dict__)
@@ -92,7 +95,9 @@ class CommentsAPI(MethodView):
             abort(404, _('Comment not found.'))
 
         # update comment from json
-        comment = update_from_json(json['comments'][0], comment,
+        if 'comments' in json:
+            json = json['comments'][0]
+        comment = update_from_json(json, comment,
                                    json_schema_resource)
 
         # print 'doc dict before: {}'.format(doc.__dict__)
@@ -102,7 +107,7 @@ class CommentsAPI(MethodView):
         comment = doc.comments[comment_id]
 
         resp = to_json(json_schema_collection, comments={comment_id: comment})
-        return Response(response=resp, status=201,
+        return Response(response=resp, status=200,
                         mimetype='application/json',
                         headers={'location': comment.uri})
 
