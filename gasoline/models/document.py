@@ -231,7 +231,7 @@ class BaseDocument(db.DynamicDocument):
         activity.send(verb='edit', object=self, object_type='comment')
 
     def delete_comment(self, comment):
-        self.update(**{'pull__comments__' + comment.id: comment})
+        self.update(**{'unset__comments__' + comment.id: comment})
         # send activity event
         activity.send(verb='delete', object=self, object_type='comment')
 
