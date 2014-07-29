@@ -141,6 +141,7 @@ class Application(Flask):
             'vendors/bootstrap-tags/js/bootstrap-tags.js',
             'vendors/underscore/js/underscore.js',
             'vendors/backbone/js/backbone.js',
+            'vendors/backbone-relational/js/backbone-relational.js',
             'vendors/backbone.marionette/js/backbone.marionette.js',
             'vendors/backbone.babysitter/js/backbone.babysitter.js',
             'vendors/backbone.wreqr/js/backbone.wreqr.js',
@@ -224,12 +225,11 @@ class Application(Flask):
         # logger = logging.getLogger(__name__)
 
         # define logging level
-        if self.debug or self.testing:
-            logger.setLevel(logging.DEBUG)
-        else:
-            logger.setLevel(logging.INFO)
-
-        logger.setLevel(logging.DEBUG)
+        # if self.debug:
+        #     logger.setLevel(logging.DEBUG)
+        # else:
+        #     logger.setLevel(logging.INFO)
+        logger.setLevel(logging.INFO)
 
         if hasattr(logging, 'captureWarnings'):
             # New in Python 2.7
@@ -237,7 +237,8 @@ class Application(Flask):
 
         # define logging handler
         console_handler = logging.StreamHandler()
-        # console_handler.setLevel(logging.DEBUG)
+        if self.debug:
+            console_handler.setLevel(logging.DEBUG)
         console_format = '%(asctime)s - %(name)s:%(lineno)d(%(funcName)s): \
     %(levelname)s %(message)s'
         console_formatter = logging.Formatter(console_format, '%b %d %H:%M:%S')

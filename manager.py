@@ -15,13 +15,23 @@ manager = Manager(app)
 @manager.command
 def run(debug=False):
     """run app"""
+    app.debug = debug
+    from flask_debugtoolbar import DebugToolbarExtension
+    toolbar = DebugToolbarExtension(app)
+
+    app.config['DEBUG_TB_PANELS'] = list(toolbar._default_config(app)['DEBUG_TB_PANELS'])
+    app.config['DEBUG_TB_PANELS'].append('flask.ext.mongoengine.panels.MongoDebugPanel')
+    sqlalchemy_index = app.config['DEBUG_TB_PANELS'].\
+        index('flask_debugtoolbar.panels.sqlalchemy.SQLAlchemyDebugPanel')
+    app.config['DEBUG_TB_PANELS'].pop(sqlalchemy_index)
+
     app.run(debug=debug, host='0.0.0.0')
 
 
 @manager.command
 def initdb():
     from gasoline.models import User, Space, BaseDocument
-    from gasoline.services.acl import ACL
+    # from gasoline.services.acl import ACL
 
     user = User(name='doe')
     user.set_password('pass')

@@ -46,7 +46,7 @@ class User(db.Document):
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.password, password)
+        return check_password_hash(str(self.password), str(password))
 
     def is_authenticated(self):
         return True

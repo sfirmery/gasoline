@@ -7,14 +7,15 @@ from jsonschema import validate
 
 from gasoline import create_app
 from gasoline.core.api import json_schema_error
+from gasoline.core.utils import genid
 from gasoline.config import BaseConfig
 from gasoline.models import User, Space, BaseDocument, Comment
-from gasoline.core.utils import genid
+from gasoline.services.acl import ACE
 
 
 class TestingConfig(BaseConfig):
 
-    DEBUG = False
+    DEBUG = True
     TESTING = True
     CSRF_ENABLED = False
 
@@ -36,42 +37,220 @@ class TestingConfig(BaseConfig):
     ASSETS_DEBUG = True
 
 
-class gasolineTestSuite(unittest.TestSuite):
+class gasolineTestSuite(object):
+
+    ace_deny_all_any = ACE(
+        truth='DENY', predicate='ANY', permission=['read', 'write'])
+    ace_deny_read_any = ACE(
+        truth='DENY', predicate='ANY', permission=['read'])
+    ace_deny_write_any = ACE(
+        truth='DENY', predicate='ANY', permission=['write'])
+
+    default_acl = {
+        'read': True,
+        'write': True,
+    }
+
+    cases = {
+        'none': {
+            'can': {'read': None, 'write': None},
+            'acl': [],
+        },
+
+        # DENY ANY
+        'deny_all_any': {
+            'can': {'read': False, 'write': False},
+            'acl': [ace_deny_all_any],
+        },
+        'deny_read_any': {
+            'can': {'read': False, 'write': None},
+            'acl': [ace_deny_read_any],
+        },
+        'deny_write_any': {
+            'can': {'read': None, 'write': False},
+            'acl': [ace_deny_write_any],
+        },
+        # ALLOW ANY
+        'allow_all_any': {
+            'can': {'read': True, 'write': True},
+            'acl': [ACE(
+                truth='ALLOW', predicate='ANY', permission=['read', 'write'])],
+        },
+        'allow_read_any': {
+            'can': {'read': True, 'write': None},
+            'acl': [ACE(
+                truth='ALLOW', predicate='ANY', permission=['read'])],
+        },
+        'allow_write_any': {
+            'can': {'read': None, 'write': True},
+            'acl': [ACE(
+                truth='ALLOW', predicate='ANY', permission=['write'])],
+        },
+        # ALLOW unittest_user
+        'allow_all_unittest_user': {
+            'can': {'read': True, 'write': True},
+            'acl': [ACE(
+                truth='ALLOW', predicate='u:unittest_user',
+                permission=['read', 'write'])],
+        },
+        'allow_read_unittest_user': {
+            'can': {'read': True, 'write': None},
+            'acl': [ACE(
+                truth='ALLOW', predicate='u:unittest_user',
+                permission=['read'])],
+        },
+        'allow_write_unittest_user': {
+            'can': {'read': None, 'write': True},
+            'acl': [ACE(
+                truth='ALLOW', predicate='u:unittest_user',
+                permission=['write'])],
+        },
+        # DENY unittest_user
+        'deny_all_unittest_user': {
+            'can': {'read': True, 'write': True},
+            'acl': [ACE(
+                truth='DENY', predicate='u:unittest_user',
+                permission=['read', 'write'])],
+        },
+        'deny_read_unittest_user': {
+            'can': {'read': True, 'write': None},
+            'acl': [ACE(
+                truth='DENY', predicate='u:unittest_user',
+                permission=['read'])],
+        },
+        'deny_write_unittest_user': {
+            'can': {'read': None, 'write': True},
+            'acl': [ACE(
+                truth='DENY', predicate='u:unittest_user',
+                permission=['write'])],
+        },
+        # ALLOW doe
+        'allow_all_doe': {
+            'can': {'read': None, 'write': None},
+            'acl': [ACE(
+                truth='ALLOW', predicate='u:doe',
+                permission=['read', 'write'])],
+        },
+        'allow_read_doe': {
+            'can': {'read': None, 'write': None},
+            'acl': [ACE(
+                truth='ALLOW', predicate='u:doe',
+                permission=['read'])],
+        },
+        'allow_write_doe': {
+            'can': {'read': None, 'write': None},
+            'acl': [ACE(
+                truth='ALLOW', predicate='u:doe',
+                permission=['write'])],
+        },
+        # DENY doe
+        'deny_all_doe': {
+            'can': {'read': None, 'write': None},
+            'acl': [ACE(
+                truth='DENY', predicate='u:doe',
+                permission=['read', 'write'])],
+        },
+        'deny_read_doe': {
+            'can': {'read': None, 'write': None},
+            'acl': [ACE(
+                truth='DENY', predicate='u:doe',
+                permission=['read'])],
+        },
+        'deny_write_doe': {
+            'can': {'read': None, 'write': None},
+            'acl': [ACE(
+                truth='DENY', predicate='u:doe',
+                permission=['write'])],
+        },
+    }
+
     def setUpSuite(self):
-        user = User(name=u'unittest_user', password=u'test').save()
-        self.user = user.name
+        with app.test_request_context():
 
-        space_main = Space(name=u'main').save()
-        space = Space(name=u'unittest_space').save()
-        self.space = space.name
+            Space.drop_collection()
+            BaseDocument.drop_collection()
+            User.drop_collection()
 
-        try:
-            document = BaseDocument(
-                space=self.space,
-                title=u'unittest_document',
-                author=user)
-            document.save()
-            print 'document: {}'.format(document)
-        except NotUniqueError:
-            document = BaseDocument.objects(
-                space=self.space,
-                title=u'unittest_document',
-                author=user).first()
-            # document.reload()
-        self.doc_id = unicode(document.id)
+            user = User(name=u'unittest_user', password=u'test').save()
+            self.user = user.name
+            self.user_obj = user
 
-        comment = Comment(author=user, content='unittest comment')
-        self.comment_id = genid(key=123456789)
-        comment.id = self.comment_id
-        document.update(**{'set__comments__' + self.comment_id: comment})
+            space_main = Space(name=u'main', description='main space').save()
+            space = Space(name=u'unittest_space').save()
+            self.space = space.name
+
+            try:
+                document = BaseDocument(
+                    space=self.space,
+                    title=u'unittest_document',
+                    author=user)
+                document.save()
+            except NotUniqueError:
+                document = BaseDocument.objects(
+                    space=self.space,
+                    title=u'unittest_document',
+                    author=user).first()
+
+            # ace = ACE(thruth='DENY', predicate='ANY', permission=['read', 'write'])
+            # document.update(push__acl=ace)
+            self.doc_id = unicode(document.id)
+
+            comment = Comment(author=user, content='unittest comment')
+            self.comment_id = genid(key=123456789)
+            comment.id = self.comment_id
+            document.update(**{'set__comments__' + self.comment_id: comment})
+
+            # create spaces
+            spaces = []
+            for key, value in self.cases.iteritems():
+                space_name = u'unittest_space_{}'.format(key)
+                space = Space(name=space_name)
+                if len(self.cases[key]['acl']) > 0:
+                    space.acl = self.cases[key]['acl']
+                space.validate(clean=True)
+                spaces.append(space)
+                self.cases[key]['space'] = space_name
+            try:
+                Space.objects.insert(spaces)
+            except:
+                pass
+
+            # create documents
+            documents = []
+            for key, value in self.cases.iteritems():
+                space_name = u'unittest_space_{}'.format(key)
+                self.cases[key]['documents'] = {}
+                for doc_key, doc_value in self.cases.iteritems():
+                    document_name = u'unittest_document_{}'.format(doc_key)
+                    document = BaseDocument(
+                        space=space_name, title=document_name,
+                        author=suite.user_obj)
+                    if len(self.cases[key]['acl']) > 0:
+                        document.acl = self.cases[key]['acl']
+
+                    comment = Comment(
+                        author=user, content=(
+                            'unittest comment for {}'.format(key)))
+                    comment.id = self.comment_id
+                    document.comments[self.comment_id] = comment
+
+                    document.validate(clean=True)
+                    documents.append(document)
+                    self.cases[key]['documents'][document_name] = {
+                        'can': self.cases[key]['can'],
+                    }
+
+            try:
+                documents = BaseDocument.objects.insert(documents)
+            except:
+                pass
+
+            for doc in documents:
+                key = doc.space.replace('unittest_space_', '')
+                self.cases[key]['documents'][doc.title]['id'] = str(doc.id)
 
     def tearDownSuite(self):
         pass
-
-    def run(self, result):
-        self.setUpSuite()
-        super(gasolineTestSuite, self).run(result)
-        self.tearDownSuite()
 
 
 class GasolineTestCase(unittest.TestCase):
@@ -95,5 +274,26 @@ class GasolineTestCase(unittest.TestCase):
             self.assertIsNone(validate(json_data, json_schema))
             return json_data
 
+    def asserts_acl(self, rv, method, space_can, document_can=None):
+        def check_acl(can):
+            if (can is not None
+                    and (method in can and can[method] is not bool)):
+                if can[method] is False:
+                    self.asserts_error(rv, 403)
+                    return False
+                elif can[method] is True:
+                    self.assertLess(rv.status_code, 400)
+                    self.assertGreaterEqual(rv.status_code, 200)
+                    return True
+            return None
+
+        # ACL at document and space level
+        for can in [check_acl(space_can), check_acl(document_can)]:
+            if can is not None:
+                return can
+        # ACL default
+        return check_acl(suite.default_acl)
+
 app = create_app(config=TestingConfig)
 suite = gasolineTestSuite()
+test_loader = unittest.TestLoader()

@@ -45,5 +45,4 @@ class ActivityService(Service):
             url=url_for('document.view', space=object.space,
                         doc_id=str(object.id))
         )
-        print 'activity %r' % activity
         activity.save()

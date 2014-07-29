@@ -2,14 +2,13 @@
 
 import unittest
 
-from test_api_spaces import SpacesAPITestCase
-from test_api_users import UsersAPITestCase
-from test_api_comments import CommentsAPITestCase
-
-from tests import suite
+from tests import suite as test_suite
 
 if __name__ == '__main__':
-    suite.addTest(unittest.makeSuite(UsersAPITestCase))
-    suite.addTest(unittest.makeSuite(SpacesAPITestCase))
-    suite.addTest(unittest.makeSuite(CommentsAPITestCase))
-    unittest.TextTestRunner(verbosity=0).run(suite)
+    test_suite.setUpSuite()
+
+    suite = unittest.TestLoader().discover('tests', pattern='test_*.py')
+    # suite = unittest.TestLoader().discover('tests', pattern='test_api_documents.py')
+
+    unittest.TextTestRunner(verbosity=2).run(unittest.TestSuite([suite]))
+    test_suite.tearDownSuite()

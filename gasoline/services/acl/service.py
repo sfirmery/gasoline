@@ -70,13 +70,12 @@ class ACLService(Service):
         def decorator(f):
             @wraps(f)
             def wrapped(*args, **kwargs):
+                acl = None
                 if 'space' in kwargs:
                     space = Space.objects(name=kwargs.get('space')).first()
                     if space is not None:
                         acl = space.acl
                     resource = _('space')
-                else:
-                    acl = None
                 if acl:
                     self.apply(permission, acl, resource)
                 return f(*args, **kwargs)
@@ -117,7 +116,7 @@ class ACLService(Service):
             return False
         elif predicate.startswith('u:'):
             predicate = predicate[2:]
-            if predicate == user.name:
+            if hasattr(user, 'name') and predicate == user.name:
                 return True
         else:
             return False

@@ -9,20 +9,13 @@ from gasoline.models.space import (
 from tests import suite, GasolineTestCase
 
 
-class SpacesAPITestCase(GasolineTestCase):
-
+class SpacesAPITestCaseMixin(object):
     headers = [('Content-Type', 'application/json')]
-    json_resource = {
+    json_space = {
         'name': 'unittest_space',
         'description': 'space created by unittest',
     }
-    json_collection = {'spaces': [json_resource]}
-
-    @classmethod
-    def setUpClass(cls):
-        super(SpacesAPITestCase, cls).setUpClass()
-        cls.json_resource['name'] = suite.space
-        cls.space = 'unittest_space_{}'.format(randint(0, 1000))
+    json_spaces = {'spaces': [json_space]}
 
     # helpers
     def get_spaces(self):
@@ -32,7 +25,7 @@ class SpacesAPITestCase(GasolineTestCase):
         if 'data' in kwargs:
             data = kwargs.pop('data')
         else:
-            data = self.json_resource
+            data = self.json_space
             data['name'] = space
             for key, value in kwargs.iteritems():
                 data[key] = value
@@ -40,35 +33,44 @@ class SpacesAPITestCase(GasolineTestCase):
                              headers=self.headers, follow_redirects=True)
 
     def get_space(self, space):
-        return self.app.get(rest_uri_resource.replace('<name>', space),
+        return self.app.get(rest_uri_resource.replace('<space>', space),
                             follow_redirects=True)
 
     def put_space(self, space, **kwargs):
         if 'data' in kwargs:
             data = kwargs.pop('data')
         else:
-            data = self.json_resource
+            data = self.json_space
             data['name'] = space
             for key, value in kwargs.iteritems():
                 data[key] = value
-        return self.app.put(rest_uri_resource.replace('<name>', space),
+        return self.app.put(rest_uri_resource.replace('<space>', space),
                             data=json.dumps(data),
                             headers=self.headers, follow_redirects=True)
 
     def delete_space(self, space):
-        return self.app.delete(rest_uri_resource.replace('<name>', space),
+        return self.app.delete(rest_uri_resource.replace('<space>', space),
                                headers=self.headers,
                                follow_redirects=True)
+
+
+class SpacesAPITestCase(GasolineTestCase, SpacesAPITestCaseMixin):
+
+    @classmethod
+    def setUpClass(cls):
+        super(SpacesAPITestCase, cls).setUpClass()
+        cls.json_space['name'] = suite.space
+        cls.space = 'unittest_space_{}'.format(randint(0, 1000))
 
     def test_crud_space(self):
         """Create, read, update and delete space."""
         # create space
-        self.asserts_valid(self.post_space(self.space), 201)
+        rv = self.post_space(self.space)
+        self.asserts_valid(rv, 201)
 
         # get space
-        rv = self.get_space(self.space)
         self.asserts_valid(
-            self.get_space(suite.space), 200, json_schema_spaces)
+            self.get_space(self.space), 200, json_schema_spaces)
 
         # update space
         rv = self.put_space(self.space, description='updated by unittest')
@@ -80,9 +82,21 @@ class SpacesAPITestCase(GasolineTestCase):
         self.asserts_valid(self.delete_space(self.space), 204)
 
     def test_get_space(self):
-        """Get unittest space."""
-        self.asserts_valid(
-            self.get_space(suite.space), 200, json_schema_spaces)
+        """Testing GET space for all cases."""
+        for key, value in suite.cases.iteritems():
+            rv = self.get_space(value['space'])
+            if self.asserts_acl(rv, 'read', value['can']):
+                self.asserts_valid(rv, 200, json_schema_spaces)
+
+    def test_put_space(self):
+        """Testing PUT space for all cases."""
+        for key, value in suite.cases.iteritems():
+            rv = self.put_space(value['space'],
+                                description='updated by unittest')
+            if self.asserts_acl(rv, 'write', value['can']):
+                json_data = self.asserts_valid(rv, 200, json_schema_spaces)
+                self.assertEqual(json_data['spaces'][0]['description'],
+                                 'updated by unittest')
 
     # undefined space
     def test_get_undefined_space(self):
@@ -99,17 +113,17 @@ class SpacesAPITestCase(GasolineTestCase):
         self.asserts_error(self.delete_space('undefined'), 404)
 
     # wrong json input
-    def test_POST_wrong_json_space(self):
+    def test_post_wrong_json_space(self):
         """Testing POST space with wrong json input."""
         self.asserts_error(self.post_space(suite.space, data='wrong'), 400)
 
-    def test_PUT_wrong_json_space(self):
+    def test_put_wrong_json_space(self):
         """Testing PUT space with wrong json input."""
         self.asserts_error(
             self.put_space(suite.space, data='wrong'), 400)
 
     # wront input
-    def test_PUT_wrong_space(self):
+    def test_put_wrong_space(self):
         """Testing PUT space with wrong space name."""
         self.asserts_error(
             self.put_space(suite.space, name='undef', description='desc'), 422)

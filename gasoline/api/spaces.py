@@ -9,7 +9,7 @@ from flask.ext.babel import gettext as _
 
 from gasoline.core.api import (
     get_json, to_json, from_json, update_from_json)
-# from gasoline.services import acl_service as acl
+from gasoline.services import acl_service as acl
 from gasoline.models import Space
 from gasoline.models.space import (
     json_schema_collection, json_schema_resource,
@@ -24,19 +24,20 @@ logger = logging.getLogger('gasoline')
 class SpacesAPI(MethodView):
     # decorators = [login_required]
 
-    # @acl.acl('read')
-    def get(self, name):
-        if name is None:
-            spaces = Space.objects().all()
+    @acl.acl('read')
+    def get(self, space):
+        if space is None:
+            spaces = Space.objects.all()
             resp = to_json(json_schema_collection, spaces=spaces)
         else:
-            space = Space.objects(name=name).first()
+            space = Space.objects(name=space).first()
             if space is None:
                 abort(404, 'Space not found')
             resp = to_json(json_schema_collection, spaces=[space])
         return Response(response=resp, status=200,
                         mimetype='application/json')
 
+    @acl.acl('write')
     def post(self):
         # get json from request
         json = get_json()
@@ -51,9 +52,10 @@ class SpacesAPI(MethodView):
                         mimetype='application/json',
                         headers={'location': space.uri})
 
-    def put(self, name):
+    @acl.acl('write')
+    def put(self, space):
         # get space
-        space = Space.objects(name=name).first()
+        space = Space.objects(name=space).first()
 
         # check if space exists
         if space is None:
@@ -63,7 +65,7 @@ class SpacesAPI(MethodView):
         # get json from request
         json = get_json()
 
-        if 'name' in json and json['name'] != name:
+        if 'name' in json and json['name'] != space.name:
             abort(422, _('Update space name denied.'))
 
         # update space
@@ -75,9 +77,10 @@ class SpacesAPI(MethodView):
 
     patch = put
 
-    def delete(self, name):
+    @acl.acl('write')
+    def delete(self, space):
         # get space
-        space = Space.objects(name=name).first()
+        space = Space.objects(name=space).first()
 
         # check if space exists
         if space is None:
@@ -95,7 +98,7 @@ class SpacesAPI(MethodView):
 
 spaces_view = SpacesAPI.as_view('spaces')
 blueprint_api_spaces.\
-    add_url_rule(rest_uri_collection, defaults={'name': None},
+    add_url_rule(rest_uri_collection, defaults={'space': None},
                  view_func=spaces_view,
                  methods=['GET'])
 blueprint_api_spaces.\

@@ -68,7 +68,7 @@ class GenerateContent(Command):
         ]
 
     def run(self, number, space):
-        from gasoline.models import BaseDocument
+        from gasoline.models import BaseDocument, User
         from codecs import open
 
         file_ = open('./poe.txt',
@@ -80,6 +80,8 @@ class GenerateContent(Command):
         except ValueError:
             pass
 
+        user = User.objects(name="doe").first()
+
         for i in range(int(number)):
             title = self.title()
             content = u''
@@ -88,7 +90,8 @@ class GenerateContent(Command):
                 for paragraph in range(random.randint(1, 4)):
                     content += '<p>' + self.p() + '</p>'
             new_doc = BaseDocument(space=space,
-                                   title=title, content=content)
+                                   title=title, content=content,
+                                   author=user)
             new_doc.save()
 
     def title(self):

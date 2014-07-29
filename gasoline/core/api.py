@@ -42,7 +42,7 @@ def api_error_handler(code, error):
                     mimetype='application/json', status=code)
 
 
-def get_json():
+def get_json(schema=None):
     """get json from request"""
     try:
         json = request.get_json()
@@ -50,6 +50,7 @@ def get_json():
             raise
     except:
         abort(400, _('Require JSON encoded data.'))
+
     return json
 
 
@@ -144,6 +145,8 @@ def to_json(json_schema, recursive=False, **kwargs):
     data = {}
 
     def parse_attr(obj=None, key=None, attr=None, schema=None):
+        # print 'parse_attr_before - obj: {}, key: {}, attr: {}, schema: {}'.\
+        #     format(repr(obj), key, repr(attr), schema)
         # get attribute from obj if no attr
         if attr is None:
             if obj is None or key is None:
@@ -160,18 +163,22 @@ def to_json(json_schema, recursive=False, **kwargs):
         if 'type' in schema:
             if schema['type'] == 'array':
                 array = []
-                for item in attr:
-                    if (hasattr(attr, '_instance')
-                            and isinstance(item, EmbeddedDocument)):
-                        item._instance = getattr(attr, '_instance')
+                try:
+                    for item in attr:
+                        if (hasattr(attr, '_instance')
+                                and isinstance(item, EmbeddedDocument)):
+                            item._instance = getattr(attr, '_instance')
 
-                    if 'type' not in schema['items']:
-                        array.append(
-                            parse_attr(attr=item, schema=schema['items']))
-                    else:
-                        array.append(
-                            to_json(schema['items'], True,
-                                    **{schema['items']['type']: item}))
+                        if 'type' not in schema['items']:
+                            array.append(
+                                parse_attr(attr=item, schema=schema['items']))
+                        else:
+                            array.append(
+                                to_json(schema['items'], True,
+                                        **{schema['items']['type']: item}))
+                except:
+                    logger.exception('')
+                    print repr(attr)
                 attr = array
             elif schema['type'] == 'object':
                 attr = to_json(schema, True, **{'object': attr})
@@ -181,6 +188,7 @@ def to_json(json_schema, recursive=False, **kwargs):
                 pass
         # if schema has a anyOf keyword, use first schema
         elif 'anyOf' in schema:
+            # print 'ANYOF with attr {}'.format(repr(attr))
             attr = parse_attr(attr=attr, schema=schema['anyOf'][0])
         else:
             pass
@@ -219,6 +227,7 @@ def to_json(json_schema, recursive=False, **kwargs):
 
     # print 'validate data: {} with schema {}'.format(data, json_schema)
 
+    # print data
     validate_input(data, json_schema)
 
     if recursive is False:

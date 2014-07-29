@@ -1,0 +1,43 @@
+<!-- extend base layout -->
+{% extends "base.html.jinja2" %}
+
+{% block content %}
+
+<div id="documents">
+    <form id="addDocument" action="#">
+        <div>
+            <label for="title">Title: </label><input id="title" type="text" />
+            <label for="author">Author: </label><input id="author" type="text" />
+            <label for="content">Content: </label><input id="content" type="text" />
+            <button id="add">Add</button>
+        </div>
+    </form>
+</div>
+
+{% endblock content %}
+
+{%- block js -%}
+
+  <!-- templates -->
+
+<script id="documentTemplate" type="text/template">
+    <ul>
+        <li><%= title %></li>
+        <li><%= author.name %></li>
+        <li><%= content %></li>
+    </ul>
+
+    <button class="delete">Delete</button>
+</script>
+
+  <script type="text/javascript" src="static/js/models/user.js"></script>
+  <script type="text/javascript" src="static/js/models/document.js"></script>
+  <script type="text/javascript" src="static/js/collections/documents.js"></script>
+  <script type="text/javascript" src="static/js/views/document.js"></script>
+  <script type="text/javascript" src="static/js/views/documents.js"></script>
+  <script type="text/javascript" src="static/js/app.js"></script>
+{%- endblock js -%}
+
+</body>
+</html>
+

@@ -50,15 +50,9 @@ json_schema_resource = {
 
 json_schema_collection = {
     'title': 'Documents collection Schema',
-    'type': 'object',
-    'required': ['documents'],
-    'properties': {
-        'documents': {
-            'type': 'array',
-            'minItems': 1,
-            'items': json_schema_resource,
-        },
-    },
+    'type': 'array',
+    'minItems': 1,
+    'items': json_schema_resource,
 }
 
 
@@ -314,7 +308,7 @@ class BaseDocument(db.DynamicDocument):
         else:
             raise
 
-    def save(self):
+    def clean(self):
         # append revision to history
         if self._next_revision is not None:
             self._get_history()
@@ -327,6 +321,7 @@ class BaseDocument(db.DynamicDocument):
         if self.last_author is None:
             self.last_author = self.author
 
+    def save(self):
         # is a new document ?
         verb = 'update'
         if self.id is None:
@@ -336,7 +331,6 @@ class BaseDocument(db.DynamicDocument):
 
         # send document update event
         event.send('document', document=self)
-
         # send activity event
         activity.send(verb=verb, object=self, object_type='page')
 

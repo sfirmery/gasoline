@@ -9,6 +9,8 @@
 		"font-awesome": "*",
 		"jquery-timeago": "*",
 		"bootstrap-tags": "*",
+		"backbone": "*",
+		"backbone-relational": "*",
 		"backbone.marionette": "*"
 	},
 	"exportsOverride": {
@@ -42,6 +44,9 @@
 		},
 		"backbone": {
 			"js": [ "backbone.js" ]
+		},
+		"backbone-relational": {
+			"js": [ "backbone-relational.js" ]
 		},
 		"backbone.marionette": {
 			"js": [ "lib/*.js", "lib/*.min.js" ]
