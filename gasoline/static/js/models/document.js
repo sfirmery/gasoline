@@ -9,4 +9,5 @@ app.Document = Backbone.Model.extend({
         content: 'No content',
         space: 'main',
     }
+
 });

@@ -5,6 +5,7 @@ from random import randint
 
 from gasoline.models.document import (
     rest_uri_collection, rest_uri_resource,
+    json_schema_resource as json_schema_document,
     json_schema_collection as json_schema_documents)
 from tests import suite, GasolineTestCase
 
@@ -81,14 +82,14 @@ class DocumentsAPITestCase(GasolineTestCase, DocumentsAPITestCaseMixin):
                                     space=value['space'], title=self.title)
             documents = None
             if self.asserts_acl(rv, 'write', value['can']):
-                documents = self.asserts_valid(rv, 201, json_schema_documents)
+                documents = self.asserts_valid(rv, 201, json_schema_document)
 
             if documents is not None and 'documents'in documents:
                 for document in documents['documents']:
                     # get document
                     rv = self.get_document(value['space'], document['id'])
                     if self.asserts_acl(rv, 'read', value['can']):
-                        self.asserts_valid(rv, 200, json_schema_documents)
+                        self.asserts_valid(rv, 200, json_schema_document)
 
                     # update document
                     rv = self.put_document(value['space'], document['id'],
@@ -97,8 +98,8 @@ class DocumentsAPITestCase(GasolineTestCase, DocumentsAPITestCaseMixin):
                                            space=value['space'])
                     if self.asserts_acl(rv, 'write', value['can']):
                         json_data = self.asserts_valid(
-                            rv, 200, json_schema_documents)
-                        self.assertEqual(json_data['documents'][0]['content'],
+                            rv, 200, json_schema_document)
+                        self.assertEqual(json_data['content'],
                                          'updated by unittest')
 
                     # delete document
@@ -112,7 +113,7 @@ class DocumentsAPITestCase(GasolineTestCase, DocumentsAPITestCaseMixin):
             for doc, doc_value in value['documents'].iteritems():
                 rv = self.get_document(value['space'], doc_value['id'])
                 if self.asserts_acl(rv, 'read', value['can']):
-                    self.asserts_valid(rv, 200, json_schema_documents)
+                    self.asserts_valid(rv, 200, json_schema_document)
 
     def test_put_document(self):
         """Testing PUT document for all cases."""
@@ -124,8 +125,8 @@ class DocumentsAPITestCase(GasolineTestCase, DocumentsAPITestCaseMixin):
 
                 if self.asserts_acl(rv, 'write', value['can']):
                     json_data = self.asserts_valid(
-                        rv, 200, json_schema_documents)
-                    self.assertEqual(json_data['documents'][0]['content'],
+                        rv, 200, json_schema_document)
+                    self.assertEqual(json_data['content'],
                                      'updated by unittest')
 
     # undefined document

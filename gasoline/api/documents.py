@@ -47,8 +47,8 @@ class DocumentsAPI(MethodView, DocumentsAPIMixin):
     @acl.acl('read')
     def get(self, space, doc_id):
         if doc_id is not None:
-            doc = self.get_document(space, doc_id, 'read')
-            resp = to_json(json_schema_collection, array=[doc])
+            document = self.get_document(space, doc_id, 'read')
+            resp = to_json(json_schema_resource, object=document)
         else:
             if request.args.get('full') is not None:
                 docs = BaseDocument.objects(space=space).limit(10)
@@ -70,7 +70,7 @@ class DocumentsAPI(MethodView, DocumentsAPIMixin):
         # create document
         document = from_json(json, BaseDocument, json_schema_resource)
 
-        resp = to_json(json_schema_collection, array=[document])
+        resp = to_json(json_schema_resource, object=document)
         return Response(response=resp, status=201, mimetype='application/json',
                         headers={'location': document.uri})
 
@@ -85,7 +85,7 @@ class DocumentsAPI(MethodView, DocumentsAPIMixin):
         # update document
         document = update_from_json(json, doc, json_schema_resource)
 
-        resp = to_json(json_schema_collection, array=[document])
+        resp = to_json(json_schema_resource, object=document)
         return Response(response=resp, status=200, mimetype='application/json')
 
     patch = put

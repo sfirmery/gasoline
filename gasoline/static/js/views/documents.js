@@ -46,9 +46,6 @@ app.DocumentsView = Backbone.View.extend({
             }
         });
 
-        console.log('addDocument started');
-
-        // this.collection.add( new app.Document( formData ) );
         this.collection.create( formData );
 
     },

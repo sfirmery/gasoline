@@ -23,7 +23,7 @@ app.DocumentView = Backbone.View.extend({
         this.model.destroy();
 
         //Delete view
-        // this.remove();
+        this.remove();
     },
 
 });
