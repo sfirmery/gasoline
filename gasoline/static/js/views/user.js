@@ -1,17 +1,17 @@
 var app = app || {};
 app.views = app.views || {};
 
-app.views.DocumentView = Backbone.View.extend({
+app.views.UserView = Backbone.View.extend({
     tagName: 'div',
-    className: 'documentView',
-    template: _.template( $( '#documentTemplate' ).html() ),
+    className: 'userView',
+    template: _.template( $( '#userTemplate' ).html() ),
 
     el: '#documents',
 
    initialize: function(model) {
-        console.log("init document view");
+        console.log("init user view");
         var self = this;
-        this.model = model
+        this.model = model;
 
         _.bindAll(this, 'render');
         this.model.bind('change', this.render);
@@ -21,25 +21,21 @@ app.views.DocumentView = Backbone.View.extend({
 
         this.model.fetch({
             success: function() {
-                // console.log("start render document");
+                // console.log("start render user");
                 // self.render();
-                console.log("self.document");
+                console.log("self.user");
                 console.log(self.model);
             }
         });
     },
 
-    // render a document by creating a DocumentView and appending the
+    // render a user by creating a UserView and appending the
     // element it renders to the view's element
     render: function() {
         //this.el is what we defined in tagName. use $el to get access to jQuery html() function
         this.$el.html( this.template( this.model.toJSON() ) );
 
-        console.log("render comment view");
-        console.log(new app.collections.Comments(this.model.get('comments')));
-        app.commentsView = new app.views.CommentsView(new app.collections.Comments(this.model.get('comments')));
-
-        app.utils.formatTime();
+        console.log("render done");
     }
 
 });

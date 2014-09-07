@@ -1,6 +1,7 @@
 var app = app || {};
+app.models = app.models || {};
 
-app.Document = Backbone.Model.extend({
+app.models.Document = Backbone.Model.extend({
     urlRoot: '/api/v1/main/documents',
 
     defaults: {
@@ -8,6 +9,5 @@ app.Document = Backbone.Model.extend({
         author: 'Unknown',
         content: 'No content',
         space: 'main',
-    }
-
+    },
 });

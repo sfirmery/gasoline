@@ -25,8 +25,8 @@
     <div class="tab-pane active" id="comments">
         {%- for comment in doc.comments recursive -%}
         <blockquote>
-          <footer><a href="{{ url_for('user.profile', name=comment.author.id) }}">{{ comment.author.id }}</a> <time class="timeago" datetime="{{ comment.date }}Z" data-toggle="tooltip" data-placement="bottom">{{ comment.date | datetime }}</time></footer>
-          <p>{{ comment.content }}</p>
+          <footer><a href="{{ url_for('user.profile', name=doc.comments[comment].author.id) }}">{{ doc.comments[comment].author.id }}</a> <time class="timeago" datetime="{{ doc.comments[comment].date }}Z" data-toggle="tooltip" data-placement="bottom">{{ doc.comments[comment].date | datetime }}</time></footer>
+          <p>{{ doc.comments[comment].content }}</p>
         </blockquote>
             {%- if comment.reply -%}
                 <ul>{{ loop(comment.reply) }}</ul>
