@@ -12,7 +12,7 @@ from gasoline.core.api import (
     to_json, from_json, update_from_json)
 from gasoline.models import User
 from gasoline.models.user import (
-    json_schema_collection,
+    json_schema_collection, json_schema_resource,
     rest_uri_collection, rest_uri_resource)
 
 blueprint_api_users = Blueprint('api.users', __name__)
@@ -25,12 +25,12 @@ class UsersAPI(MethodView):
     def get(self, name):
         if name is None:
             users = User.objects().all()
-            resp = to_json(json_schema_collection, users=users)
+            resp = to_json(json_schema_collection, array=users)
         else:
             user = User.objects(name=name).first()
             if user is None:
                 abort(404, 'Unknown user')
-            resp = to_json(json_schema_collection, users=[user])
+            resp = to_json(json_schema_resource, object=user)
 
         return Response(response=resp, status=200,
                         mimetype='application/json')

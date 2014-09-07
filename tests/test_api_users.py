@@ -2,6 +2,7 @@
 
 from gasoline.models.user import (
     rest_uri_collection, rest_uri_resource,
+    json_schema_resource as json_schema_user,
     json_schema_collection as json_schema_users)
 from tests import suite, GasolineTestCase
 
@@ -53,7 +54,7 @@ class UsersAPITestCase(GasolineTestCase):
 
     def test_get_user(self):
         """Get unittest_user."""
-        self.asserts_valid(self.get_user(suite.user), 200, json_schema_users)
+        self.asserts_valid(self.get_user(suite.user), 200, json_schema_user)
 
     def test_get_undefined_user(self):
         """Get undefined user."""

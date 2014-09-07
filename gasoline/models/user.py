@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from werkzeug import generate_password_hash, check_password_hash
-from flask import url_for
 
 from gasoline.core.extensions import db
 
@@ -26,15 +25,9 @@ json_schema_resource = {
 
 json_schema_collection = {
     'title': 'Documents collection Schema',
-    'type': 'object',
-    'required': ['users'],
-    'properties': {
-        'users': {
-            'type': 'array',
-            'minItems': 1,
-            'items': json_schema_resource,
-        },
-    },
+    'type': 'array',
+    'minItems': 1,
+    'items': json_schema_resource,
 }
 
 
