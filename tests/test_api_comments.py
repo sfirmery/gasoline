@@ -81,19 +81,20 @@ class CommentsAPITestCase(GasolineTestCase, CommentsAPITestCaseMixin):
         comments = self.asserts_valid(
             self.post_comment(), 201, json_schema_comments)
 
-        for key, value in comments['comments'].iteritems():
+        for comment in comments:
             # get comment
             self.asserts_valid(
-                self.get_comment(key), 200, json_schema_comments)
+                self.get_comment(comment['id']), 200, json_schema_comments)
             # update comment
             json_data = self.asserts_valid(
-                self.put_comment(key, content='comment updated by unittest'),
+                self.put_comment(comment['id'],
+                                 content='comment updated by unittest'),
                 200, json_schema_comments)
-            self.assertEqual(json_data['comments'][key]['content'],
+            self.assertEqual(json_data[0]['content'],
                              'comment updated by unittest')
 
             # delete comment
-            self.asserts_valid(self.delete_comment(key), 204)
+            self.asserts_valid(self.delete_comment(comment['id']), 204)
 
     def test_get_comment(self):
         """Testing GET comment for all cases."""
@@ -109,26 +110,7 @@ class CommentsAPITestCase(GasolineTestCase, CommentsAPITestCaseMixin):
                     print doc_value['id']
                     print rv
                     print rv.data
-
-        self.asserts_valid(
-            self.get_comment(suite.comment_id), 200, json_schema_comments)
-
-    # def test_get_space(self):
-    #     """Testing GET space for all cases."""
-    #     for key, value in suite.cases.iteritems():
-    #         rv = self.get_space(value['space'])
-    #         if self.asserts_acl(rv, 'read', value['can']):
-    #             self.asserts_valid(rv, 200, json_schema_spaces)
-
-    # def test_put_space(self):
-    #     """Testing PUT space for all cases."""
-    #     for key, value in suite.cases.iteritems():
-    #         rv = self.put_space(value['space'],
-    #                             description='updated by unittest')
-    #         if self.asserts_acl(rv, 'write', value['can']):
-    #             json_data = self.asserts_valid(rv, 200, json_schema_spaces)
-    #             self.assertEqual(json_data['spaces'][0]['description'],
-    #                              'updated by unittest')
+                    print json_schema_comments
 
     # undefined comment
     def test_get_undefined_comment(self):

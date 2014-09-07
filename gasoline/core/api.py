@@ -202,6 +202,9 @@ def to_json(json_schema, recursive=False, **kwargs):
     else:
         obj = kwargs
 
+    if 'anyOf' in json_schema:
+        json_schema = json_schema['anyOf'][0]
+
     if 'properties' in json_schema:
         # print "properties!!! json_schema: {}, obj: {}".\
         #     format(json_schema, obj)

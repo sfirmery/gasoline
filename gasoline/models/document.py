@@ -34,7 +34,7 @@ json_schema_resource = {
                 'type': 'string'
             },
         },
-        'comments': json_schema_comments['properties']['comments'],
+        'comments': json_schema_comments,
         'attachments': {
             'type': 'array',
             'items': json_schema_attachment,
@@ -73,7 +73,10 @@ class BaseDocument(db.DynamicDocument):
     _space = db.StringField(db_field='space', default=u'main')
     _content = db.StringField(db_field='content')
     tags = db.ListField(db.StringField())
-    comments = db.DictField(field=db.EmbeddedDocumentField(Comment))
+    # comments = db.DictField(field=db.EmbeddedDocumentField(Comment))
+    comments = db.SortedListField(
+        db.EmbeddedDocumentField('Comment'),
+        ordering='date')
     attachments = db.ListField(db.EmbeddedDocumentField(Attachment))
 
     acl = db.ListField(db.EmbeddedDocumentField(ACE))
@@ -212,20 +215,32 @@ class BaseDocument(db.DynamicDocument):
             self.current_revision = revision.number
             self.last_update = revision.date
 
+    def get_comment(self, comment_id):
+        for i, comment in enumerate(self.comments):
+            if comment.id == comment_id:
+                return self.comments[i]
+        raise
+
     def add_comment(self, comment):
         comment.id = genid()
-        self.update(**{'set__comments__' + comment.id: comment})
+        self.update(push__comments=comment)
         # send activity event
         activity.send(verb='add', object=self, object_type='comment')
         return comment.id
 
-    def update_comment(self, comment):
-        self.update(**{'set__comments__' + comment.id: comment})
+    def update_comment(self, new_comment, comment_id):
+        for idx, comment in enumerate(self.comments):
+            if comment.id == comment_id:
+                self.update(**{'set__comments__' + str(idx): new_comment})
+
+        # self.update(**{'set__comments__' + comment.id: comment})
         # send activity event
         activity.send(verb='edit', object=self, object_type='comment')
 
-    def delete_comment(self, comment):
-        self.update(**{'unset__comments__' + comment.id: comment})
+    def delete_comment(self, comment_id):
+        for idx, comment in enumerate(self.comments):
+            if comment.id == comment_id:
+                self.update(pull__comments=comment)
         # send activity event
         activity.send(verb='delete', object=self, object_type='comment')
 

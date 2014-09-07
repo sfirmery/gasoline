@@ -198,7 +198,7 @@ class gasolineTestSuite(object):
             comment = Comment(author=user, content='unittest comment')
             self.comment_id = genid(key=123456789)
             comment.id = self.comment_id
-            document.update(**{'set__comments__' + self.comment_id: comment})
+            document.update(push__comments=comment)
 
             # create spaces
             spaces = []
@@ -232,7 +232,7 @@ class gasolineTestSuite(object):
                         author=user, content=(
                             'unittest comment for {}'.format(key)))
                     comment.id = self.comment_id
-                    document.comments[self.comment_id] = comment
+                    document.comments.append(comment)
 
                     document.validate(clean=True)
                     documents.append(document)

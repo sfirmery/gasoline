@@ -25,18 +25,9 @@ json_schema_resource = {
 
 json_schema_collection = {
     'title': 'Comments collection Schema',
-    'type': 'object',
-    'required': ['comments'],
-    'properties': {
-        'comments': {
-            # 'type': 'array',
-            # 'minItems': 1,
-            # 'items': json_schema_resource,
-            'title': 'Comment resource Schema',
-            'type': 'object',
-            'additionalProperties': json_schema_resource,
-        },
-    },
+    'type': 'array',
+    'minItems': 0,
+    'items': json_schema_resource,
 }
 
 
@@ -46,7 +37,9 @@ class Comment(db.EmbeddedDocument):
     date = db.DateTimeField(default=datetime.utcnow)
     content = db.StringField()
 
-    reply = db.ListField(db.EmbeddedDocumentField('Comment'))
+    reply = db.SortedListField(
+        db.EmbeddedDocumentField('Comment'),
+        ordering='date')
 
     def __init__(self, **kwargs):
         # remove date field for new comment

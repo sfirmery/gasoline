@@ -23,24 +23,28 @@ logger = logging.getLogger('gasoline')
 
 class CommentsAPI(MethodView, DocumentsAPIMixin):
 
-    def get_comment(self, comments, comment_id):
+    def get_comment(self, doc, comment_id):
         """Get document and apply acl"""
         try:
-            return comments[comment_id]
+            # for i, comment in enumerate(comments):
+            #     if comment.id == comment_id:
+            #         return comments[i]
+            # raise
+            return doc.get_comment(comment_id)
         except:
             abort(404, _('Comment not found.'))
 
     @acl.acl('read')
     def get(self, space, doc_id, comment_id):
-        # get document
-        doc = self.get_document(space, doc_id, 'read')
-
         if comment_id is None:
-            resp = to_json(json_schema_collection, comments=doc.comments)
+            # get document
+            doc = self.get_document(space, doc_id, 'read')
+            resp = to_json(json_schema_collection, array=doc.comments)
         else:
-            comment = self.get_comment(doc.comments, comment_id)
-            resp = to_json(json_schema_collection,
-                           comments={comment_id: comment})
+            # get document
+            doc = self.get_document(space, doc_id, 'read')
+            comment = self.get_comment(doc, comment_id)
+            resp = to_json(json_schema_collection, array=[comment])
         return Response(response=resp, status=200,
                         mimetype='application/json')
 
@@ -59,9 +63,9 @@ class CommentsAPI(MethodView, DocumentsAPIMixin):
         # add comment to document
         comment_id = doc.add_comment(comment)
         doc.reload()
-        comment = doc.comments[comment_id]
+        comment = self.get_comment(doc, comment_id)
 
-        resp = to_json(json_schema_collection, comments={comment_id: comment})
+        resp = to_json(json_schema_collection, array=[comment])
         return Response(response=resp, status=201,
                         mimetype='application/json',
                         headers={'location': comment.uri})
@@ -75,20 +79,20 @@ class CommentsAPI(MethodView, DocumentsAPIMixin):
         json = get_json()
 
         # check if comment exists
-        comment = self.get_comment(doc.comments, comment_id)
+        comment = self.get_comment(doc, comment_id)
 
         # update comment object from json
-        if 'comments' in json:
-            json = json['comments'][0]
+        # if 'comments' in json:
+        #     json = json['comments'][0]
         comment = update_from_json(json, comment,
                                    json_schema_resource)
 
         # update comment on document
-        doc.update_comment(comment)
+        doc.update_comment(comment, comment_id)
         doc.reload()
-        comment = doc.comments[comment_id]
+        comment = self.get_comment(doc, comment_id)
 
-        resp = to_json(json_schema_collection, comments={comment_id: comment})
+        resp = to_json(json_schema_collection, array=[comment])
         return Response(response=resp, status=200,
                         mimetype='application/json',
                         headers={'location': comment.uri})
@@ -101,11 +105,11 @@ class CommentsAPI(MethodView, DocumentsAPIMixin):
         doc = self.get_document(space, doc_id, 'write')
 
         # check if comment exists
-        comment = self.get_comment(doc.comments, comment_id)
+        comment = self.get_comment(doc, comment_id)
 
         # delete comment
         try:
-            doc.delete_comment(comment)
+            doc.delete_comment(comment_id)
         except:
             logger.debug('comment delete failed: database error')
             abort(422, _('Error while deleting comment.'))
