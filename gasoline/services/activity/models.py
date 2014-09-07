@@ -4,11 +4,46 @@ Based on:
 Activity Stream Specs: http://activitystrea.ms/specs/json/1.0/
 """
 
-
 from datetime import datetime
 
 from gasoline.core.extensions import db
 from flask.ext.babel import gettext as _, lazy_gettext as _l
+
+from gasoline.models.user import json_schema_resource as json_schema_user
+
+rest_uri_collection = '/api/v1/activity'
+rest_uri_resource = '{}/<activity>'.format(rest_uri_collection)
+
+json_schema_resource = {
+    'title': 'Activity resource Schema',
+    'type': 'object',
+    'required': ['actor', 'published', 'verb', 'object'],
+    'properties': {
+        'actor': json_schema_user,
+        'published': {'type': 'string'},
+        'verb': {'type': 'string'},
+        'object': {
+            'type': 'object',
+            'properties': {
+                'object_type': {'type': 'string'},
+                'id': {'type': 'string'},
+                'display_name': {'type': 'string'},
+                'url': {'type': 'string'},
+            },
+        },
+        'target': {'type': 'string'},
+        'action': {'type': 'string'},
+        'icon': {'type': 'string'},
+        'uri': {'type': 'string'},
+    },
+}
+
+json_schema_collection = {
+    'title': 'Activities collection Schema',
+    'type': 'array',
+    'minItems': 1,
+    'items': json_schema_resource,
+}
 
 ACTIONS = {
     'create': {
@@ -68,6 +103,11 @@ class Activity(db.Document):
     verb = db.StringField()
     object = db.EmbeddedDocumentField(DocumentObject)
     target = db.StringField()
+
+    @property
+    def uri(self):
+        return rest_uri_resource.\
+            replace("<activity>", unicode(self.id))
 
     @property
     def action(self):

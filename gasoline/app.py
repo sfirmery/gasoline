@@ -24,6 +24,7 @@ from gasoline.api import (
     blueprint_api_documents, blueprint_api_comments)
 from gasoline.services import (
     acl_service, indexer_service, activity_service, urlshortener_service)
+from gasoline.plugins.activity import blueprint_api_plugin_activity
 
 logger = logging.getLogger('gasoline')
 
@@ -42,7 +43,7 @@ class Application(Flask):
     default_config = default_config
 
     services = {}
-    plugins = []
+    plugins = {}
     _blueprints = [
         blueprint_index,
         blueprint_document,
@@ -265,10 +266,15 @@ class Application(Flask):
 
     def register_plugins(self):
         """register plugins"""
-        pass
+        self.plugins['activity'] = {'blueprint': blueprint_api_plugin_activity}
 
     def register_blueprints(self):
         """register flask blueprints"""
+        # register plugins blueprints
+        for plugin in self.plugins.values():
+            if 'blueprint' in plugin:
+                self.register_blueprint(plugin['blueprint'])
+        # register blueprints
         for blueprint in self._blueprints:
             self.register_blueprint(blueprint)
 
