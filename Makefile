@@ -29,6 +29,9 @@ assets:
 	grunt
 	python manager.py assets build
 
+routes:
+	python manager.py routes
+
 update-pot:
 	pybabel extract -F babel.cfg -k _l -o gasoline/translations/messages.pot .
 	pybabel update -i gasoline/translations/messages.pot -d gasoline/translations
