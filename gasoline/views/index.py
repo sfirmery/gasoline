@@ -22,3 +22,9 @@ def index():
 def frontend(path):
     return render_template('frontend.html.jinja2')
 
+
+@route('/marionette', defaults={'path': ''})
+@route('/marionette/', defaults={'path': ''})
+@route('/marionette/<path:path>')
+def marionette(path):
+    return render_template('marionette.html.jinja2')
