@@ -13,3 +13,147 @@ div.content {
 .search_results {
     padding: 0 10px;
 }
+
+
+
+
+
+
+
+.document-content {
+    border-bottom: 1px solid #eee;
+}
+
+
+/* COMMENTS */
+
+.comment-timeline {
+    position: relative;
+    width: 800px;
+}
+
+.comment-timeline:before {
+    display: block;
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 96px;
+    width: 2px;
+    background-color: #f7f7f7;
+}
+
+.comment-timeline:after {
+
+}
+
+.comment-item {
+    position: relative;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding-left: 80px;
+    border-top: 4px solid #fff;
+    border-bottom: 4px solid #fff;
+}
+
+.comment-item .comment-inner {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    position: relative;
+}
+
+.comment-item .comment-inner:before {
+    border-right: 10px solid #ddd;
+    border-style: solid;
+    border-width: 10px;
+    color: transparent;
+    content: "";
+    display: block;
+    height: 0;
+    position: absolute;
+    left: -20px;
+    top: 6px;
+    width: 0;
+}
+
+.comment-item .comment-inner:after {
+    border-right: 10px solid #f7f7f7;
+    border-style: solid;
+    border-width: 10px;
+    color: transparent;
+    content: "";
+    display: block;
+    height: 0;
+    position: absolute;
+    left: -18px;
+    top: 6px;
+    width: 0;
+}
+
+.comment-avatar {
+    float: left;
+    margin-left: -60px;
+    border-radius: 3px;
+}
+
+img.comment-avatar {
+    min-height: 40px;
+    max-height: 40px;
+}
+
+.comment-header {
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    color: #999;
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #eee;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+.comment-header i {
+    float: right;
+}
+
+.comment-content {
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.comment-add {
+    clear: both;
+}
+
+.comment-form-action {
+    padding-top: 10px;
+}
+
+.comment-form-action:before {
+    display: table;
+    content: '';
+}
+.comment-form-action:after {
+    display: table;
+    content: '';
+    clear: both;
+}
+
+.comment-form-action .btn {
+    float: right;
+}
+
+
+/* TAG LIST */
+
+.tag-list .tag-list-items span {
+    margin: 1px;
+}
+
+.tag-list-items, .tag-list-actions {
+    display: inline-block;
+}
