@@ -169,6 +169,7 @@ class gasolineTestSuite(object):
 
             Space.drop_collection()
             BaseDocument.drop_collection()
+            Comment.drop_collection()
             User.drop_collection()
 
             user = User(name=u'unittest_user', password=u'test').save()
@@ -183,7 +184,8 @@ class gasolineTestSuite(object):
                 document = BaseDocument(
                     space=self.space,
                     title=u'unittest_document',
-                    author=user)
+                    author=user,
+                    tags=['unittest'])
                 document.save()
             except NotUniqueError:
                 document = BaseDocument.objects(
@@ -195,10 +197,13 @@ class gasolineTestSuite(object):
             # document.update(push__acl=ace)
             self.doc_id = unicode(document.id)
 
-            comment = Comment(author=user, content='unittest comment')
-            self.comment_id = genid(key=123456789)
-            comment.id = self.comment_id
-            document.update(push__comments=comment)
+            comment = Comment(author=user, content='unittest comment', doc=document)
+            # self.comment_id = genid(key=123456789)
+            # comment.id = self.comment_id
+            # document.update(push__comments=comment)
+            comment.save()
+            comment.reload()
+            self.comment_id = unicode(comment.id)
 
             # create spaces
             spaces = []
@@ -224,15 +229,10 @@ class gasolineTestSuite(object):
                     document_name = u'unittest_document_{}'.format(doc_key)
                     document = BaseDocument(
                         space=space_name, title=document_name,
-                        author=suite.user_obj)
+                        author=suite.user_obj,
+                        tags=['unittest'])
                     if len(self.cases[key]['acl']) > 0:
                         document.acl = self.cases[key]['acl']
-
-                    comment = Comment(
-                        author=user, content=(
-                            'unittest comment for {}'.format(key)))
-                    comment.id = self.comment_id
-                    document.comments.append(comment)
 
                     document.validate(clean=True)
                     documents.append(document)
@@ -245,9 +245,25 @@ class gasolineTestSuite(object):
             except:
                 pass
 
+            comments = []
             for doc in documents:
                 key = doc.space.replace('unittest_space_', '')
+
+                comment = Comment(
+                    author=user, content=(
+                        'unittest comment for {}'.format(key)),
+                    doc=doc)
+                # comment.id = self.comment_id
+                # document.comments.append(comment)
+                comment.validate(clean=True)
+                comments.append(comment)
+                comment.save()
+                comment.reload()
+
                 self.cases[key]['documents'][doc.title]['id'] = str(doc.id)
+                self.cases[key]['documents'][doc.title]['comment'] = str(comment.id)
+
+            # comments = Comment.objects.insert(comments)
 
     def tearDownSuite(self):
         pass

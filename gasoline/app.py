@@ -21,7 +21,7 @@ from gasoline.views import (
     blueprint_urlshortener)
 from gasoline.api import (
     blueprint_api_users, blueprint_api_spaces,
-    blueprint_api_documents, blueprint_api_comments)
+    blueprint_api_documents, blueprint_api_comments, blueprint_api_tags)
 from gasoline.services import (
     acl_service, indexer_service, activity_service, urlshortener_service)
 from gasoline.plugins.activity import blueprint_api_plugin_activity
@@ -54,6 +54,7 @@ class Application(Flask):
         blueprint_api_spaces,
         blueprint_api_documents,
         blueprint_api_comments,
+        blueprint_api_tags,
     ]
 
     def __init__(self, name=None, config=None, *args, **kwargs):
