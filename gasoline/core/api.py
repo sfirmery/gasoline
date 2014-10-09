@@ -72,6 +72,9 @@ def validate_input(json, schema):
 def sanitize_input(json, cls, json_schema_resource):
     """sanitize json with class definition"""
     json = dict(("%s" % key, value) for key, value in json.iteritems())
+    if 'anyOf' in json_schema_resource:
+        json_schema_resource = json_schema_resource['anyOf'][0]
+
     logger.debug('json before sanitization with {}: {}'.format(cls, json))
     logger.debug('json schema: {}'.format(json_schema_resource['properties']))
     data = {}
@@ -231,7 +234,7 @@ def to_json(json_schema, recursive=False, **kwargs):
     # print 'validate data: {} with schema {}'.format(data, json_schema)
 
     # print data
-    validate_input(data, json_schema)
+    # validate_input(data, json_schema)
 
     if recursive is False:
         indent = None
@@ -243,7 +246,7 @@ def to_json(json_schema, recursive=False, **kwargs):
     return data
 
 
-def from_json(json, cls, json_schema_resource, base_document=None):
+def from_json(json, cls, json_schema_resource, save=True):
     """create object of type cls with json"""
     # validate json
     validate_input(json, json_schema_resource)
@@ -261,7 +264,7 @@ def from_json(json, cls, json_schema_resource, base_document=None):
     obj = cls(**json)
     # print 'obj dict: {}'.format(obj.__dict__)
 
-    if EmbeddedDocument not in cls.__bases__:
+    if EmbeddedDocument not in cls.__bases__ and save:
         # create object
         try:
             obj.save()
@@ -295,7 +298,7 @@ def update_from_json(json, obj, json_schema_resource):
             obj.save()
         except:
             logger.exception('')
-            logger.debug(
+            logger.info(
                 '{} update failed: database error'.format(cls._class_name))
             abort(422, _('{} update: database error.'.format(cls._class_name)))
 

@@ -4,6 +4,7 @@ import json
 
 from gasoline.models.comment import (
     rest_uri_collection, rest_uri_resource,
+    json_schema_resource as json_schema_comment,
     json_schema_collection as json_schema_comments)
 from tests import suite, GasolineTestCase
 
@@ -17,13 +18,14 @@ class CommentsAPITestCaseMixin(object):
     json_comments = {'comments': [json_comment]}
 
     # helpers
-    def get_comments(self, space=suite.space, doc_id=suite.doc_id):
+    def get_comments(self, space_id=suite.space, doc_id=suite.doc_id):
         uri = rest_uri_collection.\
-            replace('<space>', space).\
+            replace('<space>', space_id).\
             replace('<doc_id>', doc_id)
         return self.app.get(uri, follow_redirects=True)
 
-    def post_comment(self, space=suite.space, doc_id=suite.doc_id, **kwargs):
+    def post_comment(self, space_id=suite.space, doc_id=suite.doc_id,
+                     **kwargs):
         if 'data' in kwargs:
             data = kwargs.pop('data')
         else:
@@ -31,20 +33,21 @@ class CommentsAPITestCaseMixin(object):
             for key, value in kwargs.iteritems():
                 data[key] = value
         uri = rest_uri_collection.\
-            replace('<space>', space).\
+            replace('<space>', space_id).\
             replace('<doc_id>', doc_id)
         return self.app.post(uri, data=json.dumps(data),
                              headers=self.headers, follow_redirects=True)
 
-    def get_comment(self, comment_id, space=suite.space, doc_id=suite.doc_id):
+    def get_comment(self, comment_id, space_id=suite.space,
+                    doc_id=suite.doc_id):
         uri = rest_uri_resource.\
-            replace('<space>', space).\
+            replace('<space>', space_id).\
             replace('<doc_id>', doc_id).\
             replace('<comment_id>', comment_id)
         return self.app.get(uri, follow_redirects=True)
 
-    def put_comment(self, comment_id, space=suite.space, doc_id=suite.doc_id,
-                    **kwargs):
+    def put_comment(self, comment_id, space_id=suite.space,
+                    doc_id=suite.doc_id, **kwargs):
         if 'data' in kwargs:
             data = kwargs.pop('data')
         else:
@@ -53,16 +56,16 @@ class CommentsAPITestCaseMixin(object):
             for key, value in kwargs.iteritems():
                 data[key] = value
         uri = rest_uri_resource.\
-            replace('<space>', space).\
+            replace('<space>', space_id).\
             replace('<doc_id>', doc_id).\
             replace('<comment_id>', comment_id)
         return self.app.put(uri, data=json.dumps(data),
                             headers=self.headers, follow_redirects=True)
 
     def delete_comment(self, comment_id,
-                       space=suite.space, doc_id=suite.doc_id):
+                       space_id=suite.space, doc_id=suite.doc_id):
         uri = rest_uri_resource.\
-            replace('<space>', space).\
+            replace('<space>', space_id).\
             replace('<doc_id>', doc_id).\
             replace('<comment_id>', comment_id)
         return self.app.delete(uri, headers=self.headers,
@@ -77,40 +80,40 @@ class CommentsAPITestCase(GasolineTestCase, CommentsAPITestCaseMixin):
 
     def test_crud_comment(self):
         """Create, read, update and delete comment."""
-        # create comment
-        comments = self.asserts_valid(
-            self.post_comment(), 201, json_schema_comments)
+        for key, value in suite.cases.iteritems():
+            for doc, doc_value in value['documents'].iteritems():
+                rv = self.post_comment(value['space'], doc_value['id'])
+                if self.asserts_acl(rv, 'write', value['can']):
+                    comment = self.asserts_valid(rv, 201, json_schema_comment)
 
-        for comment in comments:
-            # get comment
-            self.asserts_valid(
-                self.get_comment(comment['id']), 200, json_schema_comments)
-            # update comment
-            json_data = self.asserts_valid(
-                self.put_comment(comment['id'],
-                                 content='comment updated by unittest'),
-                200, json_schema_comments)
-            self.assertEqual(json_data[0]['content'],
-                             'comment updated by unittest')
+                    # get comment
+                    rv = self.get_comment(comment['id'], value['space'],
+                                          doc_value['id'])
+                    if self.asserts_acl(rv, 'read', value['can']):
+                        self.asserts_valid(rv, 200, json_schema_comment)
 
-            # delete comment
-            self.asserts_valid(self.delete_comment(comment['id']), 204)
+                    # update comment
+                    json_data = self.asserts_valid(
+                        self.put_comment(comment['id'], value['space'],
+                                         doc_value['id'],
+                                         content='comment updated by unittest'),
+                        200, json_schema_comment)
+                    self.assertEqual(json_data['content'],
+                                     'comment updated by unittest')
+
+                    # delete comment
+                    self.asserts_valid(
+                        self.delete_comment(comment['id'], value['space'],
+                                            doc_value['id']), 204)
 
     def test_get_comment(self):
         """Testing GET comment for all cases."""
         for key, value in suite.cases.iteritems():
             for doc, doc_value in value['documents'].iteritems():
                 rv = self.get_comment(
-                    suite.comment_id, value['space'], doc_value['id'])
-                try:
-                    if self.asserts_acl(rv, 'read', value['can']):
-                        self.asserts_valid(rv, 200, json_schema_comments)
-                except:
-                    print '{}.{}'.format(value['space'], doc)
-                    print doc_value['id']
-                    print rv
-                    print rv.data
-                    print json_schema_comments
+                    doc_value['comment'], value['space'], doc_value['id'])
+                if self.asserts_acl(rv, 'read', value['can']):
+                    self.asserts_valid(rv, 200, json_schema_comment)
 
     # undefined comment
     def test_get_undefined_comment(self):

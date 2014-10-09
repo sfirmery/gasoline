@@ -11,7 +11,7 @@ from flask.ext.babel import gettext as _
 from gasoline.core.api import (
     get_json, to_json, from_json, update_from_json)
 from gasoline.services import acl_service as acl
-from gasoline.models import BaseDocument
+from gasoline.models import BaseDocument, Space
 from gasoline.models.document import (
     json_schema_collection, json_schema_resource,
     rest_uri_collection, rest_uri_resource)
@@ -26,13 +26,21 @@ logger = logging.getLogger('gasoline')
 
 class DocumentsAPIMixin(object):
 
-    def get_document(self, space, doc_id, right):
+    def get_document(self, doc_id, right, filter=None):
         """Get document and apply acl"""
         try:
-            doc = BaseDocument.objects(id=doc_id, space=space).first()
+            if filter is not None:
+                doc = BaseDocument.objects(id=doc_id)\
+                    .filter(**filter).first()
+            else:
+                doc = BaseDocument.objects(id=doc_id).first()
         except:
             doc = None
-        if doc is None:
+        if doc is not None:
+            # check acl for space
+            space = Space.objects(name=doc.space).first()
+            acl.apply(right, space.acl, _('space'))
+        else:
             logger.info('document not found %r', doc_id)
             abort(404, _('document not found'))
 
@@ -47,13 +55,14 @@ class DocumentsAPI(MethodView, DocumentsAPIMixin):
     @acl.acl('read')
     def get(self, space, doc_id):
         if doc_id is not None:
-            document = self.get_document(space, doc_id, 'read')
+            document = self.get_document(doc_id, 'read')
             resp = to_json(json_schema_resource, object=document)
         else:
-            if request.args.get('full') is not None:
-                docs = BaseDocument.objects(space=space).limit(10)
+            query = {'space': space}
+            if request.args.get('details') == 'true':
+                docs = BaseDocument.objects(**query).limit(10)
             else:
-                docs = BaseDocument.objects(space=space).\
+                docs = BaseDocument.objects(**query).\
                     only('space', 'title', 'creation', 'last_update',
                          'author', 'last_author', 'current_revision', 'tags').\
                     limit(10)
@@ -67,6 +76,13 @@ class DocumentsAPI(MethodView, DocumentsAPIMixin):
         # get json from request
         json = get_json()
 
+        # check acl for space
+        if 'space' in json:
+            space = Space.objects(name=json['space']).first()
+            acl.apply('write', space.acl, _('space'))
+        else:
+            abort(400, _('Invalid JSON format.'))
+
         # create document
         document = from_json(json, BaseDocument, json_schema_resource)
 
@@ -77,7 +93,7 @@ class DocumentsAPI(MethodView, DocumentsAPIMixin):
     @acl.acl('write')
     def put(self, space, doc_id):
         # get document
-        doc = self.get_document(space, doc_id, 'write')
+        doc = self.get_document(doc_id, 'write')
 
         # get json from request
         json = get_json()
@@ -93,7 +109,7 @@ class DocumentsAPI(MethodView, DocumentsAPIMixin):
     @acl.acl('write')
     def delete(self, space, doc_id):
         # get document
-        doc = self.get_document(space, doc_id, 'write')
+        doc = self.get_document(doc_id, 'write')
 
         # delete document
         try:

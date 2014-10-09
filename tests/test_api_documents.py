@@ -80,32 +80,29 @@ class DocumentsAPITestCase(GasolineTestCase, DocumentsAPITestCaseMixin):
             # create document
             rv = self.post_document(value['space'],
                                     space=value['space'], title=self.title)
-            documents = None
             if self.asserts_acl(rv, 'write', value['can']):
-                documents = self.asserts_valid(rv, 201, json_schema_document)
+                document = self.asserts_valid(rv, 201, json_schema_document)
 
-            if documents is not None and 'documents'in documents:
-                for document in documents['documents']:
-                    # get document
-                    rv = self.get_document(value['space'], document['id'])
-                    if self.asserts_acl(rv, 'read', value['can']):
-                        self.asserts_valid(rv, 200, json_schema_document)
+                # get document
+                rv = self.get_document(value['space'], document['id'])
+                if self.asserts_acl(rv, 'read', value['can']):
+                    self.asserts_valid(rv, 200, json_schema_document)
 
-                    # update document
-                    rv = self.put_document(value['space'], document['id'],
-                                           content='updated by unittest',
-                                           title=document['title'],
-                                           space=value['space'])
-                    if self.asserts_acl(rv, 'write', value['can']):
-                        json_data = self.asserts_valid(
-                            rv, 200, json_schema_document)
-                        self.assertEqual(json_data['content'],
-                                         'updated by unittest')
+                # update document
+                rv = self.put_document(value['space'], document['id'],
+                                       content='updated by unittest',
+                                       title=document['title'],
+                                       space=value['space'])
+                if self.asserts_acl(rv, 'write', value['can']):
+                    json_data = self.asserts_valid(
+                        rv, 200, json_schema_document)
+                    self.assertEqual(json_data['content'],
+                                     'updated by unittest')
 
-                    # delete document
-                    rv = self.delete_document(value['space'], document['id'])
-                    if self.asserts_acl(rv, 'write', value['can']):
-                        self.asserts_valid(rv, 204)
+                # delete document
+                rv = self.delete_document(value['space'], document['id'])
+                if self.asserts_acl(rv, 'write', value['can']):
+                    self.asserts_valid(rv, 204)
 
     def test_get_document(self):
         """Testing GET document for all cases."""
