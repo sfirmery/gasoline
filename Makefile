@@ -22,9 +22,15 @@ clean:
 	rm -rf gasoline/static/.webassets-cache
 	rm -rf gasoline/static/assets/*
 
+test:
+	python tests
+
 assets:
 	grunt
 	python manager.py assets build
+
+routes:
+	python manager.py routes
 
 update-pot:
 	pybabel extract -F babel.cfg -k _l -o gasoline/translations/messages.pot .

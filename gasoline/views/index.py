@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import Blueprint, redirect
+from flask import Blueprint, redirect, render_template
 from flask import url_for
 from flask.ext.login import login_required
 
@@ -14,3 +14,11 @@ route = blueprint_index.route
 def index():
     """redirect to default dashboard"""
     return redirect(url_for('document.dashboard', space='main'))
+
+
+@route('/frontend', defaults={'path': ''})
+@route('/frontend/', defaults={'path': ''})
+@route('/frontend/<path:path>')
+def frontend(path):
+    return render_template('frontend.html.jinja2')
+

@@ -51,7 +51,7 @@ class ACLService(Service):
             return
 
     def can(self, permission, acl):
-        """return whether user can do action or not"""
+        """Return whether user can do action or not"""
         logger.debug('check %r with acl %r', permission, acl)
         if isinstance(acl, Container) and len(acl) < 0:
             return True
@@ -64,19 +64,20 @@ class ACLService(Service):
             return True
 
     def acl(self, permission, *args, **kwargs):
-        """apply global and space acl before request"""
+        """A decorator that is used to apply the global and space acl before the request"""
         from gasoline.models import Space
 
         def decorator(f):
             @wraps(f)
             def wrapped(*args, **kwargs):
+                acl = None
                 if 'space' in kwargs:
                     space = Space.objects(name=kwargs.get('space')).first()
                     if space is not None:
                         acl = space.acl
                     resource = _('space')
                 if acl:
-                    self.apply(permission, space.acl, resource)
+                    self.apply(permission, acl, resource)
                 return f(*args, **kwargs)
 
             return wrapped
@@ -115,7 +116,7 @@ class ACLService(Service):
             return False
         elif predicate.startswith('u:'):
             predicate = predicate[2:]
-            if predicate == user.name:
+            if hasattr(user, 'name') and predicate == user.name:
                 return True
         else:
             return False

@@ -5,13 +5,56 @@ import markdown2
 import mediawiki
 from mongoengine.fields import GridFSProxy
 
+from gasoline.core.utils import genid
 from gasoline.core.extensions import db
 from gasoline.core.signals import event, activity
 from gasoline.core.diff import Diff
 from gasoline.services.acl import ACE
-from .user import User
-from .comment import Comment
-from .attachment import Attachment
+from .space import Space
+from .user import User, json_schema_resource as json_schema_user
+from .comment import Comment, json_schema_collection as json_schema_comments
+from .attachment import (
+    Attachment, json_schema_resource as json_schema_attachment)
+
+rest_uri_collection = '/api/v1/documents/<space>'
+rest_uri_resource = '{}/<doc_id>'.format(rest_uri_collection)
+
+json_schema_resource = {
+    'title': 'Document resource Schema',
+    'type': 'object',
+    'required': ['space', 'title', 'author'],
+    'properties': {
+        '_id': {'type': 'string'},
+        'title': {'type': 'string'},
+        'space': {'type': 'string'},
+        'content': {'type': 'string'},
+        'tags': {
+            'type': 'array',
+            'items': {
+                'title': 'Tag schema',
+                'type': 'string'
+            },
+        },
+        # 'comments': json_schema_comments,
+        'attachments': {
+            'type': 'array',
+            'items': json_schema_attachment,
+        },
+        'creation': {'type': 'string'},
+        'last_update': {'type': 'string'},
+        'author': json_schema_user,
+        'last_author': json_schema_user,
+        'current_revision': {'type': 'integer'},
+        'uri': {'type': 'string'},
+    },
+}
+
+json_schema_collection = {
+    'title': 'Documents collection Schema',
+    'type': 'array',
+    'minItems': 1,
+    'items': json_schema_resource,
+}
 
 
 class DocumentRevision(db.EmbeddedDocument):
@@ -29,9 +72,14 @@ class DocumentRevision(db.EmbeddedDocument):
 class BaseDocument(db.DynamicDocument):
     _title = db.StringField(db_field='title', unique_with='_space')
     _space = db.StringField(db_field='space', default=u'main')
+    # _space = db.ReferenceField(Space, db_field='space', default=u'main')
     _content = db.StringField(db_field='content')
     tags = db.ListField(db.StringField())
-    comments = db.ListField(db.EmbeddedDocumentField(Comment))
+    # comments = db.DictField(field=db.EmbeddedDocumentField(Comment))
+    # comments = db.SortedListField(
+    #     db.EmbeddedDocumentField('Comment'),
+    #     ordering='date')
+    # comments = db.ListField(db.ReferenceField(Comment))
     attachments = db.ListField(db.EmbeddedDocumentField(Attachment))
 
     acl = db.ListField(db.EmbeddedDocumentField(ACE))
@@ -39,7 +87,7 @@ class BaseDocument(db.DynamicDocument):
     # document Metadata
     creation = db.DateTimeField(default=datetime.utcnow)
     last_update = db.DateTimeField(default=datetime.utcnow)
-    author = db.ReferenceField(User)
+    author = db.ReferenceField(User, required=True)
     last_author = db.ReferenceField(User)
     current_revision = db.IntField(default=1)
     markup = db.StringField(default=u'xhtml')
@@ -73,6 +121,12 @@ class BaseDocument(db.DynamicDocument):
         # get diff object
         if self._diff is None:
             self._diff = Diff()
+
+    @property
+    def uri(self):
+        return rest_uri_resource.\
+            replace("<space>", self.space).\
+            replace("<doc_id>", unicode(self.id))
 
     @property
     def title(self):
@@ -119,7 +173,13 @@ class BaseDocument(db.DynamicDocument):
 
     @property
     def content(self):
-        return self._content
+        # return self._content
+        if self.markup == 'xhtml':
+            return self._content
+        elif self.markup == 'mediawiki':
+            return mediawiki.wiki2html(self._content, True)
+        else:
+            return markdown2.markdown(self._content)
 
     @content.setter
     def content(self, content):
@@ -164,10 +224,39 @@ class BaseDocument(db.DynamicDocument):
             self.current_revision = revision.number
             self.last_update = revision.date
 
+    @property
+    def comments(self):
+        return Comment.objects().all()
+
+    def get_comment(self, comment_id):
+        # for i, comment in enumerate(self.comments):
+        #     if comment.id == comment_id:
+        #         return self.comments[i]
+        # raise
+        return Comment.objects(doc=self, id=comment_id).first()
+
+    def get_comments(self):
+        return Comment.objects(doc=self).all()
+
     def add_comment(self, comment):
-        self.update(push__comments=comment)
-        # send activity event
-        activity.send(verb='add', object=self, object_type='comment')
+        comment.doc = self
+        comment.save()
+
+        # # send activity event
+        # activity.send(verb='add', object=self, object_type='comment')
+
+    def update_comment(self, comment):
+        comment.doc = self
+        comment.save()
+
+        # # send activity event
+        # activity.send(verb='edit', object=self, object_type='comment')
+
+    def delete_comment(self, comment):
+        comment.delete()
+
+        # # send activity event
+        # activity.send(verb='delete', object=self, object_type='comment')
 
     def get_attachment(self, filename):
         """get attached file"""
@@ -177,7 +266,7 @@ class BaseDocument(db.DynamicDocument):
                 return attachment.attachment
         # if filename in self.attachments:
         #     print filename
-        raise
+        raise BaseException
 
     def add_attachment(self, file, filename, content_type, user):
         """attach file to document"""
@@ -224,7 +313,13 @@ class BaseDocument(db.DynamicDocument):
                 # send activity event
                 activity.send(verb='delete', object=self, object_type='file')
                 return
-        raise
+        raise BaseException
+
+    def get_tag(self, tag):
+        """update tag"""
+        if tag in self.tags:
+            return tag
+        raise BaseException
 
     def add_tag(self, tag):
         """add tag if necessary"""
@@ -235,9 +330,14 @@ class BaseDocument(db.DynamicDocument):
             # send activity event
             activity.send(verb='add', object=self, object_type='tag')
         else:
-            raise
+            raise BaseException
 
-    def remove_tag(self, tag):
+    def update_tag(self, old_tag, new_tag):
+        """update tag"""
+        self.delete_tag(old_tag)
+        self.add_tag(new_tag)
+
+    def delete_tag(self, tag):
         """remove tag"""
         if tag in self.tags:
             self.update(pull__tags=tag)
@@ -246,9 +346,9 @@ class BaseDocument(db.DynamicDocument):
             # send activity event
             activity.send(verb='remove', object=self, object_type='tag')
         else:
-            raise
+            raise BaseException
 
-    def save(self):
+    def clean(self):
         # append revision to history
         if self._next_revision is not None:
             self._get_history()
@@ -258,6 +358,10 @@ class BaseDocument(db.DynamicDocument):
         # update metadata
         self.last_update = datetime.utcnow()
 
+        if self.last_author is None:
+            self.last_author = self.author
+
+    def save(self):
         # is a new document ?
         verb = 'update'
         if self.id is None:
@@ -267,12 +371,36 @@ class BaseDocument(db.DynamicDocument):
 
         # send document update event
         event.send('document', document=self)
-
         # send activity event
         activity.send(verb=verb, object=self, object_type='page')
 
+    def to_rest(self):
+        """return document in rest friendly format"""
+        rest = dict()
+        rest['_id'] = self.id
+        rest['space'] = self.space
+        rest['title'] = self.title
+        if self._content is not None:
+            rest['content'] = self.content_html
+        if len(self.tags) > 0:
+            rest['tags'] = self.tags
+        if len(self.comments) > 0:
+            rest['comments'] = self.comments
+        if len(self.attachments) > 0:
+            rest['attachments'] = self.attachments
+        rest['creation'] = self.creation
+        rest['last_update'] = self.last_update
+        rest['author'] = self.author
+        rest['last_author'] = self.last_author
+        rest['current_revision'] = self.current_revision
+        rest['uri'] = self.uri
+        return rest
+
     def __repr__(self):
         return '<BaseDocument id=%s name=%r>' % (self.id, self.title)
+
+    def __str__(self):
+        return unicode(self.id)
 
 
 class DocumentHistory(db.Document):

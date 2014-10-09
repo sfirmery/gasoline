@@ -17,6 +17,8 @@ Collaborative Wiki
   * Whoosh
   * blinker
   * cssmin
+  * jsonschema
+  * rfc3987 (jsonschema validation)
 
 * Flask
   * Flask-Script

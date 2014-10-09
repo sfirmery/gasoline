@@ -14,12 +14,17 @@ from werkzeug.datastructures import ImmutableDict
 
 from gasoline.config import DefaultConfig
 from gasoline.core import extensions, signals
+from gasoline.core.api import api_error_handler
 from gasoline.models import User
 from gasoline.views import (
     blueprint_search, blueprint_document, blueprint_user, blueprint_index,
     blueprint_urlshortener)
+from gasoline.api import (
+    blueprint_api_users, blueprint_api_spaces,
+    blueprint_api_documents, blueprint_api_comments, blueprint_api_tags)
 from gasoline.services import (
     acl_service, indexer_service, activity_service, urlshortener_service)
+from gasoline.plugins.activity import blueprint_api_plugin_activity
 
 logger = logging.getLogger('gasoline')
 
@@ -38,12 +43,19 @@ class Application(Flask):
     default_config = default_config
 
     services = {}
-    plugins = []
-    _blueprints = [blueprint_index,
-                   blueprint_document,
-                   blueprint_user,
-                   blueprint_search,
-                   blueprint_urlshortener]
+    plugins = {}
+    _blueprints = [
+        blueprint_index,
+        blueprint_document,
+        blueprint_user,
+        blueprint_search,
+        blueprint_urlshortener,
+        blueprint_api_users,
+        blueprint_api_spaces,
+        blueprint_api_documents,
+        blueprint_api_comments,
+        blueprint_api_tags,
+    ]
 
     def __init__(self, name=None, config=None, *args, **kwargs):
         name = name or __name__
@@ -129,6 +141,12 @@ class Application(Flask):
             'vendors/bootstrap-datepicker/js/bootstrap-datepicker.js',
             'vendors/jquery-timeago/js/jquery.timeago.js',
             'vendors/bootstrap-tags/js/bootstrap-tags.js',
+            'vendors/underscore/js/underscore.js',
+            'vendors/backbone/js/backbone.js',
+            'vendors/backbone-relational/js/backbone-relational.js',
+            'vendors/backbone.marionette/js/backbone.marionette.js',
+            'vendors/backbone.babysitter/js/backbone.babysitter.js',
+            'vendors/backbone.wreqr/js/backbone.wreqr.js',
         ]
         self._assets_bundles['js']['files'].append('js/gasoline.js')
 
@@ -197,7 +215,8 @@ class Application(Flask):
         #     self.extensions['csrf'] = extensions.csrf
 
         # define errors handlers
-        for http_error_code in (403, 404, 410, 500):
+        for http_error_code in (400, 401, 403, 404, 405, 410, 415, 422, 429,
+                                500):
             handler = partial(self.handle_http_error, http_error_code)
             self.errorhandler(http_error_code)(handler)
 
@@ -208,12 +227,11 @@ class Application(Flask):
         # logger = logging.getLogger(__name__)
 
         # define logging level
-        if self.debug or self.testing:
-            logger.setLevel(logging.DEBUG)
-        else:
-            logger.setLevel(logging.INFO)
-
-        logger.setLevel(logging.DEBUG)
+        # if self.debug:
+        #     logger.setLevel(logging.DEBUG)
+        # else:
+        #     logger.setLevel(logging.INFO)
+        logger.setLevel(logging.INFO)
 
         if hasattr(logging, 'captureWarnings'):
             # New in Python 2.7
@@ -221,7 +239,8 @@ class Application(Flask):
 
         # define logging handler
         console_handler = logging.StreamHandler()
-        # console_handler.setLevel(logging.DEBUG)
+        if self.debug:
+            console_handler.setLevel(logging.DEBUG)
         console_format = '%(asctime)s - %(name)s:%(lineno)d(%(funcName)s): \
     %(levelname)s %(message)s'
         console_formatter = logging.Formatter(console_format, '%b %d %H:%M:%S')
@@ -248,17 +267,30 @@ class Application(Flask):
 
     def register_plugins(self):
         """register plugins"""
-        pass
+        self.plugins['activity'] = {'blueprint': blueprint_api_plugin_activity}
 
     def register_blueprints(self):
         """register flask blueprints"""
+        # register plugins blueprints
+        for plugin in self.plugins.values():
+            if 'blueprint' in plugin:
+                self.register_blueprint(plugin['blueprint'])
+        # register blueprints
         for blueprint in self._blueprints:
             self.register_blueprint(blueprint)
 
     def handle_http_error(self, code, error):
         """error handler"""
         template = 'errors/error{:d}.html.jinja2'.format(code)
-        return render_template(template, error=error), code
+        # return api error handler for URI starting with /api/
+        if str(request.url_rule).startswith('/api/'):
+            return api_error_handler(code, error)
+        else:
+            try:
+                return render_template(template, error=error), code
+            except:
+                return render_template('errors/error_generic.html.jinja2',
+                                       error=error), code
 
 
 def create_app(config=DefaultConfig):
