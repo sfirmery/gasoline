@@ -6,7 +6,7 @@ app.views.UserView = Backbone.View.extend({
     className: 'userView',
     template: _.template( $( '#userTemplate' ).html() ),
 
-    el: '#documents',
+    el: '#content',
 
    initialize: function(model) {
         console.log("init user view");

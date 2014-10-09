@@ -16,6 +16,9 @@ def index():
     return redirect(url_for('document.dashboard', space='main'))
 
 
-@route('/backbone')
-def backbone():
-    return render_template('backbone.html.jinja2', **locals())
+@route('/frontend', defaults={'path': ''})
+@route('/frontend/', defaults={'path': ''})
+@route('/frontend/<path:path>')
+def frontend(path):
+    return render_template('frontend.html.jinja2')
+

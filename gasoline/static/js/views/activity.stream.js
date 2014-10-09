@@ -26,16 +26,19 @@ app.views.ActivityStreamView = Backbone.View.extend({
     el: '#activity-stream',
     template: _.template( $( '#activityStreamTemplate' ).html() ),
 
-   initialize: function() {
+   initialize: function(options) {
+        this.space = options.space;
         console.log("init activity stream view");
-        this.collection = new app.collections.Activity();
-        this.collection.fetch({reset: true});
-        // empty $el
-        this.$el.html( this.template );
-        this.render();
+
+        this.collection = new app.collections.Activity({space: this.space});
 
         this.listenTo( this.collection, 'add', this.renderActivityItem );
         this.listenTo( this.collection, 'reset', this.render );
+
+        // empty $el
+        this.$el.html( this.template );
+
+        this.collection.fetch({reset: true});
     },
 
     // render view by rendering each activity in its collection
