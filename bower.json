@@ -10,8 +10,8 @@
 		"jquery-timeago": "*",
 		"bootstrap-tags": "*",
 		"backbone": "*",
-		"backbone-relational": "*",
-		"backbone.marionette": "*"
+		"backbone.marionette": "*",
+		"backbone.validation": "*"
 	},
 	"exportsOverride": {
 		"bootstrap": {
@@ -45,9 +45,6 @@
 		"backbone": {
 			"js": [ "backbone.js" ]
 		},
-		"backbone-relational": {
-			"js": [ "backbone-relational.js" ]
-		},
 		"backbone.marionette": {
 			"js": [ "lib/*.js", "lib/*.min.js" ]
 		},
@@ -56,6 +53,9 @@
 		},
 		"backbone.wreqr": {
 			"js": [ "lib/*.js", "lib/*.min.js" ]
+		},
+		"backbone.validation": {
+			"js": [ "dist/backbone-validation.js", "dist/backbone-validation-min.js" ]
 		}
 	}
 }
