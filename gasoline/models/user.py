@@ -16,6 +16,7 @@ json_schema_resource = {
             'properties': {
                 'name': {'type': 'string'},
                 'display_name': {'type': 'string'},
+                'description': {'type': 'string'},
                 'uri': {'type': 'string'},
             },
         },
@@ -33,6 +34,7 @@ json_schema_collection = {
 
 class User(db.Document):
     name = db.StringField(primary_key=True)
+    description = db.StringField()
     password = db.StringField()
 
     def set_password(self, password):
