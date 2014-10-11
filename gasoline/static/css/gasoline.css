@@ -150,10 +150,10 @@ img.comment-avatar {
 
 /* TAG LIST */
 
-.tag-list .tag-list-items span {
+.document-tag-list .document-tag-list-items span {
     margin: 1px;
 }
 
-.tag-list-items, .tag-list-actions {
+.document-tag-list-items, .document-tag-list-actions {
     display: inline-block;
 }
