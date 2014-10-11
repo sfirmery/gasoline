@@ -3,7 +3,10 @@
     class Show.Controller extends App.Controllers.Base
 
         initialize: (options) ->
-            headerView = @getHeaderView options.mode, options.model
+            @headerView options.mode, options.model
+
+        headerView: (mode, document) ->
+            headerView = @getHeaderView mode, document
             @show headerView
 
         getHeaderView: (mode, model) ->
