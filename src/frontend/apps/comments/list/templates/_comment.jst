@@ -1,0 +1,24 @@
+<a href="/frontend/user/<%= author.name %>"><img class="comment-avatar" src="https://ssl.gstatic.com/accounts/ui/avatar_2x.png"></a>
+<div class="comment-inner comment-view">
+  <div class="comment-header">
+    <a href="/frontend/user/<%= author.name %>"><%= author.display_name %></a> {{ _('commented') }} <time class="timeago" datetime="<%= date %>Z" data-toggle="tooltip" data-placement="bottom"><%= date %></time>
+   <i id="comment-edit" class="fa fa-edit"></i><i id="comment-delete" class="fa fa-times"></i>
+  </div>
+  <div class="comment-content"><%= content %></div>
+</div>
+<div class="comment-inner comment-edit-form collapse">
+  <div class="comment-header">{{ _('Edit comment') }}</div>
+  <div class="comment-content">
+    <form id="comment-edit-form" class="form-horizontal" role="form" action="" method="post" name="comment-edit">
+      <div class="comment-form">
+        <div>
+          <textarea class="form-control" id="comment-edit-form-content" name="content" rows="5"><%= content %></textarea>
+        </div>
+        <div class="comment-form-action">
+          <button id="comment-edit-form-cancel" type="button" class="btn btn-default">{{ _('Cancel') }}</button>
+          <button id="comment-edit-form-save" type="submit" class="btn btn-default">{{ _('Save') }}</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

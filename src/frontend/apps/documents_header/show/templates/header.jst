@@ -1,0 +1,22 @@
+<div id="tools-dropdown" class="pull-right btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        <i class="fa fa-cog"></i> {{ _('Tools') }} <i class="fa fa-caret-down"></i>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+        <li><a id="document-edit-link">{{ _('Edit') }}</a></li>
+        <li><a id="document-history-link">{{ _('History') }}</a></li>
+        <li><a id="document-attachments-link">{{ _('Attachments') }} (<%= attachments.length %>)</a></li>
+        <li><a id="document-rights-link">{{ _('Rights') }}</a></li>
+        <li class="divider"></li>
+        <li><a id="document-links-link">{{ _('Links') }}</a></li>
+        <li><a id="document-informations-link">{{ _('Informations') }}</a></li>
+    </ul>
+</div>
+<% if (mode != 'show') { %>
+  <div class="pull-right">
+    <a id="document-display-link" class="btn btn-default"><i class="fa fa-reply"></i> {{ _('View Document') }}</a>&nbsp;
+  </div>
+<% } %>
+<div class="page-header">
+  <h1><a href="#documents/<%= space %>/<%= id %>"><%= title %></a></h1>
+</div>
