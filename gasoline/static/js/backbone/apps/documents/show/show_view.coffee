@@ -6,6 +6,7 @@
         regions:
             documentHeaderRegion: "#document-header-region"
             documentRegion: "#document-region"
+            tagsRegion: "#tags-region"
             commentsRegion: "#comments-region"
 
     class Show.Document extends App.Views.ItemView

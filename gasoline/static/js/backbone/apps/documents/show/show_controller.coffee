@@ -9,6 +9,7 @@
             @listenTo @layout, "show", =>
                 @showHeader document
                 @documentView document
+                @showTags document
                 @showComments document
 
             if options.document != null && options.space != null
@@ -27,9 +28,12 @@
         showHeader: (document) ->
             App.execute "show:documents:header", "show", document, @layout.documentHeaderRegion
         
+        showTags: (document) ->
+            App.execute "show:documents:tags", document, @layout.tagsRegion
+
         showComments: (document) ->
             App.execute "show:comments", document, @layout.commentsRegion
-        
+
         getDocumentView: (document) ->
             new Show.Document
                 model: document
