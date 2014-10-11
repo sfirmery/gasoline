@@ -23,13 +23,11 @@
 
         events:
             "click @ui.edit" : ->
-                console.log "edit clicked", @model, @
                 @trigger "edit:comment"
             "click @ui.delete" : ->
-                console.log "delete clicked", @model
-                @model.destroy()
+                @model.destroy
+                    wait: true
             "click @ui.cancel" : ->
-                console.log "cancel clicked", @model
                 @trigger "show:comment"
 
         initialize: (options) ->
@@ -53,14 +51,12 @@
                 author: @model.get('author').name or @model.get('author')
 
         onSuccess: (model) ->
-            console.log "success save", model
             @trigger "show:comment"
-
 
     class List.Comments extends App.Views.CompositeView
         template: "comments/list/templates/_comments"
         childView: List.Comment
-    
+
     class List.NewComment extends App.Views.FormView
         template: "comments/list/templates/_new_comment"
 
@@ -81,7 +77,8 @@
                 author: "doe"
                 content: @ui.content.val()
 
-            @listenTo @model, "sync", (model, resp, options) =>
+            # add model to collection after model sync
+            @listenToOnce @model, "sync", (model, resp, options) =>
                 @collection.add model
 
         onSuccess: (model) ->

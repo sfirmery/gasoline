@@ -33,7 +33,7 @@
                 space: space
                 doc: doc
             comments.fetch
-                reset: true
+                # reset: true
                 data: params
             comments
 
@@ -46,7 +46,7 @@
                 space: space
                 doc: doc
             comment.fetch
-                reset: true
+                # reset: true
                 data: params
             comment
 
