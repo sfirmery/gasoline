@@ -3,11 +3,19 @@
     baseUrl = "/api/v1/documents"
 
     class Entities.Document extends Entities.Model
-        urlRoot: baseUrl
+        urlRoot: ->
+            "#{baseUrl}/#{@space}"
+
+        initialize: (options) ->
+            @space = options.space
 
     class Entities.DocumentsCollection extends Entities.Collection
         model: Entities.Document
-        url: baseUrl
+        url: ->
+            "#{baseUrl}/#{@space}"
+
+        initialize: (options) ->
+            @space = options.space
         
         parse: (resp) ->
             resp
@@ -17,24 +25,19 @@
             _.defaults params, {}
             
             documents = new Entities.DocumentsCollection
-            documents.url = "#{documents.url}/#{space}"
+                space: space
             documents.fetch
-                reset: true
                 data: params
-                # success: (item) ->
-                #     console.log "success", item.models
             documents
 
         getDocument: (space, id, params = {}) ->
             _.defaults params, {}
 
-            document = new Entities.Document id: id
-            document.urlRoot = "#{document.urlRoot}/#{space}"
+            document = new Entities.Document
+                space: space
+                id: id
             document.fetch
-                reset: true
                 data: params
-                # success: (item) ->
-                #     console.log "success", item
             document
 
     # request list of documents
