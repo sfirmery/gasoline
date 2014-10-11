@@ -19,6 +19,7 @@ Collaborative Wiki
   * cssmin
   * jsonschema
   * rfc3987 (jsonschema validation)
+  * glob2
 
 * Flask
   * Flask-Script

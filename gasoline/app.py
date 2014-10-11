@@ -9,8 +9,9 @@ from babel import Locale
 from flask import Flask, render_template, request, g
 from flask.ext.login import current_user
 from flask.ext.assets import Bundle
-from flask.ext.babel import format_date, format_datetime, format_time
-from werkzeug.datastructures import ImmutableDict
+from flask.ext.babel import (
+    format_date, format_datetime, format_time, get_locale as babel_get_locale)
+from werkzeug.datastructures import ImmutableDict, Headers
 
 from gasoline.config import DefaultConfig
 from gasoline.core import extensions, signals
@@ -84,6 +85,12 @@ class Application(Flask):
             'output': 'assets/app-%(version)s.min.',
         }
 
+        self._assets_jst = {
+            'locales': ['en', 'fr'],
+            'output': 'assets/jst-%(version)s.',
+            'options': dict(filters='jinja2,jst'),
+        }
+
         self.init_extensions()
 
         self.register_services()
@@ -101,6 +108,7 @@ class Application(Flask):
             from gasoline.forms import SearchForm
             if current_user.is_authenticated():
                 g.search_form = SearchForm()
+            g.locale = babel_get_locale()
 
         # request_started.connect(self._setup_breadcrumbs)
 
@@ -108,6 +116,7 @@ class Application(Flask):
         # from werkzeug.contrib.profiler import ProfilerMiddleware
         # self.wsgi_app = ProfilerMiddleware(self.wsgi_app,
         #                                    restrictions=['gasoline'])
+        # # self.wsgi_app = ProfilerMiddleware(self.wsgi_app)
 
     def init_extensions(self):
         """
@@ -132,52 +141,6 @@ class Application(Flask):
         extensions.lm.setup_app(self)
 
         # extensions.mail.init_app(self)
-
-        extensions.assets.init_app(self)
-
-        self._assets_bundles['js']['files'] = [
-            'vendors/jquery/js/jquery.js',
-            'vendors/bootstrap/js/bootstrap.js',
-            'vendors/bootstrap-datepicker/js/bootstrap-datepicker.js',
-            'vendors/jquery-timeago/js/jquery.timeago.js',
-            'vendors/bootstrap-tags/js/bootstrap-tags.js',
-            'vendors/underscore/js/underscore.js',
-            'vendors/backbone/js/backbone.js',
-            'vendors/backbone-relational/js/backbone-relational.js',
-            'vendors/backbone.marionette/js/backbone.marionette.js',
-            'vendors/backbone.babysitter/js/backbone.babysitter.js',
-            'vendors/backbone.wreqr/js/backbone.wreqr.js',
-        ]
-        self._assets_bundles['js']['files'].append('js/gasoline.js')
-
-        self._assets_bundles['css']['files'] = [
-            'vendors/bootstrap/css/bootstrap.css',
-            'vendors/bootstrap-datepicker/css/datepicker3.css',
-            'vendors/font-awesome/css/font-awesome.css',
-            'vendors/bootstrap-tags/css/bootstrap-tags.css',
-        ]
-        self._assets_bundles['css']['files'].append('css/gasoline.css')
-
-        self._assets_locales['files'] = [
-            'vendors/bootstrap-datepicker/js/locales/bootstrap-datepicker.',
-            'vendors/jquery-timeago/js/locales/jquery.timeago.',
-        ]
-
-        for name, data in self._assets_bundles.items():
-            files = data.get('files', [])
-            options = data.get('options', {})
-            if files:
-                extensions.assets.register(name, Bundle(*files, **options))
-
-        for locale in self._assets_locales['locales']:
-            files = self._assets_locales.get('files', [])
-            files = [file + locale + '.js' for file in files]
-            options = self._assets_locales.get('options', {})
-            output = self._assets_locales.get('output', {})
-            options['output'] = output + locale + '.js'
-            if files:
-                extensions.assets.register('js-' + locale,
-                                           Bundle(*files, **options))
 
         # flask-babel
         extensions.babel.init_app(self)
@@ -208,6 +171,77 @@ class Application(Flask):
         @self.template_filter('datetime')
         def _jinja2_filter_datetime(date):
             return format_datetime(date)
+
+        extensions.assets.init_app(self)
+
+        self._assets_bundles['js']['files'] = [
+            'vendors/jquery/js/jquery.js',
+            'vendors/bootstrap/js/bootstrap.js',
+            'vendors/bootstrap-datepicker/js/bootstrap-datepicker.js',
+            'vendors/jquery-timeago/js/jquery.timeago.js',
+            'vendors/bootstrap-tags/js/bootstrap-tags.js',
+            'vendors/underscore/js/underscore.js',
+            'vendors/backbone/js/backbone.js',
+            'vendors/backbone.marionette/js/backbone.marionette.js',
+            'vendors/backbone.babysitter/js/backbone.babysitter.js',
+            'vendors/backbone.wreqr/js/backbone.wreqr.js',
+            'vendors/backbone.validation/js/backbone-validation.js',
+            'js/backbone/config/**/*.js',
+            'js/backbone/app.js',
+            'js/backbone/controllers/**/*.js',
+            'js/backbone/entities/_base/*.js',
+            'js/backbone/entities/**/*.js',
+            'js/backbone/views/**/*.js',
+            'js/backbone/components/**/*.js',
+            'js/backbone/apps/**/*.js',
+        ]
+        self._assets_bundles['js']['files'].append('js/gasoline.js')
+
+        self._assets_bundles['css']['files'] = [
+            'vendors/bootstrap/css/bootstrap.css',
+            'vendors/bootstrap-datepicker/css/datepicker3.css',
+            'vendors/font-awesome/css/font-awesome.css',
+            'vendors/bootstrap-tags/css/bootstrap-tags.css',
+        ]
+        self._assets_bundles['css']['files'].append('css/gasoline.css')
+
+        self._assets_locales['files'] = [
+            'vendors/bootstrap-datepicker/js/locales/bootstrap-datepicker.',
+            'vendors/jquery-timeago/js/locales/jquery.timeago.',
+        ]
+
+        self._assets_jst['files'] = [
+            'js/backbone/apps/**/*.jst',
+        ]
+
+        for name, data in self._assets_bundles.items():
+            files = data.get('files', [])
+            options = data.get('options', {})
+            if files:
+                extensions.assets.register(name, Bundle(*files, **options))
+
+        for locale in self._assets_locales['locales']:
+            files = self._assets_locales.get('files', [])
+            files = [file + locale + '.js' for file in files]
+            options = self._assets_locales.get('options', {})
+            output = self._assets_locales.get('output', {})
+            options['output'] = output + locale + '.js'
+            if files:
+                extensions.assets.register('js-' + locale,
+                                           Bundle(*files, **options))
+
+        # for each locales, create translated jst
+        for locale in self._assets_jst['locales']:
+            # create dummy context with locale
+            with self.test_request_context(
+                    headers=Headers([('Accept-Language', locale)])):
+                files = self._assets_jst.get('files', [])
+                options = self._assets_jst.get('options', {})
+                output = self._assets_jst.get('output', {})
+                options['output'] = output + locale + '.jst'
+                if files:
+                    extensions.assets.register('jst-' + locale,
+                                               Bundle(*files, **options))
 
         # # CSRF by default
         # if self.config.get('CSRF_ENABLED'):
@@ -241,7 +275,7 @@ class Application(Flask):
         console_handler = logging.StreamHandler()
         if self.debug:
             console_handler.setLevel(logging.DEBUG)
-        console_format = '%(asctime)s - %(name)s:%(lineno)d(%(funcName)s): \
+        console_format = '%(asctime)s - %(name)s:%(lineno)d:%(filename)s(%(funcName)s): \
     %(levelname)s %(message)s'
         console_formatter = logging.Formatter(console_format, '%b %d %H:%M:%S')
         console_handler.setFormatter(console_formatter)

@@ -26,14 +26,14 @@ class SpacesAPI(MethodView):
 
     @acl.acl('read')
     def get(self, space):
-        if space is None:
-            spaces = Space.objects.all()
-            resp = to_json(json_schema_collection, spaces=spaces)
-        else:
+        if space is not None:
             space = Space.objects(name=space).first()
             if space is None:
                 abort(404, 'Space not found')
-            resp = to_json(json_schema_collection, spaces=[space])
+            resp = to_json(json_schema_resource, object=space)
+        else:
+            spaces = Space.objects.all()
+            resp = to_json(json_schema_collection, array=spaces)
         return Response(response=resp, status=200,
                         mimetype='application/json')
 
@@ -47,7 +47,7 @@ class SpacesAPI(MethodView):
                           json_schema_resource)
 
         # create space
-        resp = to_json(json_schema_collection, spaces=[space])
+        resp = to_json(json_schema_resource, object=space)
         return Response(response=resp, status=201,
                         mimetype='application/json',
                         headers={'location': space.uri})
@@ -71,7 +71,7 @@ class SpacesAPI(MethodView):
         # update space
         update_from_json(json, space, json_schema_resource)
 
-        resp = to_json(json_schema_collection, spaces=[space])
+        resp = to_json(json_schema_resource, object=space)
         return Response(response=resp, status=200,
                         mimetype='application/json')
 

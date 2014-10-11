@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-03-30 14:33+0200\n"
+"POT-Creation-Date: 2014-10-07 18:21+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,12 +17,121 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: gasoline/forms/document.py:12 gasoline/forms/document.py:13
-msgid "Title"
+#: gasoline/api/comments.py:31
+msgid "Comment not found."
 msgstr ""
 
+#: gasoline/api/comments.py:109
+msgid "Error while deleting comment."
+msgstr ""
+
+#: gasoline/api/documents.py:42 gasoline/api/documents.py:82
+#: gasoline/services/acl/service.py:78
+msgid "space"
+msgstr ""
+
+#: gasoline/api/documents.py:45 gasoline/views/document.py:31
+msgid "document not found"
+msgstr ""
+
+#: gasoline/api/documents.py:48 gasoline/views/document.py:33
+#: gasoline/views/document.py:198
+msgid "document"
+msgstr ""
+
+#: gasoline/api/documents.py:84 gasoline/core/api.py:98
+msgid "Invalid JSON format."
+msgstr ""
+
+#: gasoline/api/documents.py:119
+msgid "Error while deleting document."
+msgstr ""
+
+#: gasoline/api/spaces.py:63 gasoline/api/spaces.py:88
+msgid "Space not found."
+msgstr ""
+
+#: gasoline/api/spaces.py:69
+msgid "Update space name denied."
+msgstr ""
+
+#: gasoline/api/spaces.py:95
+msgid "Error while deleting space."
+msgstr ""
+
+#: gasoline/api/tags.py:30
+msgid "Tag not found."
+msgstr ""
+
+#: gasoline/api/tags.py:47
+msgid "Tag already exists."
+msgstr ""
+
+#: gasoline/api/tags.py:66
+msgid "Tag not changed."
+msgstr ""
+
+#: gasoline/api/tags.py:74
+msgid "Error while updating tag."
+msgstr ""
+
+#: gasoline/api/tags.py:96
+msgid "Error while deleting tag."
+msgstr ""
+
+#: gasoline/core/api.py:52
+msgid "Require JSON encoded data."
+msgstr ""
+
+#: gasoline/core/api.py:69
+msgid "JSON validation error: {}."
+msgstr ""
+
+#: gasoline/core/api.py:262
+msgid "{} already exists."
+msgstr ""
+
+#: gasoline/core/api.py:276
+msgid "{} creation: database error."
+msgstr ""
+
+#: gasoline/core/api.py:303
+msgid "{} update: database error."
+msgstr ""
+
+#: gasoline/core/utils.py:11
+msgid "bytes"
+msgstr ""
+
+#: gasoline/core/utils.py:11
+msgid "KB"
+msgstr ""
+
+#: gasoline/core/utils.py:11
+msgid "MB"
+msgstr ""
+
+#: gasoline/core/utils.py:11
+msgid "GB"
+msgstr ""
+
+#: gasoline/core/utils.py:15
+msgid "TB"
+msgstr ""
+
+#: gasoline/forms/comment.py:12 gasoline/forms/comment.py:13
 #: gasoline/forms/document.py:15 gasoline/forms/document.py:16
+#: gasoline/static/js/backbone/apps/documents/edit/templates/_document.jst:12
+#: gasoline/templates/frontend.html.jinja2:107
 msgid "Content"
+msgstr ""
+
+#: gasoline/forms/document.py:12 gasoline/forms/document.py:13
+#: gasoline/static/js/backbone/apps/documents/edit/templates/_document.jst:5
+#: gasoline/static/js/backbone/apps/documents/edit/templates/_document.jst:7
+#: gasoline/templates/frontend.html.jinja2:100
+#: gasoline/templates/frontend.html.jinja2:102
+msgid "Title"
 msgstr ""
 
 #: gasoline/forms/search.py:12 gasoline/forms/search.py:13
@@ -74,165 +183,291 @@ msgstr ""
 msgid "You are not allowed to \"%(permission)s\" this %(resource)s"
 msgstr ""
 
-#: gasoline/services/acl/service.py:77
-msgid "space"
-msgstr ""
-
-#: gasoline/services/activity/models.py:48
+#: gasoline/services/activity/models.py:50
 msgid "create page"
 msgstr ""
 
-#: gasoline/services/activity/models.py:49
+#: gasoline/services/activity/models.py:51
 msgid "create event"
 msgstr ""
 
-#: gasoline/services/activity/models.py:50
+#: gasoline/services/activity/models.py:52
 msgid "create issue"
 msgstr ""
 
-#: gasoline/services/activity/models.py:51
+#: gasoline/services/activity/models.py:53
 msgid "create task"
 msgstr ""
 
-#: gasoline/services/activity/models.py:54
+#: gasoline/services/activity/models.py:56
 msgid "update page"
 msgstr ""
 
 #: gasoline/services/activity/models.py:57
-msgid "remove page"
+msgid "update file"
 msgstr ""
 
 #: gasoline/services/activity/models.py:60
+msgid "remove page"
+msgstr ""
+
+#: gasoline/services/activity/models.py:61
+msgid "remove tag from"
+msgstr ""
+
+#: gasoline/services/activity/models.py:64
+msgid "delete file"
+msgstr ""
+
+#: gasoline/services/activity/models.py:67
 msgid "attach file"
 msgstr ""
 
-#: gasoline/services/activity/models.py:63
+#: gasoline/services/activity/models.py:70
 msgid "comment"
 msgstr ""
 
-#: gasoline/services/activity/models.py:66
+#: gasoline/services/activity/models.py:71
+msgid "add tag on"
+msgstr ""
+
+#: gasoline/services/activity/models.py:74
 msgid "share bookmark"
 msgstr ""
 
-#: gasoline/services/activity/models.py:103
+#: gasoline/services/activity/models.py:117
 msgid "$(verb)s on"
 msgstr ""
 
-#: gasoline/templates/base.html:5
-msgid "Project"
-msgstr ""
-
-#: gasoline/templates/base.html:20
-msgid "Toggle navigation"
-msgstr ""
-
-#: gasoline/templates/base.html:32
-msgid "Dashboard"
-msgstr ""
-
-#: gasoline/templates/base.html:52
-msgid "My account"
-msgstr ""
-
-#: gasoline/templates/base.html:55
-msgid "Logout"
-msgstr ""
-
-#: gasoline/templates/dashboard.html:5
-msgid "Create"
-msgstr ""
-
-#: gasoline/templates/dashboard.html:9
-msgid "Documents:"
-msgstr ""
-
-#: gasoline/templates/dashboard.html:18
-msgid "Activity Stream:"
-msgstr ""
-
-#: gasoline/templates/edit_document.html:32
+#: gasoline/static/js/backbone/apps/documents/edit/templates/_document.jst:20
+#: gasoline/templates/document_edit.html.jinja2:32
+#: gasoline/templates/frontend.html.jinja2:115
 msgid "Submit"
 msgstr ""
 
-#: gasoline/templates/login.html:8 gasoline/templates/login.html:23
-msgid "Sign in"
+#: gasoline/static/js/backbone/apps/documents/show/templates/_document.jst:4
+#: gasoline/templates/document_view.html.jinja2:5
+#: gasoline/templates/frontend.html.jinja2:72
+msgid "Created"
 msgstr ""
 
-#: gasoline/templates/profile.html:4
-msgid "Profile"
+#: gasoline/static/js/backbone/apps/documents/show/templates/_document.jst:4
+#: gasoline/templates/document_view.html.jinja2:5
+#: gasoline/templates/frontend.html.jinja2:72
+msgid "last update"
 msgstr ""
 
-#: gasoline/templates/profile.html:10
+#: gasoline/static/js/backbone/apps/documents/show/templates/show_layout.jst:6
+#: gasoline/templates/frontend.html.jinja2:79
+msgid "Tags: "
+msgstr ""
+
+#: gasoline/static/js/backbone/apps/documents/show/templates/show_layout.jst:10
+#: gasoline/templates/frontend.html.jinja2:83
+msgid "Add a tag"
+msgstr ""
+
+#: gasoline/static/js/backbone/apps/documents_menu/show/templates/menu.jst:3
+#: gasoline/templates/document.html.jinja2:5
+#: gasoline/templates/frontend.html.jinja2:48
+msgid "Tools"
+msgstr ""
+
+#: gasoline/static/js/backbone/apps/documents_menu/show/templates/menu.jst:6
+#: gasoline/templates/document.html.jinja2:8
+#: gasoline/templates/frontend.html.jinja2:51
+msgid "Edit"
+msgstr ""
+
+#: gasoline/static/js/backbone/apps/documents_menu/show/templates/menu.jst:7
+#: gasoline/templates/document.html.jinja2:9
+#: gasoline/templates/document_history.html.jinja2:4
+#: gasoline/templates/frontend.html.jinja2:52
+msgid "History"
+msgstr ""
+
+#: gasoline/static/js/backbone/apps/documents_menu/show/templates/menu.jst:8
+#: gasoline/templates/document.html.jinja2:10
+#: gasoline/templates/document_attachments.html.jinja2:4
+#: gasoline/templates/frontend.html.jinja2:53
+msgid "Attachments"
+msgstr ""
+
+#: gasoline/static/js/backbone/apps/documents_menu/show/templates/menu.jst:9
+#: gasoline/templates/document.html.jinja2:11
+#: gasoline/templates/frontend.html.jinja2:54
+msgid "Rights"
+msgstr ""
+
+#: gasoline/static/js/backbone/apps/documents_menu/show/templates/menu.jst:11
+#: gasoline/templates/document.html.jinja2:13
+#: gasoline/templates/frontend.html.jinja2:56
+msgid "Links"
+msgstr ""
+
+#: gasoline/static/js/backbone/apps/documents_menu/show/templates/menu.jst:12
+#: gasoline/templates/document.html.jinja2:14
+#: gasoline/templates/frontend.html.jinja2:57
+msgid "Informations"
+msgstr ""
+
+#: gasoline/static/js/backbone/apps/documents_menu/show/templates/menu.jst:17
+#: gasoline/templates/document.html.jinja2:20
+#: gasoline/templates/frontend.html.jinja2:62
+msgid "View Document"
+msgstr ""
+
+#: gasoline/static/js/backbone/apps/users/edit/templates/_user.jst:1
+#: gasoline/static/js/backbone/apps/users/show/templates/_user.jst:1
+#: gasoline/templates/frontend.html.jinja2:188
+#: gasoline/templates/profile.html.jinja2:10
 msgid "User:"
 msgstr ""
 
-#: gasoline/templates/profile.html:11
+#: gasoline/static/js/backbone/apps/users/edit/templates/_user.jst:8
+msgid "Save"
+msgstr ""
+
+#: gasoline/templates/dashboard.html.jinja2:7
+#: gasoline/templates/frontend.html.jinja2:26
+msgid "Documents:"
+msgstr ""
+
+#: gasoline/templates/dashboard.html.jinja2:16
+#: gasoline/templates/frontend.html.jinja2:31
+msgid "Activity Stream:"
+msgstr ""
+
+#: gasoline/templates/document_attachments.html.jinja2:10
+msgid "There are currently no attachments on this document."
+msgstr ""
+
+#: gasoline/templates/document_attachments.html.jinja2:20
+msgid "Upload"
+msgstr ""
+
+#: gasoline/templates/document_history.html.jinja2:12
+msgid "Version"
+msgstr ""
+
+#: gasoline/templates/document_history.html.jinja2:13
+msgid "Date"
+msgstr ""
+
+#: gasoline/templates/document_history.html.jinja2:14
+msgid "Author"
+msgstr ""
+
+#: gasoline/templates/document_history.html.jinja2:19
+msgid "CURRENT"
+msgstr ""
+
+#: gasoline/templates/document_view.html.jinja2:9
+msgid "Old version. View"
+msgstr ""
+
+#: gasoline/templates/document_view.html.jinja2:9
+msgid "current version"
+msgstr ""
+
+#: gasoline/templates/document_view.html.jinja2:21
+msgid "Comments"
+msgstr ""
+
+#: gasoline/templates/document_view.html.jinja2:46
+#: gasoline/templates/frontend.html.jinja2:144
+#: gasoline/templates/frontend.html.jinja2:164
+msgid "Comment"
+msgstr ""
+
+#: gasoline/templates/frontend.html.jinja2:126
+msgid "commented"
+msgstr ""
+
+#: gasoline/templates/frontend.html.jinja2:136
+msgid "Edit comment"
+msgstr ""
+
+#: gasoline/templates/frontend.html.jinja2:156
+msgid "Add a comment"
+msgstr ""
+
+#: gasoline/templates/login.html.jinja2:8
+#: gasoline/templates/login.html.jinja2:23
+msgid "Sign in"
+msgstr ""
+
+#: gasoline/templates/profile.html.jinja2:4
+msgid "Profile"
+msgstr ""
+
+#: gasoline/templates/profile.html.jinja2:11
 msgid "Last seen on:"
 msgstr ""
 
-#: gasoline/templates/search_results.html:5
+#: gasoline/templates/search_results.html.jinja2:5
 #, python-format
 msgid "%(count)d of %(num)i result found in %(seconds)fs"
 msgid_plural "%(count)d of %(num)i results found in %(seconds)fs"
 msgstr[0] ""
 msgstr[1] ""
 
-#: gasoline/templates/view_document.html:6
-msgid "Create on"
-msgstr ""
-
-#: gasoline/templates/view_document.html:6
-msgid "last update"
-msgstr ""
-
-#: gasoline/templates/view_document.html:6
-msgid "edit"
-msgstr ""
-
-#: gasoline/templates/view_document.html:7
-msgid "Current revision is"
-msgstr ""
-
-#: gasoline/templates/view_document.html:11
-msgid "History:"
-msgstr ""
-
-#: gasoline/templates/errors/error403.html:5
+#: gasoline/templates/errors/error403.html.jinja2:5
 msgid "Access denied"
 msgstr ""
 
-#: gasoline/templates/errors/error403.html:6
+#: gasoline/templates/errors/error403.html.jinja2:6
 msgid "You don't have permission to access to this ressource."
 msgstr ""
 
-#: gasoline/templates/errors/error404.html:5
+#: gasoline/templates/errors/error404.html.jinja2:5
 msgid "Not Found"
 msgstr ""
 
-#: gasoline/templates/errors/error404.html:6
+#: gasoline/templates/errors/error404.html.jinja2:6
 msgid "Page not found"
 msgstr ""
 
-#: gasoline/templates/errors/error410.html:5
+#: gasoline/templates/errors/error410.html.jinja2:5
 msgid "Gone"
 msgstr ""
 
-#: gasoline/templates/errors/error410.html:6
+#: gasoline/templates/errors/error410.html.jinja2:6
 msgid ""
 "The requested resource is no longer available and will not be available "
 "again."
 msgstr ""
 
-#: gasoline/views/document.py:43
-msgid "document not found"
+#: gasoline/views/document.py:62 gasoline/views/document.py:84
+msgid "Comment added successfully."
 msgstr ""
 
-#: gasoline/views/document.py:45 gasoline/views/document.py:60
-msgid "document"
+#: gasoline/views/document.py:123
+msgid "attachment not found"
 msgstr ""
 
-#: gasoline/views/document.py:70
+#: gasoline/views/document.py:149
+msgid "File deleted successfully."
+msgstr ""
+
+#: gasoline/views/document.py:152 gasoline/views/document.py:185
+msgid "Error while deleting file."
+msgstr ""
+
+#: gasoline/views/document.py:209
 msgid "Document saved successfully."
+msgstr ""
+
+#: gasoline/views/document.py:231
+msgid "File uploaded successfully."
+msgstr ""
+
+#: gasoline/views/document.py:234
+msgid "Error while uploading file."
+msgstr ""
+
+#: gasoline/views/document.py:236
+msgid "File empty."
 msgstr ""
 
 #: gasoline/views/user.py:29

@@ -20,15 +20,10 @@ json_schema_resource = {
 
 json_schema_collection = {
     'title': 'Spaces collection Schema',
-    'type': 'object',
     'required': ['spaces'],
-    'properties': {
-        'spaces': {
-            'type': 'array',
-            'minItems': 1,
-            'items': json_schema_resource,
-        },
-    },
+    'type': 'array',
+    'minItems': 1,
+    'items': json_schema_resource,
 }
 
 DEFAULT_ACE = ACE(

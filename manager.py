@@ -16,14 +16,6 @@ manager = Manager(app)
 def run(debug=False):
     """run app"""
     app.debug = debug
-    from flask_debugtoolbar import DebugToolbarExtension
-    toolbar = DebugToolbarExtension(app)
-
-    app.config['DEBUG_TB_PANELS'] = list(toolbar._default_config(app)['DEBUG_TB_PANELS'])
-    app.config['DEBUG_TB_PANELS'].append('flask.ext.mongoengine.panels.MongoDebugPanel')
-    sqlalchemy_index = app.config['DEBUG_TB_PANELS'].\
-        index('flask_debugtoolbar.panels.sqlalchemy.SQLAlchemyDebugPanel')
-    app.config['DEBUG_TB_PANELS'].pop(sqlalchemy_index)
 
     app.run(debug=debug, host='0.0.0.0')
 
