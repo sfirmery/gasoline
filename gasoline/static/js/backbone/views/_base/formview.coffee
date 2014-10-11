@@ -28,7 +28,7 @@
                 'keyup [data-validation]':  @validateField
 
             eventHash["click #{@ui.submit}"] = @processForm
-            eventHash["submit #{@ui.submit}"] = @processForm
+            eventHash["submit"] = @processForm
             eventHash
 
         createModel: ->
@@ -86,8 +86,8 @@
         setupValidation: ->
             Backbone.Validation.unbind this
             Backbone.Validation.bind this,
-            valid: @valid
-            invalid: @invalid
+                valid: @valid
+                invalid: @invalid
 
         valid: (view, attr, selector) =>
             @$("[data-validation=#{attr}]")
