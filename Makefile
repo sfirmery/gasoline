@@ -15,19 +15,33 @@ check:
 	# pymetrics
 
 clean:
-	rm -rf build/ MANIFEST dist build my_program.egg-info deb_dist
+	rm -rf MANIFEST dist build my_program.egg-info deb_dist
 	find . -name '*.pyc' -delete
+
+clean-coffee:
+	find gasoline/static/js/backbone/ -name '*.js' -delete
+
+clean-assets: clean-coffee
 	rm -rf bower_components/*
-	rm -rf gasoline/static/vendors/*
 	rm -rf gasoline/static/.webassets-cache
 	rm -rf gasoline/static/assets/*
+	rm -rf gasoline/static/vendors/*
+	rm -rf gasoline/static/js/backbone/*
+
+clean-all: clean clean-assets
 
 test:
 	python tests
 
-assets:
+assets: clean-assets
 	grunt
 	python manager.py assets build
+
+watch:
+	grunt watch
+
+build-coffee: clean-coffee
+	grunt coffee
 
 routes:
 	python manager.py routes
