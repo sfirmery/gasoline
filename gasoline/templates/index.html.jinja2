@@ -1,12 +1,36 @@
-<!-- extend base layout -->
-{% extends "base.html.jinja2" %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}{{ page_title|default(_('Project')) }}{% endblock %} - Gasoline</title>
+    {% assets "css" %}<link href="{{ ASSET_URL }}" rel="stylesheet" media="screen">{% endassets %}
+    <meta name="description" content="Gasoline, collaborative wiki">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
 
-{% block content %}
-<h1>Hi !</h1>
+    <div id="header-region"></div>
+    <div id="main-region"></div>
+    <div id="footer-region"></div>
 
-<ul>
-{% for doc in docs %}
-	<li><a href="{{ url_for('dashboard.view', doc_id=doc.id) }}">{{ doc.title }}</a> ({{ doc.status }})</li>
-{% endfor %}
-</ul>
-{% endblock %}
+    {% assets "js" %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
+    {% assets "js-"+g.locale.language %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
+    {% assets "jst-"+g.locale.language %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
+
+    <script type="text/javascript">
+        var app = app || {};
+        app.currentUser = { 
+          name: "{{ current_user.name }}",
+          display_name: "{{ current_user.display_name }}",
+          id: "{{ current_user.name }}",
+        };
+        console.log(app.currentUser);
+      </script>
+
+      <script type="text/javascript">
+        $(function() {
+          Gasoline.start();
+        });
+      </script>
+  </body>
+</html>

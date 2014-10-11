@@ -17,9 +17,7 @@ from gasoline.config import DefaultConfig
 from gasoline.core import extensions, signals
 from gasoline.core.api import api_error_handler
 from gasoline.models import User
-from gasoline.views import (
-    blueprint_search, blueprint_document, blueprint_user, blueprint_index,
-    blueprint_urlshortener)
+from gasoline.views import blueprint_index, blueprint_urlshortener
 from gasoline.api import (
     blueprint_api_users, blueprint_api_spaces,
     blueprint_api_documents, blueprint_api_comments, blueprint_api_tags)
@@ -47,9 +45,6 @@ class Application(Flask):
     plugins = {}
     _blueprints = [
         blueprint_index,
-        blueprint_document,
-        blueprint_user,
-        blueprint_search,
         blueprint_urlshortener,
         blueprint_api_users,
         blueprint_api_spaces,
