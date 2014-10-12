@@ -13,3 +13,4 @@ node_modules/
 bower_components
 
 gasoline/static/assets/
+gasoline/static/js/
