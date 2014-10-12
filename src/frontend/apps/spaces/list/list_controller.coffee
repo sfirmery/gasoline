@@ -2,13 +2,9 @@
 
 	class List.Controller extends App.Controllers.Base
 
-		initialize: (options) ->
-			console.log options
-			if options.space != null
-				spaces = App.request "spaces:entities", options.space
-				console.log "spaces ", spaces
-			else
-				spaces = null
+		initialize: ->
+			spaces = App.request "get:spaces:entities"
+			console.log "spaces ", spaces
 
 			@layout = @getLayoutView()
 

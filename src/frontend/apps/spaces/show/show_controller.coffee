@@ -12,7 +12,7 @@
 
             # @space = options.space or options.model.id
             if options.space != null
-                space = App.request "spaces:entities:one", options.space
+                space = App.request "get:spaces:entities", options.space
 
                 App.execute "when:fetched", space, =>
                     @show @layout

@@ -34,9 +34,9 @@
             space
 
     # request list of spaces
-    App.reqres.setHandler "spaces:entities", ->
-        API.getSpaces()
+    App.reqres.setHandler "get:spaces:entities", (space) ->
+        if space then API.getSpace $.trim(space) else API.getSpaces()
 
-    # request a space
-    App.reqres.setHandler "spaces:entities:one", (space) ->
-        API.getSpace $.trim(space)
+    # # request a space
+    # App.reqres.setHandler "getone:spaces:entities", (space) ->
+        

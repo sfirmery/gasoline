@@ -10,8 +10,8 @@
                 @showHeader space
                 @spaceView space
 
-            if options.space != null && options.space != null
-                space = App.request "spaces:entities:one", options.space, options.space
+            if options.space != null
+                space = App.request "get:spaces:entities", options.space
                 
                 App.execute "when:fetched", space, =>
                     @show @layout
