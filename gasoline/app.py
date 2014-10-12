@@ -7,7 +7,6 @@ from babel import Locale
 
 # flask
 from flask import Flask, render_template, request, g
-from flask.ext.login import current_user
 from flask.ext.assets import Bundle
 from flask.ext.babel import (
     format_date, format_datetime, format_time, get_locale as babel_get_locale)
@@ -100,9 +99,6 @@ class Application(Flask):
 
         @self.before_request
         def before_request():
-            from gasoline.forms import SearchForm
-            if current_user.is_authenticated():
-                g.search_form = SearchForm()
             g.locale = babel_get_locale()
 
         # request_started.connect(self._setup_breadcrumbs)
