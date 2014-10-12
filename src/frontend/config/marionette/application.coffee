@@ -10,7 +10,6 @@ do (Backbone) ->
             if _.isEmpty(frag) then null else frag
         
         startHistory: (options) ->
-            console.log 'start history', options
             if Backbone.history
                 Backbone.history.start(options)
         
