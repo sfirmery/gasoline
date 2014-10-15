@@ -2,7 +2,7 @@
 	
 	App.commands.setHandler "when:fetched", (entities, callback) ->
 
-		# append callback to entities fetch
-		_.chain([entities]).flatten().forEach (item) ->
-			$.when(item.fetch()).done ->
-				callback()
+        xhrs = _.chain([entities]).flatten().pluck("_fetch").value()
+    
+        $.when(xhrs...).done ->
+            callback()
