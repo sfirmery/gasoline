@@ -3,7 +3,7 @@
     class Edit.Controller extends App.Controllers.Base
 
         initialize: (options) ->
-            user = App.request "users:entities:one", options.user
+            user = App.request "users:entity", options.user
 
             @layout = @getLayoutView()
 

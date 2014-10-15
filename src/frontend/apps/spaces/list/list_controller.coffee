@@ -3,16 +3,15 @@
 	class List.Controller extends App.Controllers.Base
 
 		initialize: ->
-			spaces = App.request "get:spaces:entities"
-			console.log "spaces ", spaces
+			spaces = App.request "spaces:entities"
 
-			@layout = @getLayoutView()
+				@layout = @getLayoutView()
 
-			@listenTo @layout, "show", =>
-				console.log "showing"
-				@resultsView spaces
-				@spacesView spaces
-				@paginationView spaces
+				@listenTo @layout, "show", =>
+					console.log "showing"
+					@resultsView spaces
+					@spacesView spaces
+					@paginationView spaces
 
 			App.execute "when:fetched", spaces, =>
 				console.log "fetched", spaces.models

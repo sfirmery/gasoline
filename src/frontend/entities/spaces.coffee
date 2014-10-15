@@ -6,7 +6,7 @@
         urlRoot: baseUrl
 
         initialize: (options) ->
-            @space = options.space
+            {@space} = options
 
     class Entities.SpacesCollection extends Entities.Collection
         model: Entities.Space
@@ -33,10 +33,10 @@
                 data: params
             space
 
-    # request list of spaces
-    App.reqres.setHandler "get:spaces:entities", (space) ->
-        if space then API.getSpace $.trim(space) else API.getSpaces()
+    # request a spaces
+    App.reqres.setHandler "spaces:entity", (space) ->
+        API.getSpace $.trim(space)
 
-    # # request a space
-    # App.reqres.setHandler "getone:spaces:entities", (space) ->
-        
+    # request list of spaces
+    App.reqres.setHandler "spaces:entities", ->
+        API.getSpaces()

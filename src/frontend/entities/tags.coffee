@@ -26,7 +26,6 @@
         extractTags: (document, params = {}) ->
             _.defaults params, {}
             
-            console.log "extractTags from document", document
             tags = new Entities.TagsCollection
             tagsArray = []
             document.get("tags").forEach (tag) =>
@@ -36,7 +35,6 @@
                     space: document.get("space")
                     doc: document.get("id")
             tags.add tagsArray
-            console.log "extractTags", tags, tagsArray
             tags
 
         getTag: (name, params = {}) ->
@@ -51,11 +49,11 @@
             tag
 
     # request an empty comment
-    App.reqres.setHandler "tags:entities:empty", (space, document) ->
+    App.reqres.setHandler "new:tags:entity", (space, document) ->
         new Entities.Tag
             space: $.trim(space)
             doc: $.trim(document)
 
     # request an tag
-    App.reqres.setHandler "tags:entities:extract", (document) ->
+    App.reqres.setHandler "extract:tags:entities", (document) ->
         API.extractTags document

@@ -29,14 +29,12 @@
             user.fetch
                 reset: true
                 data: params
-                success: (item) ->
-                    console.log "success", item
             user
+
+    # request an user
+    App.reqres.setHandler "users:entity", (user) ->
+        API.getUser $.trim(user)
 
     # request list of users
     App.reqres.setHandler "users:entities", ->
         API.getUsers()
-
-    # request an user
-    App.reqres.setHandler "users:entities:one", (user) ->
-        API.getUser $.trim(user)

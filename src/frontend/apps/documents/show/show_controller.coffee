@@ -13,7 +13,7 @@
                 @showComments document
 
             if options.document != null && options.space != null
-                document = App.request "documents:entities:one", options.space, options.document
+                document = App.request "documents:entity", options.space, options.document
 
                 App.execute "when:fetched", document, =>
                     @show @layout

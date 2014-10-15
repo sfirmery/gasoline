@@ -11,7 +11,7 @@
                 @spaceView space
 
             if options.space != null
-                space = App.request "get:spaces:entities", options.space
+                space = App.request "spaces:entity", options.space
                 
                 App.execute "when:fetched", space, =>
                     @show @layout

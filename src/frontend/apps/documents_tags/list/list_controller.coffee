@@ -3,7 +3,7 @@
     class List.Controller extends App.Controllers.Base
 
         initialize: (options) ->
-            tags = App.request "tags:entities:extract", options.document
+            tags = App.request "extract:tags:entities", options.document
             @space = options.document.get('space')
             @doc = options.document.id
 

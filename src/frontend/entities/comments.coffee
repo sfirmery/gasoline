@@ -7,8 +7,7 @@
             "#{baseUrl}/#{@space}/#{@doc}/comments"
 
         initialize: (options) ->
-            @space = options.space
-            @doc = options.doc
+            {@space, @doc} = options
 
 
     class Entities.CommentsCollection extends Entities.Collection
@@ -18,8 +17,7 @@
             "#{baseUrl}/#{@space}/#{@doc}/comments"
 
         initialize: (options) ->
-            @space = options.space
-            @doc = options.doc
+            {@space, @doc} = options
 
         parse: (resp) ->
             resp
@@ -37,29 +35,12 @@
                 data: params
             comments
 
-        # get a comment of a document
-        getComment: (space, document, id, params = {}) ->
-            _.defaults params, {}
-
-            comment = new Entities.Comment
-                id: id
-                space: space
-                doc: doc
-            comment.fetch
-                # reset: true
-                data: params
-            comment
-
     # request list of comments
-    App.reqres.setHandler "comments:entities", (space, document) ->
-        API.getComments $.trim(space), $.trim(document)
-
-    # request a comment
-    App.reqres.setHandler "comments:entities:one", (space, document, comment) ->
-        API.getComment $.trim(space), $.trim(document), $.trim(comment)
+    App.reqres.setHandler "comments:entities", (space, doc) ->
+        API.getComments $.trim(space), $.trim(doc)
 
     # request an empty comment
-    App.reqres.setHandler "comments:entities:empty", (space, document) ->
+    App.reqres.setHandler "new:comments:entity", (space, doc) ->
         new Entities.Comment
             space: $.trim(space)
-            doc: $.trim(document)
+            doc: $.trim(doc)

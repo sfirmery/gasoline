@@ -70,7 +70,7 @@
             super options
 
         createModel: ->
-            @model = App.request "comments:entities:empty", @space, @doc
+            @model = App.request "new:comments:entity", @space, @doc
 
         updateModel: ->
             @model.set

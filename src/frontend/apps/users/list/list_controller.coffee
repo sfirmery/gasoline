@@ -5,12 +5,12 @@
 		initialize: ->
 			users = App.request "users:entities"
 
-			@layout = @getLayoutView()
+				@layout = @getLayoutView()
 
-			@listenTo @layout, "show", =>
-				@resultsView users
-				@usersView users
-				@paginationView users
+				@listenTo @layout, "show", =>
+					@resultsView users
+					@usersView users
+					@paginationView users
 
 			App.execute "when:fetched", users, =>
 				users.reset users.sortBy "name"

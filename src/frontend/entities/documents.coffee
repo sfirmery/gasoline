@@ -7,7 +7,7 @@
             "#{baseUrl}/#{@space}"
 
         initialize: (options) ->
-            @space = options.space
+            {@space} = options
 
     class Entities.DocumentsCollection extends Entities.Collection
         model: Entities.Document
@@ -15,7 +15,7 @@
             "#{baseUrl}/#{@space}"
 
         initialize: (options) ->
-            @space = options.space
+            {@space} = options
         
         parse: (resp) ->
             resp
@@ -30,20 +30,20 @@
                 data: params
             documents
 
-        getDocument: (space, id, params = {}) ->
+        getDocument: (space, doc, params = {}) ->
             _.defaults params, {}
 
             document = new Entities.Document
                 space: space
-                id: id
+                id: doc
             document.fetch
                 data: params
             document
 
+    # request a document
+    App.reqres.setHandler "documents:entity", (space, doc) ->
+        API.getDocument $.trim(space), $.trim(doc)
+
     # request list of documents
     App.reqres.setHandler "documents:entities", (space) ->
         API.getDocuments $.trim(space)
-
-    # request a document
-    App.reqres.setHandler "documents:entities:one", (space, document) ->
-        API.getDocument $.trim(space), $.trim(document)

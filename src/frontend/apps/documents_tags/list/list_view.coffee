@@ -39,7 +39,7 @@
             super options
 
         createModel: ->
-            @model = App.request "tags:entities:empty", @space, @doc
+            @model = App.request "new:tags:entity", @space, @doc
 
         updateModel: ->
             @model.set

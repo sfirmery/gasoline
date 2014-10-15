@@ -4,7 +4,7 @@
 
         initialize: (options) ->
             if options.user != null
-                user = App.request "users:entities:one", options.user
+                user = App.request "users:entity", options.user
             else
                 user = options.model
 
