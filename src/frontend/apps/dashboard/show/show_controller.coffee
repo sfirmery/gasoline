@@ -1,18 +1,21 @@
 @Gasoline.module "DashboardApp.Show", (Show, App, Backbone, Marionette, $, _) ->
 
-	class Show.Controller extends App.Controllers.Base
+    class Show.Controller extends App.Controllers.Base
 
-		initialize: ->
-			@layout = @getLayoutView()
+        initialize: ->
+            @layout = @getLayoutView()
 
-			@listenTo @layout, "show", =>
-				@listUsers()
+            @listenTo @layout, "show", =>
+                @showWidgetSpaces()
+                @showWidgetActivityStream()
 
-			@show @layout
-		
-		listUsers: ->
-			App.execute "users:entities", @layout.usersRegion
-			console.log "list users end"
+            @show @layout
+        
+        showWidgetSpaces: ->
+            App.execute "show:widget:spaces", @layout.spacesListRegion
 
-		getLayoutView: ->
-			new Show.LayoutView
+        showWidgetActivityStream: ->
+            App.execute "show:widget:activitystream", @layout.activityStreamRegion
+
+        getLayoutView: ->
+            new Show.LayoutView
