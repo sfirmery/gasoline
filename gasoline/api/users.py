@@ -22,12 +22,12 @@ route = blueprint_api_users.route
 class UsersAPI(MethodView):
     # decorators = [login_required]
 
-    def get(self, name):
-        if name is None:
+    def get(self, uid):
+        if uid is None:
             users = User.objects().all()
             resp = to_json(json_schema_collection, array=users)
         else:
-            user = User.objects(name=name).first()
+            user = User.objects(id=uid).first()
             if user is None:
                 abort(404, 'Unknown user')
             resp = to_json(json_schema_resource, object=user)
@@ -35,14 +35,28 @@ class UsersAPI(MethodView):
         return Response(response=resp, status=200,
                         mimetype='application/json')
 
-    def put(self, name):
+    def post(self):
+        # get json from request
+        json = get_json()
+
+        # create document
+        user = from_json(json, User, json_schema_resource)
+
+        resp = to_json(json_schema_resource, object=user)
+        return Response(response=resp, status=201, mimetype='application/json',
+                        headers={'location': user.uri})
+
+    def put(self, uid):
         # get user
-        user = User.objects(name=name).first()
+        user = User.objects(id=uid).first()
         if user is None:
             abort(404, 'Unknown user')
 
         # get json from request
         json = get_json()
+
+        import time
+        time.sleep(10)
 
         # update document
         user = update_from_json(json, user, json_schema_resource)
@@ -53,7 +67,7 @@ class UsersAPI(MethodView):
 
 users_view = UsersAPI.as_view('users')
 blueprint_api_users.\
-    add_url_rule(rest_uri_collection, defaults={'name': None},
+    add_url_rule(rest_uri_collection, defaults={'uid': None},
                  view_func=users_view, methods=['GET'])
 blueprint_api_users.\
     add_url_rule(rest_uri_collection,

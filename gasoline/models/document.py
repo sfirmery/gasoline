@@ -369,10 +369,10 @@ class BaseDocument(db.DynamicDocument):
 
         super(BaseDocument, self).save()
 
-        # send document update event
-        event.send('document', document=self)
-        # send activity event
-        activity.send(verb=verb, object=self, object_type='page')
+        # # send document update event
+        # event.send('document', document=self)
+        # # send activity event
+        # activity.send(verb=verb, object=self, object_type='page')
 
     def to_rest(self):
         """return document in rest friendly format"""

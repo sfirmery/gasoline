@@ -5,7 +5,7 @@ from werkzeug import generate_password_hash, check_password_hash
 from gasoline.core.extensions import db
 
 rest_uri_collection = '/api/v1/users'
-rest_uri_resource = '{}/<name>'.format(rest_uri_collection)
+rest_uri_resource = '{}/<uid>'.format(rest_uri_collection)
 
 json_schema_resource = {
     'title': 'User resource Schema',
@@ -14,6 +14,7 @@ json_schema_resource = {
             'type': 'object',
             'required': ['name'],
             'properties': {
+                '_id': {'type': 'string'},
                 'name': {'type': 'string'},
                 'display_name': {'type': 'string'},
                 'description': {'type': 'string'},
@@ -33,7 +34,7 @@ json_schema_collection = {
 
 
 class User(db.Document):
-    name = db.StringField(primary_key=True)
+    name = db.StringField()
     description = db.StringField()
     password = db.StringField()
 
@@ -58,7 +59,7 @@ class User(db.Document):
     @property
     def uri(self):
         return rest_uri_resource.\
-            replace("<name>", self.name)
+            replace("<uid>", unicode(self.id))
 
     @property
     def display_name(self):

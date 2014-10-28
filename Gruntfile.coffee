@@ -28,7 +28,7 @@ module.exports = (grunt) ->
       jst:
         files: [
           expand: true
-          cwd: "src/frontend/"
+          cwd: "src/frontend/backbone/"
           src: ["**/templates/*.jst"]
           dest: "gasoline/static/js/backbone/"
           filter: "isFile"
@@ -36,11 +36,13 @@ module.exports = (grunt) ->
 
     coffee:
       compile:
+        options:
+          bare: false
         files: [
           expand: true
           cwd: "src/frontend/"
           src: ['*.coffee', '**/*.coffee']
-          dest: "gasoline/static/js/backbone/"
+          dest: "gasoline/static/js/"
           ext: ".js"
           extDot: "first"
         ]
@@ -53,9 +55,13 @@ module.exports = (grunt) ->
       coffee:
         files: ['src/frontend/*.coffee', 'src/frontend/**/*.coffee']
         tasks: ['newer:coffee:compile']
+        options:
+          debounceDelay: 50
       jst:
         files: ['src/frontend/*.jst', 'src/frontend/**/*.jst']
         tasks: ['newer:copy:jst']
+        options:
+          debounceDelay: 50
 
   grunt.loadNpmTasks "grunt-contrib-uglify"
   grunt.loadNpmTasks "grunt-contrib-watch"

@@ -65,7 +65,7 @@ class Application(Flask):
         self._assets_bundles = {
             'css': {
                 'options': dict(
-                    filters='cssmin',
+                    # filters='cssmin',
                     output='assets/style-%(version)s.min.css')
             },
             'js-top': {
@@ -177,13 +177,16 @@ class Application(Flask):
             'vendors/backbone.babysitter/js/backbone.babysitter.js',
             'vendors/backbone.wreqr/js/backbone.wreqr.js',
             'vendors/backbone.validation/js/backbone-validation.js',
-            'js/backbone/config/**/*.js',
+            'vendors/backbone.syphon/js/backbone.syphon.js',
+            'js/config/**/*.js',
             'js/backbone/app.js',
-            'js/backbone/controllers/**/*.js',
-            'js/backbone/entities/_base/*.js',
+            'js/backbone/lib/entities/**/*.js',
+            'js/backbone/lib/utilities/**/*.js',
+            'js/backbone/lib/views/**/*.js',
+            'js/backbone/lib/controllers/**/*.js',
+            'js/backbone/lib/regions/**/*.js',
+            'js/backbone/lib/components/**/*.js',
             'js/backbone/entities/**/*.js',
-            'js/backbone/views/**/*.js',
-            'js/backbone/components/**/*.js',
             'js/backbone/apps/**/*.js',
         ]
         self._assets_bundles['js']['files'].append('js/gasoline.js')
@@ -192,7 +195,7 @@ class Application(Flask):
             'vendors/bootstrap/css/bootstrap.css',
             'vendors/bootstrap-datepicker/css/datepicker3.css',
             'vendors/font-awesome/css/font-awesome.css',
-            'vendors/bootstrap-tags/css/bootstrap-tags.css',
+            'vendors/*bootstrap-tags/css/bootstrap-tags.css',
         ]
         self._assets_bundles['css']['files'].append('css/gasoline.css')
 
@@ -203,6 +206,7 @@ class Application(Flask):
 
         self._assets_jst['files'] = [
             'js/backbone/apps/**/*.jst',
+            'js/backbone/lib/**/*.jst',
         ]
 
         for name, data in self._assets_bundles.items():

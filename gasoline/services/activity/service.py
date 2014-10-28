@@ -2,7 +2,6 @@
 """"""
 
 import logging
-from flask import url_for
 from flask.ext.login import current_user
 
 from gasoline.core.signals import activity
@@ -42,7 +41,6 @@ class ActivityService(Service):
             object_type=object_type,
             id=str(object.id),
             display_name=object.title,
-            url=url_for('document.view', space=object.space,
-                        doc_id=str(object.id))
+            url=object.uri
         )
         activity.save()

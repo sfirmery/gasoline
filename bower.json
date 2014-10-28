@@ -11,33 +11,34 @@
 		"bootstrap-tags": "*",
 		"backbone": "*",
 		"backbone.marionette": "*",
-		"backbone.validation": "*"
+		"backbone.validation": "*",
+		"backbone.syphon": "*"
 	},
 	"exportsOverride": {
 		"bootstrap": {
-			"js": "dist/js/*.js",
-			"css": [ "dist/css/bootstrap.css",  "dist/css/bootstrap.min.css" ],
+			"js": [ "dist/js/bootstrap.js" ],
+			"css": [ "dist/css/bootstrap.css" ],
 			"fonts": "dist/fonts/*"
 		},
 		"bootstrap-datepicker": {
-			"js": "js/*.js",
+			"js": "js/bootstrap-datepicker.js",
 			"js/locales": "js/locales/*.js",
 			"css": "css/datepicker3.css"
 		},
 		"font-awesome": {
-			"css": [ "css/*.css", "css/*.min.css" ],
+			"css": [ "css/font-awesome.css" ],
 			"fonts": "fonts/*"
 		},
 		"jquery": {
-			"js": [ "dist/*.js", "dist/*.min.js" ]
+			"js": [ "dist/jquery.js" ]
 		},
 		"jquery-timeago": {
 			"js": "jquery.timeago.js",
 			"js/locales": "locales/*.js"
 		},
 		"bootstrap-tags": {
-			"js": [ "dist/js/*.js" ],
-			"css": [ "dist/css/*.css" ]
+			"js": [ "dist/js/bootstrap-tags.js" ],
+			"css": [ "dist/css/bootstrap-tags.css" ]
 		},
 		"underscore": {
 			"js": [ "underscore.js" ]
@@ -46,16 +47,19 @@
 			"js": [ "backbone.js" ]
 		},
 		"backbone.marionette": {
-			"js": [ "lib/*.js", "lib/*.min.js" ]
+			"js": [ "lib/backbone.marionette.js" ]
 		},
 		"backbone.babysitter": {
-			"js": [ "lib/*.js", "lib/*.min.js" ]
+			"js": [ "lib/backbone.babysitter.js" ]
 		},
 		"backbone.wreqr": {
-			"js": [ "lib/*.js", "lib/*.min.js" ]
+			"js": [ "lib/backbone.wreqr.js" ]
 		},
 		"backbone.validation": {
-			"js": [ "dist/backbone-validation.js", "dist/backbone-validation-min.js" ]
+			"js": [ "dist/backbone-validation.js" ]
+		},
+		"backbone.syphon": {
+			"js": [ "lib/backbone.syphon.js" ]
 		}
 	}
 }
