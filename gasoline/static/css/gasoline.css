@@ -157,3 +157,12 @@ img.comment-avatar {
 .document-tag-list-items, .document-tag-list-actions {
     display: inline-block;
 }
+
+
+
+[data-wrapper].opacity    {  opacity: 0.4;  }
+
+
+.sign_in {
+    margin-top: 100px;
+}
