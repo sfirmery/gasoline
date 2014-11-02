@@ -1,10 +1,10 @@
 @Gasoline.module "CommentsApp", (CommentsApp, App, Backbone, Marionette, $, _) ->
         
     API =
-        list: (model, region) ->
+        list: (model) ->
             new CommentsApp.List.Controller
                 model: model
-                region: region
 
-    App.commands.setHandler "show:comments", (model, region) ->
-        API.list model, region
+    App.reqres.setHandler "list:comments", (model) ->
+        throw new Error "Comments List requires a model to be passed in" if not model
+        API.list model
