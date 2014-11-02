@@ -4,6 +4,7 @@ from datetime import datetime
 import markdown2
 import mediawiki
 from mongoengine.fields import GridFSProxy
+from bson.objectid import ObjectId
 
 from gasoline.core.utils import genid
 from gasoline.core.extensions import db
@@ -69,6 +70,15 @@ class DocumentRevision(db.EmbeddedDocument):
         return '<DocumentVersion number=%r>' % self.number
 
 
+class BaseDocumentQuerySet(db.QuerySet):
+
+    def get_document(self, doc):
+        if ObjectId.is_valid(doc):
+            return self.filter(id=doc)
+        else:
+            return self.filter(title=doc)
+
+
 class BaseDocument(db.DynamicDocument):
     _title = db.StringField(db_field='title', unique_with='_space')
     _space = db.StringField(db_field='space', default=u'main')
@@ -93,7 +103,8 @@ class BaseDocument(db.DynamicDocument):
     markup = db.StringField(default=u'xhtml')
 
     meta = {
-        'indexes': ['title', 'space']
+        'indexes': ['title', 'space'],
+        'queryset_class': BaseDocumentQuerySet,
     }
 
     _history = None
@@ -361,13 +372,13 @@ class BaseDocument(db.DynamicDocument):
         if self.last_author is None:
             self.last_author = self.author
 
-    def save(self):
+    def save(self, *args, **kwargs):
         # is a new document ?
         verb = 'update'
         if self.id is None:
             verb = 'create'
 
-        super(BaseDocument, self).save()
+        super(BaseDocument, self).save(*args, **kwargs)
 
         # # send document update event
         # event.send('document', document=self)
