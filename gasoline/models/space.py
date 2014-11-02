@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from mongoengine import queryset_manager, Q
 from gasoline.core.extensions import db
 from gasoline.services.acl import ACE
 
@@ -12,7 +11,9 @@ json_schema_resource = {
     'type': 'object',
     'required': ['name'],
     'properties': {
+        '_id': {'type': 'string'},
         'name': {'type': 'string'},
+        'display_name': {'type': 'string'},
         'description': {'type': 'string'},
         'uri': {'type': 'string'},
     },
@@ -32,6 +33,7 @@ DEFAULT_ACE = ACE(
 
 class Space(db.Document):
     name = db.StringField(primary_key=True)
+    display_name = db.StringField()
     description = db.StringField(default='')
     acl = db.ListField(db.EmbeddedDocumentField(ACE), default=[DEFAULT_ACE])
 
@@ -39,6 +41,12 @@ class Space(db.Document):
     def uri(self):
         return rest_uri_resource.\
             replace("<space>", self.name)
+
+    def save(self, *args, **kwargs):
+        if not self.display_name:
+            self.display_name = self.name
+
+        return super(Space, self).save(*args, **kwargs)
 
     def __repr__(self):
         return '<Space name=%s>' % (self.name)
