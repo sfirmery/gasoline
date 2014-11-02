@@ -1,36 +1,34 @@
 @Gasoline.module "SpacesApp", (SpacesApp, App, Backbone, Marionette, $, _) ->
 
-	class SpacesApp.Router extends Marionette.AppRouter
-		appRoutes:
-			"spaces": "list"
-			"spaces/:space": "show"
-			"spaces/:space/edit": "edit"
-		
-	API =
-		list: ->
-			new SpacesApp.List.Controller
+    class SpacesApp.Router extends Marionette.AppRouter
+        appRoutes:
+            "spaces": "list"
+            "spaces/:space": "show"
+        
+    API =
+        list: ->
+            new SpacesApp.List.Controller
 
-		show: (space, model) ->
-			new SpacesApp.Show.Controller
-				space: space
-				model: model
+        show: (space) ->
+            new SpacesApp.Show.Controller
+                space: space
 
-		edit: (space, model) ->
-			new SpacesApp.Edit.Controller
-				space: space
-				model: model
+        edit: (space) ->
+            new SpacesApp.Edit.Controller
+                region: App.dialogRegion
+                space: space
 
-	App.addInitializer ->
-		new SpacesApp.Router
-			controller: API
+        newSpace: (spaces) ->
+            new SpacesApp.Edit.Controller
+                region: App.dialogRegion
+                spaces: spaces
 
-	App.vent.on "space:saved", (model) ->
-        App.vent.trigger "show:space", model
+    App.vent.on "edit:space:clicked", (space) ->
+        API.edit space
 
-	App.vent.on "edit:space", (model) ->
-		API.edit null, model
-		App.navigate "spaces/#{model.id}/edit"
+    App.vent.on "new:space:clicked", (spaces) ->
+        API.newSpace spaces
 
-	App.vent.on "show:space", (model) ->
-		API.show null, model
-		App.navigate "spaces/#{model.id}"
+    App.addInitializer ->
+        new SpacesApp.Router
+            controller: API

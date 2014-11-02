@@ -3,24 +3,17 @@
     class Show.Controller extends App.Controllers.Application
 
         initialize: (options) ->
-            @layout = @getLayoutView()
+            space = App.request "spaces:entity", options.space
 
-            # render region when render layout
-            @listenTo @layout, "show", =>
-                @showHeader space
-                @spaceView space
+            App.execute "when:fetched", space, =>
+                @layout = @getLayoutView()
 
-            # @space = options.space or options.model.id
-            if options.space != null
-                space = App.request "spaces:entity", options.space
+                @listenTo @layout, "show", =>
+                    @spaceRegion space
 
-                App.execute "when:fetched", space, =>
-                    @show @layout
-            else
-                space = options.model
                 @show @layout
 
-        spaceView: (space) ->
+        spaceRegion: (space) ->
             spaceView = @getSpaceView space
             @show spaceView, region: @layout.spaceRegion
 
