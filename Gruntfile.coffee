@@ -56,11 +56,13 @@ module.exports = (grunt) ->
         files: ['src/frontend/*.coffee', 'src/frontend/**/*.coffee']
         tasks: ['newer:coffee:compile']
         options:
+          spawn: false
           debounceDelay: 50
       jst:
         files: ['src/frontend/*.jst', 'src/frontend/**/*.jst']
         tasks: ['newer:copy:jst']
         options:
+          spawn: false,
           debounceDelay: 50
 
   grunt.loadNpmTasks "grunt-contrib-uglify"
