@@ -19,16 +19,13 @@
     {% assets "jst-"+g.locale.language %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
 
     <script type="text/javascript">
-        var app = app || {};
-        app.currentUser = { 
-          name: "{{ current_user.name }}",
-          display_name: "{{ current_user.display_name }}",
-          id: "{{ current_user.name }}",
-        };
-      </script>
-
-      <script type="text/javascript">
         $(function() {
+          Gasoline.currentUser = new Gasoline.Entities.User({ 
+            name: "{{ current_user.name }}",
+            display_name: "{{ current_user.display_name }}",
+            id: "{{ current_user.name }}",
+          });
+
           Gasoline.start();
         });
       </script>
