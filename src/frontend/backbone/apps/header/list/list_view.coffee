@@ -12,3 +12,6 @@
         className: "navbar navbar-default"
         attributes:
             role: "navigation"
+
+        serializeData: ->
+            currentUser: App.currentUser
