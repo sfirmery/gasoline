@@ -15,7 +15,7 @@
 
         events:
             "click @ui.edit" : ->
-                App.vent.trigger "edit:document", @model
+                @model.trigger "edit:document:clicked"
             "click @ui.history" : ->
                 console.log "history clicked"
             "click @ui.attachments" : ->
@@ -27,7 +27,7 @@
             "click @ui.informations" : ->
                 console.log "informations clicked"
             "click @ui.display" : ->
-                App.vent.trigger "show:document", @model
+                @model.trigger "display:document:clicked"
 
         initialize: (options) ->
             super
