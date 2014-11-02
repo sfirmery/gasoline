@@ -3,32 +3,34 @@
     class Edit.Controller extends App.Controllers.Application
 
         initialize: (options) ->
-            @layout = @getLayoutView()
+            {model} = options
+            # @layout = @getLayoutView()
+            # @setMainView @layout
 
-            # render region when render layout
-            @listenTo @layout, "show", =>
-                @showHeader document
-                @documentView document
+            documentView = @getDocumentView model
 
-            if options.document != null && options.space != null
-                document = App.request "documents:entity", options.space, options.document
-                
-                App.execute "when:fetched", document, =>
-                    @show @layout
-            else
-                document = options.model
-                @show @layout
+            form = App.request "form:component", documentView,
+                buttons:
+                    primary: "Submit"
+                    cancel: "Cancel"
+                # onFormCancel: => @region.empty()
+                # onFormSuccess: => @region.empty()
 
-        documentView: (document) ->
-            documentView = @getUserView document
-            @show documentView, region: @layout.documentRegion
-        
-        showHeader: (document) ->
-            App.execute "show:documents:header", "edit", document, @layout.documentHeaderRegion
-        
-        getUserView: (document) ->
+            # @listenTo @layout, "show", =>
+            @listenTo form, "form:cancel", =>
+                console.log "trap form:cancel"
+                @trigger "edit:cancel"
+
+            console.log "show edit layout", @layout
+            @show form
+
+        show: (options) ->
+            console.log "show edit Controller wiht options", options
+            super options
+
+        getDocumentView: (model) ->
             new Edit.Document
-                model: document
-        
+                model: model
+
         getLayoutView: ->
             new Edit.LayoutView

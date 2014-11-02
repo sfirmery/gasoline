@@ -1,54 +1,46 @@
 @Gasoline.module "DocumentsApp.List", (List, App, Backbone, Marionette, $, _) ->
 
-	class List.Controller extends App.Controllers.Application
+    class List.Controller extends App.Controllers.Application
 
-		initialize: (options) ->
-			console.log options
-			if options.space != null
-				documents = App.request "documents:entities", options.space
-				console.log "documents ", documents
-			else
-				documents = null
+        initialize: (options) ->
+            # documents = if options.space then App.request "documents:entities", options.space else null
+            documents = App.request "documents:entities", options.space
 
-			@layout = @getLayoutView()
+            @layout = @getLayoutView()
 
-			@listenTo @layout, "show", =>
-				console.log "showing"
-				@resultsView documents
-				@documentsView documents
-				@paginationView documents
+            @listenTo @layout, "show", =>
+                @panelRegion documents
+                @documentsRegion documents
+                @paginationRegion documents
 
-			App.execute "when:fetched", documents, =>
-				## perform aggregates / sorting / nesting here
-				## this is helpful when you want to perform operations but only after
-				## all the required dependencies have been fetched and are available
-				console.log "fetched", documents.models
-				documents.reset documents.sortBy "name"
-				@show @layout
+            App.execute "when:fetched", documents, =>
+                console.log "fetched", documents.models
+                documents.reset documents.sortBy "name"
+                @show @layout
 
-		resultsView: (documents) ->
-			resultsView = @getResultsView documents
-			@show resultsView, region: @layout.resultsRegion
-		
-		documentsView: (documents) ->
-			documentsView = @getDocumentsView documents
-			@show documentsView, region: @layout.documentsRegion
-		
-		paginationView: (documents) ->
-			paginationView = @getPaginationView documents
-			@show paginationView, region: @layout.paginationRegion
-		
-		getResultsView: (documents) ->
-			new List.Results
-				collection: documents
-		
-		getPaginationView: (documents) ->
-			new List.Pagination
-				collection: documents
-		
-		getDocumentsView: (documents) ->
-			new List.Documents
-				collection: documents
-		
-		getLayoutView: ->
-			new List.LayoutView
+        panelRegion: (documents) ->
+            panelView = @getPanelView documents
+            @show panelView, region: @layout.panelRegion
+        
+        documentsRegion: (documents) ->
+            documentsView = @getDocumentsView documents
+            @show documentsView, region: @layout.documentsRegion
+        
+        paginationRegion: (documents) ->
+            paginationView = @getPaginationView documents
+            @show paginationView, region: @layout.paginationRegion
+        
+        getPanelView: (documents) ->
+            new List.Panel
+                collection: documents
+        
+        getPaginationView: (documents) ->
+            new List.Pagination
+                collection: documents
+        
+        getDocumentsView: (documents) ->
+            new List.Documents
+                collection: documents
+        
+        getLayoutView: ->
+            new List.LayoutView

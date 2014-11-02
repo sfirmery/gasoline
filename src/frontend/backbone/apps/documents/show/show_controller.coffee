@@ -3,36 +3,71 @@
     class Show.Controller extends App.Controllers.Application
 
         initialize: (options) ->
+            {@mode, @docId, @space} = options
             @layout = @getLayoutView()
 
-            # render region when render layout
+            # request document
+            document = App.request "documents:entity", @space, @docId
+
+            @on "change:mode", ->
+                console.log "change:mode"
+                @reload document
+
+            @listenTo document, "edit:document:clicked", =>
+                @mode = "edit"
+                @trigger "change:mode"
+
+            @listenTo document, "display:document:clicked", =>
+                @mode = "show"
+                @trigger "change:mode"
+
             @listenTo @layout, "show", =>
-                @showHeader document
-                @documentView document
-                @showTags document
-                @showComments document
+                @headerRegion document
+                @documentRegion document
+                @tagsRegion document
+                @commentsRegion document
 
-            if options.document != null && options.space != null
-                document = App.request "documents:entity", options.space, options.document
-
-                App.execute "when:fetched", document, =>
-                    @show @layout
-            else
-                document = options.model
+            App.execute "when:fetched", document, =>
                 @show @layout
 
-        documentView: (document) ->
-            documentView = @getDocumentView document
-            @show documentView, region: @layout.documentRegion
+        reload: (document) ->
+            console.log "reload", document
+            @headerRegion document
+            @documentRegion document
+            @tagsRegion document
+            @commentsRegion document
 
-        showHeader: (document) ->
-            App.execute "show:documents:header", "show", document, @layout.documentHeaderRegion
-        
-        showTags: (document) ->
-            App.execute "show:documents:tags", document, @layout.tagsRegion
+        editDocument: (document) ->
+            console.log "edit:document", document
 
-        showComments: (document) ->
-            App.execute "show:comments", document, @layout.commentsRegion
+        documentRegion: (document) ->
+            if @mode == "edit"
+                documentView = App.request "edit:document", document, @layout.documentRegion
+            else
+                documentView = @getDocumentView document
+                @show documentView, region: @layout.documentRegion
+            
+            @listenTo documentView, "edit:cancel", =>
+                @mode = "show"
+                @trigger "change:mode"
+
+        headerRegion: (document) ->
+            headerView = App.request "documents:header", @mode, document
+            @show headerView, region: @layout.documentHeaderRegion
+
+        tagsRegion: (document) ->
+            if @mode =="edit"
+                @layout.tagsRegion.reset()
+            else
+                tagsView = App.request "list:document:tags", document
+                @show tagsView, region: @layout.tagsRegion
+
+        commentsRegion: (document) ->
+            if @mode =="edit"
+                @layout.commentsRegion.reset()
+            else
+                commentsView = App.request "list:comments", document
+                @show commentsView, region: @layout.commentsRegion
 
         getDocumentView: (document) ->
             new Show.Document
