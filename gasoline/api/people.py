@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from flask import Blueprint, flash, abort, redirect, session
-from flask import url_for, request, Response
+from flask import Blueprint, abort, Response
 from flask.views import MethodView
 from flask.ext.babel import gettext as _, ngettext as _n
-from flask.ext.login import login_user, logout_user
 from flask.ext.login import current_user, login_required
 
 from gasoline.core.api import get_json
@@ -15,19 +13,19 @@ from gasoline.models.user import (
     json_schema_collection, json_schema_resource,
     rest_uri_collection, rest_uri_resource)
 
-blueprint_api_users = Blueprint('api.users', __name__)
-route = blueprint_api_users.route
+blueprint_api_people = Blueprint('api.people', __name__)
+route = blueprint_api_people.route
 
 
-class UsersAPI(MethodView):
+class PeopleAPI(MethodView):
     # decorators = [login_required]
 
     def get(self, uid):
         if uid is None:
-            users = User.objects().all()
-            resp = to_json(json_schema_collection, array=users)
+            people = User.objects().all()
+            resp = to_json(json_schema_collection, array=people)
         else:
-            user = User.objects(id=uid).first()
+            user = User.objects(name=uid).first()
             if user is None:
                 abort(404, 'Unknown user')
             resp = to_json(json_schema_resource, object=user)
@@ -48,31 +46,43 @@ class UsersAPI(MethodView):
 
     def put(self, uid):
         # get user
-        user = User.objects(id=uid).first()
+        user = User.objects(name=uid).first()
         if user is None:
             abort(404, 'Unknown user')
 
         # get json from request
         json = get_json()
 
-        import time
-        time.sleep(10)
-
-        # update document
+        # update user
         user = update_from_json(json, user, json_schema_resource)
 
         resp = to_json(json_schema_resource, object=user)
         return Response(response=resp, status=200, mimetype='application/json')
 
+    patch = put
 
-users_view = UsersAPI.as_view('users')
-blueprint_api_users.\
+    def delete(self, uid):
+        # get user
+        user = User.objects(name=uid).first()
+        if user is None:
+            abort(404, 'Unknown user')
+
+        # delete space
+        try:
+            user.delete()
+        except:
+            abort(422, _('Error while deleting user.'))
+
+        return Response(status=204, mimetype='application/json')
+
+people_view = PeopleAPI.as_view('people')
+blueprint_api_people.\
     add_url_rule(rest_uri_collection, defaults={'uid': None},
-                 view_func=users_view, methods=['GET'])
-blueprint_api_users.\
+                 view_func=people_view, methods=['GET'])
+blueprint_api_people.\
     add_url_rule(rest_uri_collection,
-                 view_func=users_view, methods=['POST'])
-blueprint_api_users.\
+                 view_func=people_view, methods=['POST'])
+blueprint_api_people.\
     add_url_rule(rest_uri_resource,
-                 view_func=users_view,
+                 view_func=people_view,
                  methods=['GET', 'PUT', 'PATCH', 'DELETE'])

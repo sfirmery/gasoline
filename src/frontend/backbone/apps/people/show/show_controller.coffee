@@ -1,12 +1,9 @@
-@Gasoline.module "UsersApp.Show", (Show, App, Backbone, Marionette, $, _) ->
+@Gasoline.module "PeopleApp.Show", (Show, App, Backbone, Marionette, $, _) ->
 
     class Show.Controller extends App.Controllers.Application
 
         initialize: (options) ->
-            if options.user != null
-                user = App.request "users:entity", options.user
-            else
-                user = options.model
+            user = App.request "people:entity", options.user
 
             App.execute "when:fetched", user, =>
                 @layout = @getLayoutView()
@@ -18,8 +15,8 @@
 
         userRegion: (user) ->
             userView = @getUserView user
-            @layout.userRegion.show userView
-        
+            @show userView, region: @layout.userRegion
+
         getUserView: (user) ->
             new Show.User
                 model: user

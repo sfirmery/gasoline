@@ -18,7 +18,7 @@ from gasoline.core.api import api_error_handler
 from gasoline.models import User
 from gasoline.views import blueprint_index, blueprint_urlshortener
 from gasoline.api import (
-    blueprint_api_users, blueprint_api_spaces,
+    blueprint_api_people, blueprint_api_spaces,
     blueprint_api_documents, blueprint_api_comments, blueprint_api_tags)
 from gasoline.services import (
     acl_service, indexer_service, activity_service, urlshortener_service)
@@ -45,7 +45,7 @@ class Application(Flask):
     _blueprints = [
         blueprint_index,
         blueprint_urlshortener,
-        blueprint_api_users,
+        blueprint_api_people,
         blueprint_api_spaces,
         blueprint_api_documents,
         blueprint_api_comments,

@@ -1,14 +1,12 @@
-@Gasoline.module "UsersApp.Edit", (Edit, App, Backbone, Marionette, $, _) ->
+@Gasoline.module "PeopleApp.Edit", (Edit, App, Backbone, Marionette, $, _) ->
 
     class Edit.Controller extends App.Controllers.Application
 
         initialize: (options) ->
-            { users, user } = options
+            { people, user } = options
             user ?= App.request "new:user:entity"
 
-            console.log "user new", user.isNew()
-
-            userView = @getUserView users, user
+            userView = @getUserView people, user
 
             form = App.request "form:component", userView,
                 proxy: "dialog"
@@ -18,7 +16,7 @@
 
             @show form
 
-        getUserView: (users, user) ->
+        getUserView: (people, user) ->
             new Edit.User
-                collection: users
+                collection: people
                 model: user

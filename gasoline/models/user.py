@@ -4,7 +4,7 @@ from werkzeug import generate_password_hash, check_password_hash
 
 from gasoline.core.extensions import db
 
-rest_uri_collection = '/api/v1/users'
+rest_uri_collection = '/api/v1/people'
 rest_uri_resource = '{}/<uid>'.format(rest_uri_collection)
 
 json_schema_resource = {
@@ -34,7 +34,7 @@ json_schema_collection = {
 
 
 class User(db.Document):
-    name = db.StringField()
+    name = db.StringField(primary_key=True)
     description = db.StringField()
     password = db.StringField()
 

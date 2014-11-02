@@ -1,7 +1,7 @@
-@Gasoline.module "UsersApp.Edit", (Edit, App, Backbone, Marionette, $, _) ->
+@Gasoline.module "PeopleApp.Edit", (Edit, App, Backbone, Marionette, $, _) ->
 
     class Edit.User extends App.Views.LayoutView
-        template: "users/edit/user"
+        template: "people/edit/user"
 
         dialog: ->
             title: => (if @model.isNew() then "New" else "Edit") + " user"
