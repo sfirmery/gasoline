@@ -5,7 +5,7 @@
         tagName: "div"
         className: "document-tag-list"
         regions:
-            tagsRegion: "#document-tag-list-region"
+            tagsListRegion: "#document-tag-list-region"
             tagsActionsRegion: "#document-tag-list-actions-region"
 
     class List.Tag extends App.Views.ItemView
@@ -33,9 +33,7 @@
             tag: '[name="tag"]'
 
         initialize: (options) ->
-            @space = options.space
-            @doc = options.doc
-            @collection = options.collection
+            {@space, @doc, @collection} = options
             super options
 
         createModel: ->
@@ -52,6 +50,5 @@
 
         onSuccess: (model) ->
             App.vent.trigger "tag:saved", model
-            console.log "success saved", model
             model.set
                 id: model.get("tag")

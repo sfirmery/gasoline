@@ -3,23 +3,27 @@
     class List.Controller extends App.Controllers.Application
 
         initialize: (options) ->
-            tags = App.request "extract:tags:entities", options.document
             @space = options.document.get('space')
             @doc = options.document.id
 
             @layout = @getLayoutView()
 
             @listenTo @layout, "show", =>
-                @tagsView tags
-                @newTagView tags
+                # extract tags from document
+                tags = App.request "extract:tags:entities", options.document
 
-            @show @layout
+                # fill regions
+                @tagsListRegion tags
+                @tagsActionsRegion tags
 
-        tagsView: (tags) ->
+            # define main view
+            @setMainView @layout
+
+        tagsListRegion: (tags) ->
             tagsView = @getTagsView tags
-            @show tagsView, region: @layout.tagsRegion
+            @show tagsView, region: @layout.tagsListRegion
 
-        newTagView: (tags) ->
+        tagsActionsRegion: (tags) ->
             newTagView = @getNewTagView tags
             @show newTagView, region: @layout.tagsActionsRegion
 

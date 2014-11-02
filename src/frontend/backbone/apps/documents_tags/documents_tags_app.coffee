@@ -4,7 +4,7 @@
         list: (document, region) ->
             new DocumentsTagsApp.List.Controller
                 document: document
-                region: region
     
-    App.commands.setHandler "show:documents:tags", (document, region) ->
-        API.list document, region
+    App.reqres.setHandler "list:document:tags", (document) ->
+        throw new Error "Tags List requires a document to be passed in" if not document
+        API.list document
