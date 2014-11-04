@@ -4,43 +4,42 @@
 
     class Entities.Comment extends Entities.Model
         urlRoot: ->
-            "#{baseUrl}/#{@space}/#{@doc}/comments"
+            "#{baseUrl}/#{@space}/#{@docId}/comments"
 
         initialize: (options) ->
-            {@space, @doc} = options
-
+            {@space, @docId} = options
 
     class Entities.CommentsCollection extends Entities.Collection
         model: Entities.Comment
 
         url: ->
-            "#{baseUrl}/#{@space}/#{@doc}/comments"
+            "#{baseUrl}/#{@space}/#{@docId}/comments"
 
         initialize: (options) ->
-            {@space, @doc} = options
+            {@space, @docId} = options
 
         parse: (resp) ->
             resp
 
     API =
         # get comment collection for document
-        getComments: (space, doc, params = {}) ->
+        getComments: (space, docId, params = {}) ->
             _.defaults params, {}
             
             comments = new Entities.CommentsCollection
                 space: space
-                doc: doc
+                docId: docId
             comments.fetch
                 # reset: true
                 data: params
             comments
 
     # request list of comments
-    App.reqres.setHandler "comments:entities", (space, doc) ->
-        API.getComments $.trim(space), $.trim(doc)
+    App.reqres.setHandler "comments:entities", (space, docId) ->
+        API.getComments $.trim(space), $.trim(docId)
 
     # request an empty comment
-    App.reqres.setHandler "new:comments:entity", (space, doc) ->
+    App.reqres.setHandler "new:comments:entity", (space, docId) ->
         new Entities.Comment
             space: $.trim(space)
-            doc: $.trim(doc)
+            docId: $.trim(docId)
