@@ -9,6 +9,13 @@
         initialize: (options) ->
             {@space} = options
 
+        toJSON: (options) ->
+            url = "#{location.protocol}//#{location.host}"
+            json = super options
+            json.link = location.href
+            json.tinylink = "#{url}/#{json.tinylink}" if json.tinylink
+            json
+
         save: (attrs, options) ->
             attrs.author = @get('author').name or @get('author')
             attrs.last_author = @get('last_author').name or @get('last_author')
