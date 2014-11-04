@@ -4,8 +4,6 @@
 
         initialize: (options) ->
             {model} = options
-            # @layout = @getLayoutView()
-            # @setMainView @layout
 
             documentView = @getDocumentView model
 
@@ -13,24 +11,11 @@
                 buttons:
                     primary: "Submit"
                     cancel: "Cancel"
-                # onFormCancel: => @region.empty()
-                # onFormSuccess: => @region.empty()
+                onFormCancel: => @trigger "edit:cancel"
+                onFormSuccess: => @trigger "edit:success"
 
-            # @listenTo @layout, "show", =>
-            @listenTo form, "form:cancel", =>
-                console.log "trap form:cancel"
-                @trigger "edit:cancel"
-
-            console.log "show edit layout", @layout
             @show form
-
-        show: (options) ->
-            console.log "show edit Controller wiht options", options
-            super options
 
         getDocumentView: (model) ->
             new Edit.Document
                 model: model
-
-        getLayoutView: ->
-            new Edit.LayoutView

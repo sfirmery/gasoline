@@ -80,12 +80,9 @@
             @_saveModel is false or config.onFormSubmit is false or config.onFormSubmit?(data) is false
 
         processModelSave: (data, config) ->
-            console.log "processModelSave", @model, @collection, data, config
             @model.save data,
                 collection: @collection
                 callback: config.onFormSuccess
-
-            console.log "processModelSaved", @model, @collection
 
         bodyRegion: ->
             @show @contentView, region: @formLayout.bodyRegion
