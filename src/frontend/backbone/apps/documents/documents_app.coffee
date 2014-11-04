@@ -22,10 +22,18 @@
                 model: model
                 region: region
 
+        links: (model) ->
+            new DocumentsApp.Links.Controller
+                region: App.dialogRegion
+                model: model
+
     App.reqres.setHandler "edit:document", (model, region) ->
         throw new Error "Comments List requires a model to be passed in" if not model
         console.log "request edit:document"
         API.edit model, region
+
+    App.vent.on "links:document:clicked", (model) ->
+        API.links model
 
     App.addInitializer ->
         new DocumentsApp.Router

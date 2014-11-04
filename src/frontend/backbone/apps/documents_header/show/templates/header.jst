@@ -3,20 +3,21 @@
         <i class="fa fa-cog"></i> {{ _('Tools') }} <i class="fa fa-caret-down"></i>
     </button>
     <ul class="dropdown-menu" role="menu">
-        <li><a id="document-edit-link">{{ _('Edit') }}</a></li>
-        <li><a id="document-history-link">{{ _('History') }}</a></li>
-        <li><a id="document-attachments-link">{{ _('Attachments') }} (<%= attachments.length %>)</a></li>
-        <li><a id="document-rights-link">{{ _('Rights') }}</a></li>
+        <li><a id="document-edit-link"><i class="fa fa-edit fa-fw"></i>&nbsp; {{ _('Edit') }}</a></li>
+        <li><a id="document-history-link"><i class="fa fa-history fa-fw"></i>&nbsp; {{ _('History') }}</a></li>
+        <li><a id="document-attachments-link"><i class="fa fa-paperclip fa-fw"></i>&nbsp; {{ _('Attachments') }} (<%= attachments.length %>)</a></li>
+        <li><a id="document-rights-link"><i class="fa fa-key fa-fw"></i>&nbsp; {{ _('Rights') }}</a></li>
         <li class="divider"></li>
-        <li><a id="document-links-link">{{ _('Links') }}</a></li>
-        <li><a id="document-informations-link">{{ _('Informations') }}</a></li>
+        <li><a id="document-links-link"><i class="fa fa-link fa-fw"></i>&nbsp; {{ _('Links') }}</a></li>
+        <li><a id="document-informations-link"><i class="fa fa-info fa-fw"></i>&nbsp; {{ _('Informations') }}</a></li>
     </ul>
 </div>
 <% if (mode != 'show') { %>
-  <div class="pull-right">
-    <a id="document-display-link" class="btn btn-default"><i class="fa fa-reply"></i> {{ _('View Document') }}</a>&nbsp;
-  </div>
+    <div class="pull-right">
+        <a id="document-display-link" class="btn btn-default"><i class="fa fa-reply"></i>&nbsp;{{ _('View Document') }}</a>&nbsp;
+    </div>
 <% } %>
 <div class="page-header">
-  <h1><a href="#documents/<%= space %>/<%= id %>"><%= title %></a></h1>
+    <h1><a href="#documents/<%= space %>/<%= id %>"><%= title %></a></h1>
+    <small>{{ _('Created') }} <time class="timeago" datetime="<%= creation %>Z" data-toggle="tooltip" data-placement="bottom"><%= creation %></time>, {{ _('last update') }} <time class="timeago" datetime="<%= last_update %>Z" data-toggle="tooltip" data-placement="bottom"><%= last_update %></time> (v.<%= current_revision %>)</small>
 </div>
