@@ -140,11 +140,6 @@ def to_json(json_schema, recursive=False, **kwargs):
     # print 'schema: {}'.format(repr(json_schema))
     # print 'kwargs: {}'.format(repr(kwargs))
 
-    # if isinstance(obj, mongoengine.Document):
-    #     print "mongoengine.Document !!!"
-    # if isinstance(obj, mongoengine.queryset.base.BaseQuerySet):
-    #     print "mongoengine.BaseQuerySet !!!"
-
     data = {}
 
     def parse_attr(obj=None, key=None, attr=None, schema=None):
