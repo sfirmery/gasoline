@@ -9,6 +9,12 @@
         initialize: (options) ->
             {@space} = options
 
+        save: (attrs, options) ->
+            attrs.author = @get('author').name or @get('author')
+            attrs.last_author = @get('last_author').name or @get('last_author')
+
+            super attrs, options
+
     class Entities.DocumentsCollection extends Entities.Collection
         model: Entities.Document
         url: ->
