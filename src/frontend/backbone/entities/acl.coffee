@@ -14,7 +14,7 @@
 
         url: ->
             "#{baseUrl}/documents/#{@space}/#{@docId}/acl" if @space and @docId
-            "#{baseUrl}/documents/#{@space}/#{@docId}/acl" if not @space or not @docId
+            # "#{baseUrl}/documents/#{@space}/#{@docId}/acl" if not @space or not @docId
 
         initialize: (options) ->
             {@space, @docId} = options
@@ -39,7 +39,6 @@
 
     # request ACL
     App.reqres.setHandler "acl:entities", (space = {}, docId = {}) ->
-        console.log "query acl:entities"
         API.getACL $.trim(space), $.trim(docId)
 
     # request a new space

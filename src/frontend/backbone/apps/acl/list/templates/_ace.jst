@@ -1,0 +1,3 @@
+<td><%= predicate %></td>
+<td><% _.each(truth, function(perms) { _.keys(perms).forEach(function(perm) { %><span><%= perm %> - <%= perms[perm] %></span><% }); }); %></td>
+<td> </td>
