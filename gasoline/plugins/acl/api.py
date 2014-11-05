@@ -6,7 +6,7 @@ from flask import Blueprint, abort, Response
 from flask.views import MethodView
 from flask.ext.babel import gettext as _
 
-from gasoline.core.api import get_json, to_json, from_json, update_from_json
+from gasoline.core.api import get_json, to_json, from_json
 from gasoline.services import acl_service as acl
 
 from gasoline.services.acl.models import ACE
@@ -62,8 +62,7 @@ class AclAPI(MethodView, DocumentsAPIMixin):
 
         resp = to_json(json_schema_collection, array=doc.acl)
         return Response(response=resp, status=201,
-                        mimetype='application/json',
-                        headers={'location': acl})
+                        mimetype='application/json')
 
     @acl.acl('write')
     def put(self, space, doc_id, predicate):
@@ -72,25 +71,24 @@ class AclAPI(MethodView, DocumentsAPIMixin):
 
         # get json from request
         json = get_json()
+        ace = from_json(json, ACE, json_schema_resource, save=False)
 
         # check if ace exists
-        acl = self.get_acl(doc, predicate)
-
-        # update ace object from json
-        # if 'acl' in json:
-        #     json = json['acl'][0]
-        acl = update_from_json(json, acl,
-                               json_schema_collection)
+        acl = self.get_acl(doc, ace.predicate, ace.truth)
 
         # update ace on document
-        doc.update_ace(ace)
-        ace.reload()
-        ace = self.get_acl(doc, predicate)
+        try:
+            doc.update_ace(ace)
+            doc.reload()
+            acl = self.get_acl(doc, ace.predicate, ace.truth)[0]
+        except:
+            logger.exception('')
+            logger.debug('ace update failed: database error')
+            abort(422, _('Error while updating ace.'))
 
-        resp = to_json(json_schema_resource, object=ace)
+        resp = to_json(json_schema_resource, object=acl)
         return Response(response=resp, status=200,
-                        mimetype='application/json',
-                        headers={'location': ace.uri})
+                        mimetype='application/json')
 
     patch = put
 
@@ -114,7 +112,8 @@ class AclAPI(MethodView, DocumentsAPIMixin):
 
 acl_view = AclAPI.as_view('acl')
 blueprint_api_plugin_acl.\
-    add_url_rule(rest_uri_collection, defaults={'predicate': None},
+    add_url_rule(rest_uri_collection,
+                 defaults={'predicate': None},
                  view_func=acl_view,
                  methods=['GET'])
 blueprint_api_plugin_acl.\
@@ -124,4 +123,4 @@ blueprint_api_plugin_acl.\
 blueprint_api_plugin_acl.\
     add_url_rule(rest_uri_resource,
                  view_func=acl_view,
-                 methods=['GET', 'PUT', 'PATCH', 'DELETE'])
+                 methods=['GET', 'PUT', 'PATCH'])

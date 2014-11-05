@@ -11,6 +11,7 @@ from gasoline.core.extensions import db
 from gasoline.core.signals import event, activity
 from gasoline.core.diff import Diff
 from gasoline.services.acl import ACE
+from .comment import Comment
 from .user import User, json_schema_resource as json_schema_user
 from .attachment import (
     Attachment, json_schema_resource as json_schema_attachment)
@@ -84,7 +85,7 @@ class BaseDocument(db.DynamicDocument):
     attachments = db.ListField(db.EmbeddedDocumentField(Attachment))
 
     acl = db.SortedListField(db.EmbeddedDocumentField(ACE),
-                             ordering='predicate', unique=True)
+                             ordering='predicate')
 
     # document Metadata
     creation = db.DateTimeField(default=datetime.utcnow)
@@ -236,10 +237,8 @@ class BaseDocument(db.DynamicDocument):
                     acl.append(ace)
         else:
             acl = self.acl
-        if len(acl) > 0:
-            return acl
 
-        raise BaseException
+        return acl
 
     def add_acl(self, acl):
         """add acl if necessary"""
@@ -251,7 +250,7 @@ class BaseDocument(db.DynamicDocument):
                 predicate_acl = [a for a in self.acl
                                  if a.predicate == ace.predicate]
                 if len(predicate_acl) > 0:
-                    # get ACL for ace thruth
+                    # get ACL for ace truth
                     match_acl = [a for a in predicate_acl
                                  if a.truth == ace.truth]
                     if len(match_acl) > 0:
@@ -267,16 +266,17 @@ class BaseDocument(db.DynamicDocument):
                 # push new ace
                 self.update(push__acl=ace)
 
-    def update_ace(self, old_ace, new_ace):
+    def update_ace(self, ace):
         """update ace"""
-        self.delete_ace(old_ace)
-        self.add_acl([new_ace])
+        for old_ace in self.get_acl(ace.predicate, ace.truth):
+            self.delete_ace(old_ace)
+        self.reload()
+        self.add_acl([ace])
 
     def delete_ace(self, ace):
         """remove ace"""
         if ace in self.acl:
             self.update(pull__acl=ace)
-            # send document update event
         else:
             raise BaseException
 
