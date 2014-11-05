@@ -11,11 +11,11 @@ json_schema_resource = {
     'required': ['predicate', 'truth', 'permission'],
     'properties': {
         'predicate': {'type': 'string'},
-        'truth': {'type': 'string'},
-        'permission': {
+        'truth': {
             'type': 'array',
             'items': {
-                'type': 'string'
+                'type': 'object',
+                'additionalProperties': 'true',
             },
         },
     },
@@ -32,11 +32,11 @@ TRUTH = ['DENY', 'ALLOW']
 
 
 class ACE(db.EmbeddedDocument):
-    truth = db.StringField(unique_with=['predicate'],
-                           choices=TRUTH, default=TRUTH[0])
+    # truth = db.StringField(unique_with=['predicate'],
+    #                        choices=TRUTH, default=TRUTH[0])
     predicate = db.StringField()
-    permission = db.ListField(db.StringField())
+    # permission = db.ListField(db.StringField())
+    truth = db.DictField()
 
     def __repr__(self):
-        return '<ACE "%s %s %s">' % (
-            self.truth, self.predicate, self.permission)
+        return '<ACE "%s %s">' % (self.predicate, self.truth)
