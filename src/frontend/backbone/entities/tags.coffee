@@ -4,25 +4,16 @@
 
     class Entities.Tag extends Entities.Model
         urlRoot: ->
-            "#{baseUrl}/#{@space}/#{@doc}/tags"
+            "#{baseUrl}/#{@space}/#{@docId}/tags"
 
-        initialize: (options) ->
-            @space = options.space or @model.get("space")
-            @doc = options.doc or @model.get("doc")
+        initialize: (attributes, options) ->
+            @space = options.space
+            @docId = options.docId
 
     class Entities.TagsCollection extends Entities.Collection
         model: Entities.Tag
 
     API =
-        getTags: (params = {}) ->
-            _.defaults params, {}
-            
-            tags = new Entities.TagsCollection
-            tags.fetch
-                reset: true
-                data: params
-            tags
-
         extractTags: (document, params = {}) ->
             _.defaults params, {}
             
@@ -33,26 +24,15 @@
                     id: tag
                     tag: tag
                     space: document.get("space")
-                    doc: document.get("id")
+                    docId: document.get("id")
             tags.add tagsArray
             tags
 
-        getTag: (name, params = {}) ->
-            _.defaults params, {}
-
-            tag = new Entities.Tag id: name
-            tag.fetch
-                reset: true
-                data: params
-                success: (item) ->
-                    console.log "success", item
-            tag
-
     # request an empty comment
-    App.reqres.setHandler "new:tags:entity", (space, document) ->
-        new Entities.Tag
+    App.reqres.setHandler "new:tags:entity", (space, docId) ->
+        new Entities.Tag null,
             space: $.trim(space)
-            doc: $.trim(document)
+            docId: $.trim(docId)
 
     # request an tag
     App.reqres.setHandler "extract:tags:entities", (document) ->

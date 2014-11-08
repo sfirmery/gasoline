@@ -6,7 +6,7 @@
         urlRoot: ->
             "#{baseUrl}/#{@space}/#{@docId}/comments"
 
-        initialize: (options) ->
+        initialize: (attributes, options) ->
             {@space, @docId} = options
 
     class Entities.CommentsCollection extends Entities.Collection
@@ -15,7 +15,7 @@
         url: ->
             "#{baseUrl}/#{@space}/#{@docId}/comments"
 
-        initialize: (options) ->
+        initialize: (models, options) ->
             {@space, @docId} = options
 
         parse: (resp) ->
@@ -26,7 +26,7 @@
         getComments: (space, docId, params = {}) ->
             _.defaults params, {}
             
-            comments = new Entities.CommentsCollection
+            comments = new Entities.CommentsCollection null,
                 space: space
                 docId: docId
             comments.fetch
@@ -40,6 +40,6 @@
 
     # request an empty comment
     App.reqres.setHandler "new:comments:entity", (space, docId) ->
-        new Entities.Comment
+        new Entities.Comment null,
             space: $.trim(space)
             docId: $.trim(docId)

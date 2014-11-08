@@ -6,10 +6,11 @@
         urlRoot: ->
             "#{baseUrl}/#{@space}"
 
-        initialize: (options) ->
+        initialize: (attributes, options) ->
+            console.log "init document", attributes, options
             {@space} = options
 
-        toJSON: (options) ->
+        toJSON: (model, options) ->
             url = "#{location.protocol}//#{location.host}"
             json = super options
             json.link = location.href
@@ -27,7 +28,7 @@
         url: ->
             "#{baseUrl}/#{@space}"
 
-        initialize: (options) ->
+        initialize: (models, options) ->
             {@space} = options
         
         parse: (resp) ->
@@ -37,7 +38,7 @@
         getDocuments: (space, params = {}) ->
             _.defaults params, {}
             
-            documents = new Entities.DocumentsCollection
+            documents = new Entities.DocumentsCollection null,
                 space: space
             documents.fetch
                 data: params
@@ -46,9 +47,8 @@
         getDocument: (space, doc, params = {}) ->
             _.defaults params, {}
 
-            document = new Entities.Document
+            document = new Entities.Document id: doc,
                 space: space
-                id: doc
             document.fetch
                 data: params
             document
