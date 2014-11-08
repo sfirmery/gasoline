@@ -8,15 +8,13 @@ rest_uri_resource = '{}/<predicate>'.format(rest_uri_collection)
 json_schema_resource = {
     'title': 'Document resource Schema',
     'type': 'object',
-    'required': ['predicate', 'truth', 'permission'],
+    'required': ['predicate', 'truth'],
     'properties': {
+        'id': {'type': 'string'},
         'predicate': {'type': 'string'},
         'truth': {
-            'type': 'array',
-            'items': {
-                'type': 'object',
-                'additionalProperties': 'true',
-            },
+            'type': 'object',
+            'additionalProperties': True,
         },
     },
 }
@@ -28,15 +26,19 @@ json_schema_collection = {
     'items': json_schema_resource,
 }
 
-TRUTH = ['DENY', 'ALLOW']
+ORDER = {
+    'read': 1,
+    'write': 2,
+}
 
 
 class ACE(db.EmbeddedDocument):
-    # truth = db.StringField(unique_with=['predicate'],
-    #                        choices=TRUTH, default=TRUTH[0])
-    predicate = db.StringField()
-    # permission = db.ListField(db.StringField())
+    predicate = db.StringField(primary_key=True)
     truth = db.DictField()
+
+    @property
+    def id(self):
+        return unicode(self.predicate)
 
     def __repr__(self):
         return '<ACE "%s %s">' % (self.predicate, self.truth)
