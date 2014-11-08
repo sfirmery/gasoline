@@ -231,47 +231,27 @@ class BaseDocument(db.DynamicDocument):
     def get_acl(self, predicate=None):
         """get acl for predicate"""
         if predicate is not None:
-            acl = []
-            for ace in self.acl:
-                if ace.predicate == predicate:
-                    acl.append(ace)
+            acl = [a for a in self.acl if a.predicate == predicate]
         else:
             acl = self.acl
 
         return acl
 
-    def add_acl(self, acl):
-        """add acl if necessary"""
-        # for each ace in ACL
-        for ace in acl:
-            # if ace not in document ACL
-            if ace not in self.acl:
-                # get ACL for ace predicate
-                predicate_acl = [a for a in self.acl
-                                 if a.predicate == ace.predicate]
-                if len(predicate_acl) > 0:
-                    # get ACL for ace truth
-                    match_acl = [a for a in predicate_acl
-                                 if a.truth == ace.truth]
-                    if len(match_acl) > 0:
-                        # remove ace
-                        self.delete_ace(match_acl[0])
-                        # extend permission list
-                        match_acl[0].permission.\
-                            extend([p for p in ace.permission
-                                    if p not in match_acl[0].permission])
-                        # new ace
-                        ace = match_acl[0]
-
-                # push new ace
-                self.update(push__acl=ace)
+    def add_ace(self, ace):
+        """add ace"""
+        if len(self.get_acl(ace.predicate)) == 0:
+            self.update(push__acl=ace)
+        else:
+            raise BaseException
 
     def update_ace(self, ace):
         """update ace"""
-        for old_ace in self.get_acl(ace.predicate, ace.truth):
+        if len([a for a in self.acl if a.predicate == ace.predicate]) < 1:
+            raise BaseException
+        for old_ace in self.get_acl(ace.predicate):
             self.delete_ace(old_ace)
         self.reload()
-        self.add_acl([ace])
+        self.add_ace(ace)
 
     def delete_ace(self, ace):
         """remove ace"""

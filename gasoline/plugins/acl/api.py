@@ -50,17 +50,16 @@ class AclAPI(MethodView, DocumentsAPIMixin):
         # get json from request
         json = get_json()
 
-        # create acl from json
-        acl = []
-        for entry in json:
-            acl.append(from_json(entry, ACE, json_schema_resource, save=False))
+        # create ace from json
+        ace = from_json(json, ACE, json_schema_resource, save=False)
 
-        # set acl and save document
-        doc.add_acl(acl)
-        # doc.acl.extend(acl)
-        doc.reload()
+        # add ace to document
+        try:
+            doc.add_ace(ace)
+        except:
+            abort(422, _('Error while adding ace.'))
 
-        resp = to_json(json_schema_collection, array=doc.acl)
+        resp = to_json(json_schema_resource, object=ace)
         return Response(response=resp, status=201,
                         mimetype='application/json')
 
@@ -71,22 +70,23 @@ class AclAPI(MethodView, DocumentsAPIMixin):
 
         # get json from request
         json = get_json()
+
+        # create ace from json
         ace = from_json(json, ACE, json_schema_resource, save=False)
 
-        # check if ace exists
-        acl = self.get_acl(doc, ace.predicate, ace.truth)
+        # check ace predicate
+        if predicate != ace.predicate:
+            abort(422, _('Wrong predicate in json content.'))
 
         # update ace on document
         try:
             doc.update_ace(ace)
-            doc.reload()
-            acl = self.get_acl(doc, ace.predicate, ace.truth)[0]
         except:
             logger.exception('')
             logger.debug('ace update failed: database error')
             abort(422, _('Error while updating ace.'))
 
-        resp = to_json(json_schema_resource, object=acl)
+        resp = to_json(json_schema_resource, object=ace)
         return Response(response=resp, status=200,
                         mimetype='application/json')
 
@@ -102,7 +102,7 @@ class AclAPI(MethodView, DocumentsAPIMixin):
 
         # delete ace
         try:
-            doc.delete_ace(ace)
+            doc.delete_ace(ace[0])
         except:
             logger.exception('')
             logger.debug('ace delete failed: database error')
@@ -123,4 +123,4 @@ blueprint_api_plugin_acl.\
 blueprint_api_plugin_acl.\
     add_url_rule(rest_uri_resource,
                  view_func=acl_view,
-                 methods=['GET', 'PUT', 'PATCH'])
+                 methods=['GET', 'PUT', 'PATCH', 'DELETE'])
