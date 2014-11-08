@@ -8,8 +8,7 @@ from flask.views import MethodView
 from flask.ext.login import login_required
 from flask.ext.babel import gettext as _
 
-from gasoline.core.api import (
-    get_json, to_json, from_json, update_from_json)
+from gasoline.core.api import (get_json, to_json, from_json, update_from_json)
 from gasoline.services import acl_service as acl
 from gasoline.models import BaseDocument, Space
 from gasoline.models.document import (
