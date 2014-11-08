@@ -67,6 +67,11 @@ def validate_input(json, schema):
             ('json validation: don\'t match "{}" for value "{}" '
              'with error "{}"').format(title, json, e.message))
         abort(400, _('JSON validation error: {}.'.format(e.message)))
+    except Exception as e:
+        logger.info(
+            ('json validation: don\'t match "{}" for value "{}" '
+             'with error "{}"').format(title, json, e.message))
+        abort(400, _('JSON validation error.'))
 
 
 def sanitize_input(json, cls, json_schema_resource):
@@ -188,9 +193,12 @@ def to_json(json_schema, recursive=False, **kwargs):
         elif 'anyOf' in schema:
             # print 'ANYOF with attr {}'.format(repr(attr))
             attr = parse_attr(attr=attr, schema=schema['anyOf'][0])
+        elif 'additionalProperties' in schema:
+            pass
+            print 'Has additionalProperties {}'.format(schema)
         else:
             pass
-            print 'ERROR: no properties {}'.format(schema)
+            print 'ERROR: no properties {} {}'.format(schema, obj)
 
         # print 'attr {}, value: {}'.format(key, attr)
         return attr
@@ -218,8 +226,12 @@ def to_json(json_schema, recursive=False, **kwargs):
         #     format(json_schema, obj)
         for key, value in obj.iteritems():
             # print 'item key: {}, value: {}'.format(key, repr(value))
-            data[key] = parse_attr(obj=obj, key=key,
-                                   schema=json_schema['additionalProperties'])
+            if json_schema['additionalProperties'] is True:
+                data[key] = value
+            else:
+                data[key] = parse_attr(
+                    obj=obj, key=key,
+                    schema=json_schema['additionalProperties'])
 
     else:
         # print "NON properties!!! json_schema: {}, obj: {}".\
