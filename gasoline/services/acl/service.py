@@ -32,27 +32,27 @@ class ACLService(Service):
 
     def apply(self, permission, acl, resource=_l('resource')):
         """apply acl, abort if not allowed"""
-        logger.info('check %r with acl %r', permission, acl)
+        logger.debug('check %r with acl %r', permission, acl)
         if isinstance(acl, Container) and len(acl) < 0:
             return
         truth = self.get_truth(permission, current_user, acl)
         if truth == 'ALLOW':
-            logger.info('ALLOW for {}'.format(resource))
+            logger.debug('ALLOW for {}'.format(resource))
             return
         elif truth == 'DENY':
-            logger.info('DENY for {}'.format(resource))
+            logger.debug('DENY for {}'.format(resource))
             abort(403,
                   _('You are not allowed to "%(permission)s" this\
  %(resource)s',
                     permission=PERMISSIONS.get(permission, _('unknown')),
                     resource=resource))
         else:
-            logger.info('no match for {}, ignore'.format(resource))
+            logger.debug('no match for {}, ignore'.format(resource))
             return
 
     def can(self, permission, acl):
         """Return whether user can do action or not"""
-        logger.info('check %r with acl %r', permission, acl)
+        logger.debug('check %r with acl %r', permission, acl)
         if isinstance(acl, Container) and len(acl) < 0:
             return True
         truth = self.get_truth(permission, current_user, acl)
@@ -86,7 +86,7 @@ class ACLService(Service):
     @classmethod
     def get_truth(cls, permission, user, acl):
         """get truth value from acl for permission and user"""
-        logger.info('get truth for permission %r for user %r with acl %r',
+        logger.debug('get truth for permission %r for user %r with acl %r',
                      permission, user, acl)
         match = []
         for ace in acl:
@@ -104,7 +104,7 @@ class ACLService(Service):
 
     @classmethod
     def check_predicate(cls, predicate, user):
-        logger.info('check predicate %r with %r', predicate, user)
+        logger.debug('check predicate %r with %r', predicate, user)
         if predicate == 'ANY':
             return True
         elif predicate == 'OWNER':
@@ -123,7 +123,7 @@ class ACLService(Service):
 
     @classmethod
     def get_permission(cls, perms, req_perm):
-        logger.info('get perm %r in %r', req_perm, perms)
+        logger.debug('get perm %r in %r', req_perm, perms)
         try:
             return [perm for perm in perms if req_perm in perm]
         except:
