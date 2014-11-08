@@ -1,3 +1,26 @@
-<td><%= predicate %></td>
-<td><% _.each(truth, function(perms) { _.keys(perms).forEach(function(perm) { %><span><%= perm %> - <%= perms[perm] %></span><% }); }); %></td>
-<td> </td>
+<td><button type="button" class="btn btn-xs btn-default">
+<% if (user) { %>
+<i class="fa fa-fw fa-user"></i>&nbsp;<%= user %>
+<% } else if (group) { %>
+<i class="fa fa-fw fa-users"></i>&nbsp;<%= group %>
+<% } else if (predicate == 'ANY') { %>
+<i class="fa fa-fw fa-asterisk"></i>&nbsp;<%= predicate %>
+<% } else { %>
+<i class="fa fa-fw fa-question"></i>&nbsp;<%= predicate %>
+<% } %>
+</button>
+</td>
+<td>
+<%  truthKeys.forEach(function(key) { %>
+    <button id="<%= key %>" type="button" class="btn btn-xs
+    <% if (truth[key] == allow) { %>
+        btn-success"><i class="fa fa-fw fa-check"></i>&nbsp;<%= key %>
+    <% } else if (truth[key] == deny) { %>
+        btn-danger"><i class="fa fa-fw fa-ban"></i>&nbsp;<%= key %>
+    <% } else { %>
+        btn-default"><i class="fa fa-fw fa-circle-o"></i>&nbsp;<%= key %>
+    <% } %>
+    </button>
+<% });%>
+</td>
+<td><i id="delete" class="fa fa-trash"></i></td>
