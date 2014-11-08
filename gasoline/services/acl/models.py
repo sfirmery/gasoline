@@ -2,15 +2,43 @@
 
 from gasoline.core.extensions import db
 
-TRUTH = ['DENY', 'ALLOW']
+rest_uri_collection = '/api/v1/documents/<space>/<doc_id>/acl'
+rest_uri_resource = '{}/<predicate>'.format(rest_uri_collection)
+
+json_schema_resource = {
+    'title': 'Document resource Schema',
+    'type': 'object',
+    'required': ['predicate', 'truth'],
+    'properties': {
+        'id': {'type': 'string'},
+        'predicate': {'type': 'string'},
+        'truth': {
+            'type': 'object',
+            'additionalProperties': True,
+        },
+    },
+}
+
+json_schema_collection = {
+    'title': 'ACL Schema',
+    'type': 'array',
+    'minItems': 1,
+    'items': json_schema_resource,
+}
+
+ORDER = {
+    'read': 1,
+    'write': 2,
+}
 
 
 class ACE(db.EmbeddedDocument):
-    truth = db.StringField(unique_with=['predicate'],
-                           choices=TRUTH, default=TRUTH[0])
-    predicate = db.StringField()
-    permission = db.ListField(db.StringField())
+    predicate = db.StringField(primary_key=True)
+    truth = db.DictField()
+
+    @property
+    def id(self):
+        return unicode(self.predicate)
 
     def __repr__(self):
-        return '<ACE "%s %s %s">' % (
-            self.truth, self.predicate, self.permission)
+        return '<ACE "%s %s">' % (self.predicate, self.truth)

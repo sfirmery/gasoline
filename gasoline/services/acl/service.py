@@ -35,19 +35,19 @@ class ACLService(Service):
         logger.debug('check %r with acl %r', permission, acl)
         if isinstance(acl, Container) and len(acl) < 0:
             return
-        thruth = self.get_thruth(permission, current_user, acl)
-        if thruth == 'ALLOW':
-            logger.debug('ALLOW for space')
+        truth = self.get_truth(permission, current_user, acl)
+        if truth == 'ALLOW':
+            logger.debug('ALLOW for {}'.format(resource))
             return
-        elif thruth == 'DENY':
-            logger.debug('DENY for space')
+        elif truth == 'DENY':
+            logger.debug('DENY for {}'.format(resource))
             abort(403,
                   _('You are not allowed to "%(permission)s" this\
  %(resource)s',
                     permission=PERMISSIONS.get(permission, _('unknown')),
                     resource=resource))
         else:
-            logger.debug('no match for space, ignore')
+            logger.debug('no match for {}, ignore'.format(resource))
             return
 
     def can(self, permission, acl):
@@ -55,10 +55,10 @@ class ACLService(Service):
         logger.debug('check %r with acl %r', permission, acl)
         if isinstance(acl, Container) and len(acl) < 0:
             return True
-        thruth = self.get_thruth(permission, current_user, acl)
-        if thruth == 'ALLOW':
+        truth = self.get_truth(permission, current_user, acl)
+        if truth == 'ALLOW':
             return True
-        elif thruth == 'DENY':
+        elif truth == 'DENY':
             return False
         else:
             return True
@@ -84,21 +84,21 @@ class ACLService(Service):
         return decorator
 
     @classmethod
-    def get_thruth(cls, permission, user, acl):
-        """get thruth value from acl for permission and user"""
-        logger.debug('get thruth for permission %r for user %r with acl %r',
+    def get_truth(cls, permission, user, acl):
+        """get truth value from acl for permission and user"""
+        logger.debug('get truth for permission %r for user %r with acl %r',
                      permission, user, acl)
         match = []
         for ace in acl:
             predicate_match = cls.check_predicate(ace.predicate, current_user)
-            perm_match = cls.check_permission(ace.permission, permission)
-            if predicate_match and perm_match:
-                match.append(ace.truth)
+            perm = cls.get_permission(ace.truth, permission)
+            if predicate_match:
+                match.extend(perm)
         if len(match) > 0:
             if 'DENY' in match:
                 return 'DENY'
             else:
-                return match[0]
+                return 'ALLOW'
         else:
             return None
 
@@ -122,9 +122,9 @@ class ACLService(Service):
             return False
 
     @classmethod
-    def check_permission(cls, perms, req_perm):
-        logger.debug('check perm %r with %r', perms, req_perm)
-        if isinstance(perms, Container):
-            return req_perm in perms
-        else:
-            raise TypeError('permissions must be a container')
+    def get_permission(cls, perms, req_perm):
+        logger.debug('get perm %r in %r', req_perm, perms)
+        try:
+            return [perm for perm in perms if req_perm in perm]
+        except:
+            raise TypeError('permissions not found')

@@ -6,14 +6,13 @@ import mediawiki
 from mongoengine.fields import GridFSProxy
 from bson.objectid import ObjectId
 
-from gasoline.core.utils import genid
+# from gasoline.core.utils import genid
 from gasoline.core.extensions import db
 from gasoline.core.signals import event, activity
 from gasoline.core.diff import Diff
 from gasoline.services.acl import ACE
-from .space import Space
+from .comment import Comment
 from .user import User, json_schema_resource as json_schema_user
-from .comment import Comment, json_schema_collection as json_schema_comments
 from .attachment import (
     Attachment, json_schema_resource as json_schema_attachment)
 
@@ -36,7 +35,6 @@ json_schema_resource = {
                 'type': 'string'
             },
         },
-        # 'comments': json_schema_comments,
         'attachments': {
             'type': 'array',
             'items': json_schema_attachment,
@@ -82,17 +80,12 @@ class BaseDocumentQuerySet(db.QuerySet):
 class BaseDocument(db.DynamicDocument):
     _title = db.StringField(db_field='title', unique_with='_space')
     _space = db.StringField(db_field='space', default=u'main')
-    # _space = db.ReferenceField(Space, db_field='space', default=u'main')
     _content = db.StringField(db_field='content')
     tags = db.ListField(db.StringField())
-    # comments = db.DictField(field=db.EmbeddedDocumentField(Comment))
-    # comments = db.SortedListField(
-    #     db.EmbeddedDocumentField('Comment'),
-    #     ordering='date')
-    # comments = db.ListField(db.ReferenceField(Comment))
     attachments = db.ListField(db.EmbeddedDocumentField(Attachment))
 
-    acl = db.ListField(db.EmbeddedDocumentField(ACE))
+    acl = db.SortedListField(db.EmbeddedDocumentField(ACE),
+                             ordering='predicate')
 
     # document Metadata
     creation = db.DateTimeField(default=datetime.utcnow)
@@ -235,15 +228,43 @@ class BaseDocument(db.DynamicDocument):
             self.current_revision = revision.number
             self.last_update = revision.date
 
+    def get_acl(self, predicate=None):
+        """get acl for predicate"""
+        if predicate is not None:
+            acl = [a for a in self.acl if a.predicate == predicate]
+        else:
+            acl = self.acl
+
+        return acl
+
+    def add_ace(self, ace):
+        """add ace"""
+        if len(self.get_acl(ace.predicate)) == 0:
+            self.update(push__acl=ace)
+        else:
+            raise BaseException
+
+    def update_ace(self, ace):
+        """update ace"""
+        if len([a for a in self.acl if a.predicate == ace.predicate]) < 1:
+            raise BaseException
+        for old_ace in self.get_acl(ace.predicate):
+            self.delete_ace(old_ace)
+        self.reload()
+        self.add_ace(ace)
+
+    def delete_ace(self, ace):
+        """remove ace"""
+        if ace in self.acl:
+            self.update(pull__acl=ace)
+        else:
+            raise BaseException
+
     @property
     def comments(self):
         return Comment.objects().all()
 
     def get_comment(self, comment_id):
-        # for i, comment in enumerate(self.comments):
-        #     if comment.id == comment_id:
-        #         return self.comments[i]
-        # raise
         return Comment.objects(doc=self, id=comment_id).first()
 
     def get_comments(self):
@@ -327,7 +348,7 @@ class BaseDocument(db.DynamicDocument):
         raise BaseException
 
     def get_tag(self, tag):
-        """update tag"""
+        """get a tag"""
         if tag in self.tags:
             return tag
         raise BaseException

@@ -17,7 +17,7 @@
             "click @ui.edit" : ->           @model.trigger "edit:document:clicked"
             "click @ui.history" : ->        @model.trigger "history:document:clicked"
             "click @ui.attachments" : ->    @model.trigger "attachments:document:clicked"
-            "click @ui.rights" : ->         @model.trigger "rights:document:clicked"
+            "click @ui.rights" : ->         App.vent.trigger "list:acl:clicked", @model
             "click @ui.links" : ->          App.vent.trigger "links:document:clicked", @model
             "click @ui.informations" : ->   @model.trigger "informations:document:clicked"
             "click @ui.display" : ->        @model.trigger "display:document:clicked"
