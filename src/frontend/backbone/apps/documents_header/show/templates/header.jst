@@ -17,7 +17,7 @@
         <a id="document-display-link" class="btn btn-default"><i class="fa fa-reply"></i>&nbsp;{{ _('View Document') }}</a>&nbsp;
     </div>
 <% } %>
-<div class="page-header">
+<div>
     <h1><a href="#documents/<%= space %>/<%= id %>"><%= title %></a></h1>
     <small>{{ _('Created') }} <time class="timeago" datetime="<%= creation %>Z" data-toggle="tooltip" data-placement="bottom"><%= creation %></time>, {{ _('last update') }} <time class="timeago" datetime="<%= last_update %>Z" data-toggle="tooltip" data-placement="bottom"><%= last_update %></time> (v.<%= current_revision %>)</small>
 </div>

@@ -1,2 +1,4 @@
-{{ _('User:') }} <%= display_name %> : <%= description %>
-<button id="edit" class="btn btn-default"><i class="fa fa-edit"></i> {{ _('Edit') }}</button>
+<div class="page-header">
+    <h1>{{ _('User:') }} <%= display_name %> <button id="edit" class="btn btn-default pull-right"><i class="fa fa-edit"></i> {{ _('Edit') }}</button></h1>
+    <small><%= description %></small>
+</div>
