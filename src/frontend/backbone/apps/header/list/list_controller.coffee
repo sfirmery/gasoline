@@ -6,16 +6,44 @@
             @layout = @getLayoutView()
 
             @listenTo @layout, "show", =>
-                @navRegion()
+                @navLeftRegion()
+                @navRightRegion()
 
             @show @layout
 
-        navRegion: (document) ->
-            navView = @getNavView()
-            @layout.navRegion.show navView
+        navLeftRegion: ->
+            navLeftView = @getNavLeftView()
+            @layout.navLeftRegion.show navLeftView
 
-        getNavView: ->
-            new List.Nav
+        navRightRegion: ->
+            navRightView = @getNavRightView()
+            @layout.navRightRegion.show navRightView
+
+        getNavLeftView: ->
+            # collection of nav element
+            collection = new Backbone.Collection
+            collection.add [
+                { 'childView': List.NavCreate },
+                { 'childView': List.NavSearch },
+                { 'childView': List.NavSpaces },
+                { 'childView': List.NavTests }
+            ]
+
+            new List.NavLeft
+                collection: collection
+
+        getNavRightView: ->
+            # collection of nav element
+            collection = new Backbone.Collection
+            collection.add [
+                { 'childView': List.NavUserMenu }
+            ]
+
+            new List.NavRight
+                collection: collection
+
+        getNavUserMenuView: ->
+            new List.NavUserMenu
 
         getLayoutView: ->
             new List.LayoutView
