@@ -23,10 +23,10 @@
             # collection of nav element
             collection = new Backbone.Collection
             collection.add [
-                { 'childView': List.NavCreate },
-                { 'childView': List.NavSearch },
+                # { 'childView': List.NavCreate },
                 { 'childView': List.NavSpaces },
-                { 'childView': List.NavTests }
+                { 'childView': List.NavTests },
+                { 'childView': List.NavSearch },
             ]
 
             new List.NavLeft
@@ -36,7 +36,7 @@
             # collection of nav element
             collection = new Backbone.Collection
             collection.add [
-                { 'childView': List.NavUserMenu }
+                { 'childView': List.NavUserMenu },
             ]
 
             new List.NavRight

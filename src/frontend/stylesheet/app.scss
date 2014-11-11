@@ -1,0 +1,69 @@
+@import "base";
+
+body {
+    padding-top: 60px;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    a:active,
+    a:hover {
+        text-decoration: none;
+    }
+}
+
+.nav {
+    font-weight: 300;
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.navbar {
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+
+@import "header_searchbox";
+@import "document";
+@import "comment";
+
+div.content {
+    padding: 0 6px;
+}
+
+.activity-stream p {
+    padding-left: 24px;
+}
+
+.activity-stream div div {
+    padding: 6px;
+}
+
+.search_results {
+    padding: 0 10px;
+}
+
+.page-header small {
+    color: $gray;
+}
+
+.document-header {
+    @extend .page-header;
+
+    small {
+        color: $white;
+        @include transition(color ease-in-out .5s);
+
+        &:hover {
+            @include transition(color ease-in-out .2s);
+            color: $gray;
+        }
+    }
+}
+
+// opacity wrapper
+[data-wrapper].opacity {
+    @include opacity(0.4);
+}
+
+.sign_in {
+    margin-top: 100px;
+}

@@ -5,6 +5,7 @@
 	"dependencies": {
 		"jquery": "*",
 		"bootstrap": "*",
+		"bootstrap-sass-official": "*",
 		"bootstrap-datepicker": "*",
 		"font-awesome": "*",
 		"jquery-timeago": "*",
@@ -20,6 +21,7 @@
 			"css": [ "dist/css/bootstrap.css" ],
 			"fonts": "dist/fonts/*"
 		},
+		"bootstrap-sass-official": {},
 		"bootstrap-datepicker": {
 			"js": "js/bootstrap-datepicker.js",
 			"js/locales": "js/locales/*.js",

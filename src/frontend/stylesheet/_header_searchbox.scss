@@ -1,0 +1,28 @@
+#header-searchbox {
+
+    input {
+        background-color: $navbar-default-bg;
+        border-color: $navbar-default-bg;
+        width: 0px;
+        box-shadow: none;
+        padding-right: 22.5px;
+
+        @include transition(background ease-in-out .5s, width ease-in-out .5s);
+
+        &:focus {
+            background-color: $white;
+            width: 200px;
+        }
+    }
+
+    i {
+        font-size: 20px;
+        color: $white;
+        @include transition(color ease-in-out .5s);
+    }
+
+    &.focus i {
+        color: $gray;
+    }
+
+}

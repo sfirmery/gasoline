@@ -1,0 +1,195 @@
+
+// Primary color
+$lightblue:             #0288D1;
+$lightbluedark:         #0277BD;
+// Red
+$red:                   #F44336;
+$accent-red:            #FF5252;
+// Green
+$green:                 #4CAF50;
+$accent-green:          #69F0AE;
+// Orange
+$orange:                #FF9800;
+$accent-orange:         #FFAB40;
+// Blue
+$blue:                  #2196F3;
+$accent-blue:           #448AFF;
+// Purple
+$purple:                #9C27B0;
+$deeppurlple:           #673AB7;
+// BlueGrey
+$bluegrey:              #607D8B;
+// Yelloh
+$yellow:                #FFEB3B;
+
+
+//== Colors
+//
+//## Gray and brand colors for use across Bootstrap.
+
+// $gray-base:             #000;
+$gray-darker:           #212121;
+$gray-dark:             #616161;
+$gray:                  #9E9E9E;
+$gray-light:            #E0E0E0;
+$gray-lighter:          #F5F5F5;
+
+$white:                 #FFF;
+
+$brand-primary: $lightblue;
+$brand-success: $green;
+$brand-info:    $blue;
+$brand-warning: $orange;
+$brand-danger:  $red;
+$brand-inverse: $white;
+
+
+//== Scaffolding
+//
+//## Settings for some of the most global styles.
+
+// //** Background color for `<body>`.
+// $body-bg:               #fff !default;
+//** Global text color on `<body>`.
+$text-color:            $gray-dark;
+
+// //** Global textual link color.
+// $link-color:            $brand-primary !default;
+// //** Link hover color set via `darken()` function.
+// $link-hover-color:      darken($link-color, 15%) !default;
+// //** Link hover decoration.
+// $link-hover-decoration: underline !default;
+
+
+//== Typography
+//
+//## Font, line-height, and color for body text, headings, and more.
+
+$font-family-sans-serif:  Lato, Helvetica, Arial, sans-serif;
+// $font-family-serif:       Georgia, "Times New Roman", Times, serif !default;
+//** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
+// $font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace !default;
+// $font-family-base:        $font-family-sans-serif !default;
+
+$font-size-base:          14px;
+$font-size-large:         ceil(($font-size-base * 1.25)); // ~18px
+$font-size-small:         ceil(($font-size-base * 0.85)); // ~12px
+
+$font-size-h1:            floor(($font-size-base * 3.25)); // ~52px
+$font-size-h2:            floor(($font-size-base * 2.5)); // ~40px
+$font-size-h3:            ceil(($font-size-base * 2)); // ~32px
+$font-size-h4:            ceil(($font-size-base * 1.75)); // ~28px
+$font-size-h5:            floor(($font-size-base * 1.5)); // ~24px
+$font-size-h6:            ceil(($font-size-base * 1.25)); // ~20px
+
+//** Unit-less `line-height` for use in components like buttons.
+$line-height-base:        1.428571429; // 20/14
+//** Computed "line-height" (`font-size` * `line-height`) for use with `margin`, `padding`, etc.
+// $line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
+
+// @font-size-h1:                  floor((@font-size-base * 3.444)); // ~62px
+// @font-size-h2:                  ceil((@font-size-base * 2.889)); // ~52px
+// @font-size-h3:                  ceil((@font-size-base * 2.222)); // ~40px
+// @font-size-h4:                  ceil((@font-size-base * 1.611)); // ~29px
+// @font-size-h5:                  floor((@font-size-base * 1.556)); // ~28px
+// @font-size-h6:                  ceil((@font-size-base * 1.333)); // ~24px
+
+
+//** By default, this inherits from the `<body>`.
+// $headings-font-family:    inherit !default;
+$headings-font-weight:    300;
+// $headings-line-height:    1.1 !default;
+// $headings-color:          inherit !default;
+
+
+//== Components
+//
+//## Define common padding and border radius sizes and more. Values based on 14px text and 1.428 line-height (~20px to start).
+
+// Border-radius
+$border-radius-base:        3px;
+$border-radius-large:       3px;
+$border-radius-small:       3px;
+
+//== Navbar
+//
+//##
+
+// Basics of a navbar
+$navbar-height:         40px;
+// $navbar-margin-bottom:             $line-height-computed !default;
+// $navbar-border-radius:             $border-radius-base !default;
+// $navbar-padding-horizontal:        floor(($grid-gutter-width / 2)) !default;
+// $navbar-padding-vertical:          (($navbar-height - $line-height-computed) / 2) !default;
+// $navbar-collapse-max-height:       340px !default;
+
+$navbar-default-color:  $white;
+$navbar-default-bg:     $lightbluedark;
+$navbar-default-border: $lightbluedark;
+
+// Navbar links
+$navbar-default-link-color:                $navbar-default-color;
+$navbar-default-link-hover-color:          $navbar-default-color;
+$navbar-default-link-hover-bg:             $lightblue;
+$navbar-default-link-active-color:         $navbar-default-color;
+$navbar-default-link-active-bg:            $lightblue;
+// $navbar-default-link-disabled-color:       #ccc !default;
+// $navbar-default-link-disabled-bg:          transparent !default;
+
+// Navbar brand label
+$navbar-default-brand-color:               $navbar-default-link-color;
+$navbar-default-brand-hover-color:         $navbar-default-brand-color;
+$navbar-default-brand-hover-bg:            transparent;
+
+// Navbar toggle
+$navbar-default-toggle-hover-bg:           #ddd !default;
+$navbar-default-toggle-icon-bar-bg:        #888 !default;
+$navbar-default-toggle-border-color:       #ddd !default;
+
+
+//== Fonts
+//
+//##
+
+$font-lato-path:               "../fonts/lato/";
+$font-lato-name:               "LatoLatin-Regular";
+$font-lato-name-light:         "LatoLatinLight-Regular";
+$font-lato-name-black:         "LatoLatinBlack-Regular";
+$font-lato-name-bold:          "LatoLatin-Bold";
+$font-lato-name-italic:        "LatoLatin-Italic";
+$font-lato-name-bold-italic:   "LatoLatin-BoldItalic";
+
+
+//== Buttons
+//
+//## For each of Bootstrap's buttons, define text, background and border color.
+
+$btn-default-color:          $text-color;
+$btn-default-bg:             $gray-light;
+$btn-default-border:         $gray-light;
+
+$btn-primary-color:          $white;
+$btn-primary-bg:             $brand-primary;
+$btn-primary-border:         $btn-primary-bg;
+
+$btn-success-color:          $white;
+$btn-success-bg:             $brand-success;
+$btn-success-border:         $btn-success-bg;
+
+$btn-info-color:             $white;
+$btn-info-bg:                $brand-info;
+$btn-info-border:            $btn-info-bg;
+
+$btn-warning-color:          $white;
+$btn-warning-bg:             $brand-warning;
+$btn-warning-border:         $btn-warning-bg;
+
+$btn-danger-color:           $white;
+$btn-danger-bg:              $brand-danger;
+$btn-danger-border:          $btn-danger-bg;
+
+$btn-inverse-color:          $text-color;
+$btn-inverse-bg:             $brand-inverse;
+$btn-inverse-border:         $btn-inverse-bg;
+
+// $btn-link-disabled-color:    $gray-light !default;

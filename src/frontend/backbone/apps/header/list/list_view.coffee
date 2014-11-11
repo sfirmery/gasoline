@@ -66,6 +66,16 @@
         template: "header/list/_nav_search"
         tagName: "li"
 
+        ui:
+            input: '#header-searchbox input'
+            searchbox: '#header-searchbox'
+
+        events:
+            "focus @ui.input" : ->
+                @ui.searchbox.addClass "focus"
+            "blur @ui.input" : ->
+                @ui.searchbox.removeClass "focus"
+
     class List.NavUserMenu extends App.Views.ItemView
         template: "header/list/_nav_user_menu"
         tagName: "li"
