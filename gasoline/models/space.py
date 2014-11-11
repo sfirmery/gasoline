@@ -27,8 +27,8 @@ json_schema_collection = {
     'items': json_schema_resource,
 }
 
-DEFAULT_ACE = ACE(
-    truth='ALLOW', predicate='ANY', permission=['read', 'write'])
+DEFAULT_ACE = ACE(predicate='ANY',
+                  permission={'read': 'ALLOW', 'write': 'ALLOW'})
 
 
 class Space(db.Document):
