@@ -11,11 +11,11 @@
 </button>
 </td>
 <td>
-<%  truthKeys.forEach(function(key) { %>
+<%  permissionsKeys.forEach(function(key) { %>
     <button id="<%= key %>" type="button" class="btn btn-xs
-    <% if (truth[key] == allow) { %>
+    <% if (permissions[key] == allow) { %>
         btn-success"><i class="fa fa-fw fa-check"></i>&nbsp;<%= key %>
-    <% } else if (truth[key] == deny) { %>
+    <% } else if (permissions[key] == deny) { %>
         btn-danger"><i class="fa fa-fw fa-ban"></i>&nbsp;<%= key %>
     <% } else { %>
         btn-default"><i class="fa fa-fw fa-circle-o"></i>&nbsp;<%= key %>

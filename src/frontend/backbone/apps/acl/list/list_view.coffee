@@ -40,8 +40,8 @@
 
         # register events for each permissions
         registerEvents: ->
-            # add event for each truth keys
-            @model.truthKeys.forEach (key) =>
+            # add event for each permissions keys
+            @model.permissionsKeys.forEach (key) =>
                 @events["click ##{key}"] = ->
                     @togglePermission key
 
@@ -50,12 +50,12 @@
 
         # toggle permission value and save
         togglePermission: (key) ->
-            if @model.attributes.truth[key] == 'ALLOW'
-                @model.attributes.truth[key] = 'DENY'
-            else if @model.attributes.truth[key] == 'DENY'
-                @model.attributes.truth[key] = ''
+            if @model.attributes.permissions[key] == 'ALLOW'
+                @model.attributes.permissions[key] = 'DENY'
+            else if @model.attributes.permissions[key] == 'DENY'
+                @model.attributes.permissions[key] = ''
             else
-                @model.attributes.truth[key] = 'ALLOW'
+                @model.attributes.permissions[key] = 'ALLOW'
             @model.save()
 
         templateHelpers: ->
@@ -63,7 +63,7 @@
             group: @group()
             allow: 'ALLOW'
             deny: 'DENY'
-            truthKeys: @model.truthKeys
+            permissionsKeys: @model.permissionsKeys
 
         user: ->
             @model.get('predicate').split(':')[1] if @model.get('predicate').search('u:') == 0

@@ -91,7 +91,7 @@ class ACLService(Service):
         match = []
         for ace in acl:
             predicate_match = cls.check_predicate(ace.predicate, current_user)
-            perm = cls.get_permission(ace.truth, permission)
+            perm = cls.get_permission(ace.permissions, permission)
             if predicate_match:
                 match.extend(perm)
         if len(match) > 0:

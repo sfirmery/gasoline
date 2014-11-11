@@ -8,11 +8,11 @@ rest_uri_resource = '{}/<predicate>'.format(rest_uri_collection)
 json_schema_resource = {
     'title': 'Document resource Schema',
     'type': 'object',
-    'required': ['predicate', 'truth'],
+    'required': ['predicate', 'permissions'],
     'properties': {
         'id': {'type': 'string'},
         'predicate': {'type': 'string'},
-        'truth': {
+        'permissions': {
             'type': 'object',
             'additionalProperties': True,
         },
@@ -33,12 +33,12 @@ ORDER = {
 
 
 class ACE(db.EmbeddedDocument):
-    predicate = db.StringField(primary_key=True)
-    truth = db.DictField()
+    predicate = db.StringField()
+    permissions = db.DictField()
 
     @property
     def id(self):
         return unicode(self.predicate)
 
     def __repr__(self):
-        return '<ACE "%s %s">' % (self.predicate, self.truth)
+        return '<ACE "%s %s">' % (self.predicate, self.permissions)
