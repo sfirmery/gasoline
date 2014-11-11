@@ -98,11 +98,11 @@ class AclAPI(MethodView, DocumentsAPIMixin):
         doc = self.get_document(doc_id, 'write')
 
         # check if ace exists
-        ace = self.get_acl(doc, predicate)
+        ace = self.get_acl(doc, predicate)[0]
 
         # delete ace
         try:
-            doc.delete_ace(ace[0])
+            doc.delete_ace(ace)
         except:
             logger.exception('')
             logger.debug('ace delete failed: database error')
