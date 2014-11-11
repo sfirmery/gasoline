@@ -193,12 +193,12 @@ class Application(Flask):
         self._assets_bundles['js']['files'].append('js/gasoline.js')
 
         self._assets_bundles['css']['files'] = [
-            'vendors/bootstrap/css/bootstrap.css',
+            # 'vendors/bootstrap/css/bootstrap.css',
+            'css/app.css',
             'vendors/bootstrap-datepicker/css/datepicker3.css',
             'vendors/font-awesome/css/font-awesome.css',
-            'vendors/*bootstrap-tags/css/bootstrap-tags.css',
+            'vendors/bootstrap-tags/css/bootstrap-tags.css',
         ]
-        self._assets_bundles['css']['files'].append('css/gasoline.css')
 
         self._assets_locales['files'] = [
             'vendors/bootstrap-datepicker/js/locales/bootstrap-datepicker.',
