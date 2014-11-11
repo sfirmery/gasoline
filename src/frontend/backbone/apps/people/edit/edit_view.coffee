@@ -5,6 +5,7 @@
 
         dialog: ->
             title: => (if @model.isNew() then "New" else "Edit") + " user"
+            size: "lg"
 
         serializeData: ->
             isNew: @model.isNew()
