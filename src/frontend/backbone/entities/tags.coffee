@@ -4,27 +4,28 @@
 
     class Entities.Tag extends Entities.Model
         urlRoot: ->
+            {@space, @docId} = @collection if @collection
             "#{baseUrl}/#{@space}/#{@docId}/tags"
-
-        initialize: (attributes, options) ->
-            @space = options.space
-            @docId = options.docId
 
     class Entities.TagsCollection extends Entities.Collection
         model: Entities.Tag
+
+        initialize: (attributes, options) ->
+            {@space, @docId} = options
 
     API =
         extractTags: (document, params = {}) ->
             _.defaults params, {}
             
-            tags = new Entities.TagsCollection
+            tags = new Entities.TagsCollection null,
+                space: document.get("space")
+                docId: document.get("id")
+
             tagsArray = []
             document.get("tags").forEach (tag) =>
                 tagsArray.push
                     id: tag
                     tag: tag
-                    space: document.get("space")
-                    docId: document.get("id")
             tags.add tagsArray
             tags
 

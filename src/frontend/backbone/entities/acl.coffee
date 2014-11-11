@@ -5,20 +5,21 @@
     class Entities.ACE extends Entities.Model
         urlRoot: ->
             {@space, @docId} = @collection if @collection
-            "#{baseUrl}/documents/#{@space}/#{@docId}/acl"
+            return "#{baseUrl}/documents/#{@space}/#{@docId}/acl" if @space and @docId
+            return "#{baseUrl}/spaces/#{@space}/acl" if @space and not @docId
 
         defaults:
             predicate: ''
-            truth:
+            permissions:
                 read: ''
                 write: ''
 
         initialize: (attributes, options) ->
-            @truthKeys = @getTruthKeys()
+            @permissionsKeys = @getTruthKeys()
 
         # get ordered permission name
         getTruthKeys: ->
-            _.keys(@attributes.truth).sort (a, b) ->
+            _.keys(@attributes.permissions).sort (a, b) ->
                 return -1 if a == 'read'
                 return 1 if b == 'read'
                 return -1 if a == 'write'
@@ -29,8 +30,8 @@
         model: Entities.ACE
 
         url: ->
-            "#{baseUrl}/documents/#{@space}/#{@docId}/acl" if @space and @docId
-            # "#{baseUrl}/documents/#{@space}/#{@docId}/acl" if not @space or not @docId
+            return "#{baseUrl}/documents/#{@space}/#{@docId}/acl" if @space and @docId
+            return "#{baseUrl}/spaces/#{@space}/acl" if @space and not @docId
 
         # custom sort
         comparator: (a, b) ->
