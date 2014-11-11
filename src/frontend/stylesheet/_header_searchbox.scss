@@ -16,12 +16,13 @@
     }
 
     i {
+        font-size: 20px;
         color: $white;
         @include transition(color ease-in-out .5s);
     }
 
-    &.focused i {
-        color: $gray-light;
+    &.focus i {
+        color: $gray;
     }
 
 }

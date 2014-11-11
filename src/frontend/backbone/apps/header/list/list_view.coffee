@@ -72,9 +72,9 @@
 
         events:
             "focus @ui.input" : ->
-                @ui.searchbox.addClass "focused"
+                @ui.searchbox.addClass "focus"
             "blur @ui.input" : ->
-                @ui.searchbox.removeClass "focused"
+                @ui.searchbox.removeClass "focus"
 
     class List.NavUserMenu extends App.Views.ItemView
         template: "header/list/_nav_user_menu"

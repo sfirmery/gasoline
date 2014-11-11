@@ -14,6 +14,11 @@ h1, h2, h3, h4, h5, h6,
 
 .nav {
     font-weight: 300;
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.navbar {
+    -webkit-font-smoothing: subpixel-antialiased;
 }
 
 @import "header_searchbox";
@@ -37,13 +42,20 @@ div.content {
 }
 
 .page-header small {
-    color: $white;
-    @include transition(color ease-in-out .5s);
-    font-weight: 300;
+    color: $gray;
+}
 
-    &:hover {
-        @include transition(color ease-in-out .2s);
-        color: $gray-light;
+.document-header {
+    @extend .page-header;
+
+    small {
+        color: $white;
+        @include transition(color ease-in-out .5s);
+
+        &:hover {
+            @include transition(color ease-in-out .2s);
+            color: $gray;
+        }
     }
 }
 
