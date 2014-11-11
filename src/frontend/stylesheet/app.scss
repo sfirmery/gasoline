@@ -1,0 +1,49 @@
+@import "base";
+
+body {
+    padding-top: 60px;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    a:active,
+    a:hover {
+        text-decoration: none;
+    }
+}
+
+.nav {
+    font-weight: 300;
+}
+
+@import "document";
+@import "comment";
+
+div.content {
+    padding: 0 6px;
+}
+
+.activity-stream p {
+    padding-left: 24px;
+}
+
+.activity-stream div div {
+    padding: 6px;
+}
+
+.search_results {
+    padding: 0 10px;
+}
+
+.page-header small {
+    color: $gray-light;
+}
+
+// opacity wrapper
+[data-wrapper].opacity {
+    @include opacity(0.4);
+}
+
+.sign_in {
+    margin-top: 100px;
+}

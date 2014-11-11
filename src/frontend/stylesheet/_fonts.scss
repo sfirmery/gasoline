@@ -1,0 +1,63 @@
+//
+// Fonts
+// --------------------------------------------------
+
+@font-face {
+  font-family: 'Lato';
+  src: url($font-lato-path+$font-lato-name-black+'.eot');
+  src: url($font-lato-path+$font-lato-name-black+'.eot?#iefix') format('embedded-opentype'),
+       url($font-lato-path+$font-lato-name-black+'.woff') format('woff'),
+       url($font-lato-path+$font-lato-name-black+'.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Lato';
+  src: url($font-lato-path+$font-lato-name-bold+'.eot');
+  src: url($font-lato-path+$font-lato-name-bold+'.eot?#iefix') format('embedded-opentype'),
+       url($font-lato-path+$font-lato-name-bold+'.woff') format('woff'),
+       url($font-lato-path+$font-lato-name-bold+'.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Lato';
+  src: url($font-lato-path+$font-lato-name-bold-italic+'.eot');
+  src: url($font-lato-path+$font-lato-name-bold-italic+'.eot?#iefix') format('embedded-opentype'),
+       url($font-lato-path+$font-lato-name-bold-italic+'.woff') format('woff'),
+       url($font-lato-path+$font-lato-name-bold-italic+'.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Lato';
+  src: url($font-lato-path+$font-lato-name-italic+'.eot');
+  src: url($font-lato-path+$font-lato-name-italic+'.eot?#iefix') format('embedded-opentype'),
+       url($font-lato-path+$font-lato-name-italic+'.woff') format('woff'),
+       url($font-lato-path+$font-lato-name-italic+'.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Lato';
+  src: url($font-lato-path+$font-lato-name-light+'.eot');
+  src: url($font-lato-path+$font-lato-name-light+'.eot?#iefix') format('embedded-opentype'),
+       url($font-lato-path+$font-lato-name-light+'.woff') format('woff'),
+       url($font-lato-path+$font-lato-name-light+'.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Lato';
+  src: url($font-lato-path+$font-lato-name+'.eot');
+  src: url($font-lato-path+$font-lato-name+'.eot?#iefix') format('embedded-opentype'),
+       url($font-lato-path+$font-lato-name+'.woff') format('woff'),
+       url($font-lato-path+$font-lato-name+'.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}

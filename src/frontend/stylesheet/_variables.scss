@@ -1,0 +1,152 @@
+
+// Material Colors : http://www.google.com/design/spec/style/color.html
+$red:                   #F44336;
+$accent-red:            #FF5252;
+$pink:                  #E91E63;
+$purple:                #9C27B0;
+$deeppurlple:           #673AB7;
+$indigo:                #3F51B5;
+$blue:                  #2196F3;
+$accent-blue:           #448AFF;
+$lightblue:             #03A9F4;
+$lightblue700:          #0288D1;
+$lightblue800:          #0277BD;
+$accent-lightblue:      #40C4FF;
+$cyan:                  #00BCD4;
+$accent-cyan:           #18FFFF;
+$teal:                  #009688;
+$green:                 #4CAF50;
+$accent-green:          #69F0AE;
+$lightgreen:            #8BC34A;
+$lime:                  #CDDC39;
+$yellow:                #FFEB3B;
+$amber:                 #FFC107;
+$orange:                #FF9800;
+$accent-orange:         #FFAB40;
+$deeporange:            #FF5722;
+$brown:                 #795548;
+$grey:                  #9E9E9E;
+$bluegrey:              #607D8B;
+
+
+//== Colors
+//
+//## Gray and brand colors for use across Bootstrap.
+
+$brand-primary: $blue;
+$brand-success: $green;
+$brand-info:    $lightblue;
+$brand-warning: $orange;
+$brand-danger:  $red;
+
+$gray-base:             #000;
+$gray-darker:           transparentize($gray-base, 0);
+$gray-dark:             transparentize($gray-base, 0.13);
+$gray:                  transparentize($gray-base, 0.46);
+$gray-light:            transparentize($gray-base, 0.74);
+$gray-lighter:          transparentize($gray-base, 0.88);
+
+$white:                 #FFF;
+$white3:                opacify($white, 0.12);
+$white2:                opacify($white, 0.3);
+$white1:                opacify($white, 0.7);
+$white0:                opacify($white, 1);
+
+
+//== Typography
+//
+//## Font, line-height, and color for body text, headings, and more.
+
+$font-family-sans-serif:  Lato, Helvetica, Arial, sans-serif;
+// $font-family-serif:       Georgia, "Times New Roman", Times, serif !default;
+//** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
+// $font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace !default;
+// $font-family-base:        $font-family-sans-serif !default;
+
+$font-size-base:          16px;
+$font-size-large:         ceil(($font-size-base * 1.25)); // ~18px
+$font-size-small:         ceil(($font-size-base * 0.85)); // ~12px
+
+$font-size-h1:            floor(($font-size-base * 3.25)); // ~52px
+$font-size-h2:            floor(($font-size-base * 2.5)); // ~40px
+$font-size-h3:            ceil(($font-size-base * 2)); // ~32px
+$font-size-h4:            ceil(($font-size-base * 1.75)); // ~28px
+$font-size-h5:            floor(($font-size-base * 1.5)); // ~24px
+$font-size-h6:            ceil(($font-size-base * 1.25)); // ~20px
+
+//** Unit-less `line-height` for use in components like buttons.
+$line-height-base:        1.25 !default; // 20/14
+//** Computed "line-height" (`font-size` * `line-height`) for use with `margin`, `padding`, etc.
+// $line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
+
+// @font-size-h1:                  floor((@font-size-base * 3.444)); // ~62px
+// @font-size-h2:                  ceil((@font-size-base * 2.889)); // ~52px
+// @font-size-h3:                  ceil((@font-size-base * 2.222)); // ~40px
+// @font-size-h4:                  ceil((@font-size-base * 1.611)); // ~29px
+// @font-size-h5:                  floor((@font-size-base * 1.556)); // ~28px
+// @font-size-h6:                  ceil((@font-size-base * 1.333)); // ~24px
+
+
+//** By default, this inherits from the `<body>`.
+// $headings-font-family:    inherit !default;
+$headings-font-weight:    300;
+// $headings-line-height:    1.1 !default;
+// $headings-color:          inherit !default;
+
+
+//== Components
+//
+//## Define common padding and border radius sizes and more. Values based on 14px text and 1.428 line-height (~20px to start).
+
+$border-radius-base:        1px;
+$border-radius-large:       1.5px;
+$border-radius-small:       .75px;
+
+
+//== Navbar
+//
+//##
+
+// Basics of a navbar
+$navbar-height:         40px;
+// $navbar-margin-bottom:             $line-height-computed !default;
+// $navbar-border-radius:             $border-radius-base !default;
+// $navbar-padding-horizontal:        floor(($grid-gutter-width / 2)) !default;
+// $navbar-padding-vertical:          (($navbar-height - $line-height-computed) / 2) !default;
+// $navbar-collapse-max-height:       340px !default;
+
+$navbar-default-color:  $white0;
+$navbar-default-bg:     $lightblue800;
+$navbar-default-border: $lightblue800;
+
+// Navbar links
+$navbar-default-link-color:                $navbar-default-color;
+$navbar-default-link-hover-color:          $navbar-default-color;
+$navbar-default-link-hover-bg:             $lightblue700;
+$navbar-default-link-active-color:         $navbar-default-color;
+$navbar-default-link-active-bg:            $lightblue700;
+// $navbar-default-link-disabled-color:       #ccc !default;
+// $navbar-default-link-disabled-bg:          transparent !default;
+
+// Navbar brand label
+$navbar-default-brand-color:               $navbar-default-link-color;
+$navbar-default-brand-hover-color:         $navbar-default-brand-color;
+$navbar-default-brand-hover-bg:            transparent;
+
+// Navbar toggle
+$navbar-default-toggle-hover-bg:           #ddd !default;
+$navbar-default-toggle-icon-bar-bg:        #888 !default;
+$navbar-default-toggle-border-color:       #ddd !default;
+
+
+//== Fonts
+//
+//##
+
+$font-lato-path:               "../fonts/lato/";
+$font-lato-name:               "LatoLatin-Regular";
+$font-lato-name-light:         "LatoLatinLight-Regular";
+$font-lato-name-black:         "LatoLatinBlack-Regular";
+$font-lato-name-bold:          "LatoLatin-Bold";
+$font-lato-name-italic:        "LatoLatin-Italic";
+$font-lato-name-bold-italic:   "LatoLatin-BoldItalic";
