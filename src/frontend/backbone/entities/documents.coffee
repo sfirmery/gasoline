@@ -7,7 +7,6 @@
             "#{baseUrl}/#{@space}"
 
         initialize: (attributes, options) ->
-            console.log "init document", attributes, options
             {@space} = options
 
         toJSON: (model, options) ->

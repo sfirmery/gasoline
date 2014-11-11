@@ -23,21 +23,17 @@
 
         addAce: (acl, type, options) ->
             data = Backbone.Syphon.serialize @layout
-            console.log "add:ace:clicked with", type, data, 'predicate' in _.keys(data)
             if type == 'ANY'
                 throw new Error "predicate already exists" if acl.get type
                 ace = App.request "new:acl:entity", type, @space, @docId
-                console.log 'is ANY', ace
             else if 'predicate' in _.keys(data)
                 data.predicate = $.trim(data.predicate)
                 if type == 'user'
                     throw new Error "predicate already exists" if acl.get "u:#{data.predicate}"
                     ace = App.request "new:acl:entity", "u:#{data.predicate}", @space, @docId
-                    console.log 'is user', ace
                 else if type == 'group'
                     throw new Error "predicate already exists" if acl.get "g:#{data.predicate}"
                     ace = App.request "new:acl:entity", "g:#{data.predicate}", @space, @docId
-                    console.log 'is group', ace
                 else
                     throw new Error "unknown predicate type #{data.predicate}"
             else
@@ -45,7 +41,6 @@
 
             acl.add ace
             ace.save()
-            console.log 'new acl', acl, ace
 
         panelRegion: (acl) ->
             panelView = @getPanelView acl
@@ -55,10 +50,7 @@
             aclView = @getACLView acl
             @show aclView, region: @layout.aclRegion
 
-            @listenTo aclView, "all", (options) ->
-                console.log "event aclView", options
             @listenTo aclView, "childview:delete:ace:clicked", (iv, args) ->
-                console.log "childview:delete:ace:clicked"
                 args.model.destroy
                     wait: true
 

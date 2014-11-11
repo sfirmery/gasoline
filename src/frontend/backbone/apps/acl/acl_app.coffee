@@ -7,5 +7,4 @@
                 model: model
     
     App.vent.on "list:acl:clicked", (model) ->
-        console.log "list:acl:clicked"
         API.list model
