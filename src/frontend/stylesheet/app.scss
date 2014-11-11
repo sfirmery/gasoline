@@ -37,7 +37,14 @@ div.content {
 }
 
 .page-header small {
-    color: $gray-light;
+    color: $white;
+    @include transition(color ease-in-out .5s);
+    font-weight: 300;
+
+    &:hover {
+        @include transition(color ease-in-out .2s);
+        color: $gray-light;
+    }
 }
 
 // opacity wrapper
