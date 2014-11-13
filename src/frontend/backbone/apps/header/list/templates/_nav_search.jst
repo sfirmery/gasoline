@@ -1,7 +1,8 @@
 <form class="navbar-form navbar-left form-inline" role="search" name="search">
     <div class="form-group has-feedback dropdown" id="header-searchbox">
-        <input autocomplete="off" class="form-control input-sm" name="query" placeholder="{{ _('Search...') }}" type="text">
-        <i class="fa fa-search fa-fw form-control-feedback"></i>
-        <ul id="header-searchbox-results" class="dropdown-menu"></ul>
+        <input autocomplete="off" class="form-control" name="query" placeholder="{{ _('Search...') }}" type="text">
+        <i class="fa fa-search fa-fw"></i>
+        <i class="fa fa-spinner fa-spin fa-fw fade"></i>
+        <div id="header-searchbox-results-region"></div>
     </div>
 </form>
