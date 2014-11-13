@@ -16,13 +16,33 @@
     }
 
     i {
-        font-size: 20px;
+        font-size: 22px;
         color: $white;
-        @include transition(color ease-in-out .5s);
+        @include opacity(1);
+        @include transition(color ease-in-out .5s, opacity linear .5s .5s);
+
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 2; // Ensure icon is above input groups
+        width: $input-height-base;
+        height: $input-height-base;
+        line-height: $input-height-base;
+        text-align: center;
+        pointer-events: none;
+    }
+
+    i.fade {
+        @include opacity(0);
     }
 
     &.focus i {
         color: $gray;
+    }
+
+    ul.search-results {
+        @include transition(all ease-in-out .5s);
+        min-width: 200px;      
     }
 
 }
