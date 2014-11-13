@@ -2,7 +2,6 @@
 
 import os.path
 import logging
-from flask import url_for
 from whoosh.fields import SchemaClass
 from whoosh.fields import TEXT, KEYWORD, ID, DATETIME, NGRAM, NGRAMWORDS
 from whoosh.analysis import StemmingAnalyzer
@@ -13,6 +12,7 @@ from whoosh.writing import AsyncWriter, CLEAR
 
 from gasoline.core.signals import event, plugins_registered
 from gasoline.services.base import Service
+from gasoline.services.indexer.model import SearchResults
 
 logger = logging.getLogger('gasoline')
 
@@ -169,25 +169,8 @@ class IndexerService(Service):
                                   schema=self.ix.schema)
             q = qp.parse(query)
             results = searcher.search(q, limit=25).copy()
-            res = {'estimated_length': results.estimated_length(),
-                   'scored_length': results.scored_length(),
-                   'runtime': results.runtime,
-                   'list': []}
-            print res
-            print results
-            for i, r in enumerate(results):
-                if 'id' in r and 'space' in r:
-                    url = url_for('document.view', space=r['space'],
-                                  doc_id=r['id'])
-                else:
-                    url = None
-                res['list'].append({'id': r.get('id', ''),
-                                    'space': r.get('space', ''),
-                                    'title': r.get('title', ''),
-                                    'rank': r.rank,
-                                    'url': url,
-                                    'score': results.score(i)})
-            return res
+
+            return SearchResults(results)
 
     def live_search(self, query):
         """live search on ngram field"""
@@ -197,23 +180,8 @@ class IndexerService(Service):
                                   schema=self.ix.schema)
             q = qp.parse(query)
             results = searcher.search(q, limit=25).copy()
-            res = {'estimated_length': results.estimated_length(),
-                   'scored_length': results.scored_length(),
-                   'runtime': results.runtime,
-                   'list': []}
-            for i, r in enumerate(results):
-                if 'id' in r and 'space' in r:
-                    url = url_for('document.view', space=r['space'],
-                                  doc_id=r['id'])
-                else:
-                    url = None
-                res['list'].append({'id': r.get('id', ''),
-                                    'space': r.get('space', ''),
-                                    'title': r.get('title', ''),
-                                    'rank': r.rank,
-                                    'url': url,
-                                    'score': results.score(i)})
-        return res
+
+            return SearchResults(results)
 
     def index_document_callback(self, sender, **extra):
         """signals callback for indexing document"""
