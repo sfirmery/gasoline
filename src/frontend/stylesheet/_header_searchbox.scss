@@ -9,17 +9,17 @@
 
         @include transition(background ease-in-out .5s, width ease-in-out .5s);
 
-        &:focus {
-            background-color: $white;
-            width: 200px;
-        }
+    }
+    &.focus input {
+        background-color: $white;
+        width: 200px;
     }
 
     i {
         font-size: 22px;
         color: $white;
         @include opacity(1);
-        @include transition(color ease-in-out .5s, opacity linear .5s .5s);
+        @include transition(color ease-in-out .5s, opacity linear .2s .2s);
 
         position: absolute;
         top: 0;
@@ -42,7 +42,27 @@
 
     ul.search-results {
         @include transition(all ease-in-out .5s);
-        min-width: 200px;      
+        min-width: 200px;
+        @include opacity(0);
+        display: block;
+        visibility: hidden;
     }
 
+    &.focus ul.search-results {
+        visibility: visible;
+        @include opacity(1);
+    }
+
+    &.focus li {
+        @include animation(new-item-animation linear .5s);
+    }
+}
+
+@include keyframes(new-item-animation) {
+    from {
+        @include opacity(0);
+    }
+    to {
+        @include opacity(1);
+    }
 }
