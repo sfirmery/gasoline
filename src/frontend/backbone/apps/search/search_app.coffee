@@ -9,16 +9,6 @@
             new SearchApp.List.Controller
                 query: query
 
-        liveList: (region) ->
-            new SearchApp.LiveList.Controller
-                region: region
-
-    App.reqres.setHandler "get:live:search", (region) ->
-        API.liveList region
-
-    App.vent.on "live:search:typed", (query) ->
-        API.liveList query
-
     App.addInitializer ->
         new SearchApp.Router
             controller: API
