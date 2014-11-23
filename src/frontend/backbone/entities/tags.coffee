@@ -7,6 +7,9 @@
             {@space, @docId} = @collection if @collection
             "#{baseUrl}/#{@space}/#{@docId}/tags"
 
+        initialize: (attributes, options) ->
+            {@space, @docId} = options
+
     class Entities.TagsCollection extends Entities.Collection
         model: Entities.Tag
 
