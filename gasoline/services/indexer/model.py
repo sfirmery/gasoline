@@ -56,7 +56,6 @@ class SearchResults(object):
 
         self.results = []
         for i, r in enumerate(results):
-            print "i: {}, r: {}".format(i, r)
             self.results.append(SearchResult(**{
                 'id': r.get('id', ''),
                 'space': r.get('space', ''),
