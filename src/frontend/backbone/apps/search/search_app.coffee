@@ -2,7 +2,7 @@
 
     class SearchApp.Router extends Marionette.AppRouter
         appRoutes:
-            "search/:query": "list"
+            "search?q=:query": "list"
         
     API =
         list: (query) ->
