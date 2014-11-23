@@ -28,6 +28,7 @@
             search.fetch
                 reset: true
                 data: params
+            search.q = params.q
             search
 
         getEmptySearchResultsCollection: ->
