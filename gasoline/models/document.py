@@ -97,6 +97,7 @@ class BaseDocument(db.DynamicDocument):
 
     meta = {
         'indexes': ['title', 'space'],
+        'ordering': ['title', 'space'],
         'queryset_class': BaseDocumentQuerySet,
     }
 
