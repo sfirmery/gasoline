@@ -168,7 +168,7 @@ class IndexerService(Service):
             qp = MultifieldParser(self.search_field,
                                   schema=self.ix.schema)
             q = qp.parse(query)
-            results = searcher.search(q, limit=25).copy()
+            results = searcher.search(q, limit=15).copy()
 
             return SearchResults(results)
 
@@ -179,7 +179,7 @@ class IndexerService(Service):
             qp = MultifieldParser(self.live_search_field + self.search_field,
                                   schema=self.ix.schema)
             q = qp.parse(query)
-            results = searcher.search(q, limit=25).copy()
+            results = searcher.search(q, limit=15).copy()
 
             return SearchResults(results)
 
